@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:layout_marginBottom="3dp"
+	android:orientation="vertical">
+
+	<TextView
+		android:id="@+id/rating_text"
+		android:layout_width="64dp"
+		android:layout_height="64dp"
+		android:layout_marginEnd="8dp"
+		android:layout_marginRight="8dp"
+		android:gravity="center"
+		android:textColor="@android:color/white"
+		android:textSize="30sp"
+		tools:background="@color/blue_main"
+		tools:text="4.3" />
+
+	<ImageView
+		android:id="@+id/photo_image"
+		android:layout_width="58dp"
+		android:layout_height="58dp"
+		android:layout_alignParentEnd="true"
+		android:layout_alignParentRight="true"
+		android:layout_marginBottom="2dp"
+		android:layout_marginEnd="4dp"
+		android:layout_marginLeft="8dp"
+		android:layout_marginRight="4dp"
+		android:layout_marginStart="8dp"
+		android:layout_marginTop="2dp"
+		android:scaleType="fitCenter"
+		android:src="@drawable/beer_208708" />
+
+	<TextView
+		android:id="@+id/name_text"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginBottom="2dp"
+		android:layout_marginTop="8dp"
+		android:layout_toEndOf="@+id/rating_text"
+		android:layout_toLeftOf="@+id/photo_image"
+		android:layout_toRightOf="@+id/rating_text"
+		android:layout_toStartOf="@+id/photo_image"
+		android:fontFamily="sans-serif-condensed"
+		android:textColor="@android:color/black"
+		android:textSize="18sp"
+		android:textStyle="bold"
+		tools:text="À l’Abri de la Tempête Palabre de la Corne de Glace" />
+
+	<TextView
+		android:id="@+id/date_text"
+		android:layout_width="wrap_content"
+		android:layout_height="24dp"
+		android:layout_below="@+id/name_text"
+		android:layout_toLeftOf="@+id/photo_image"
+		android:layout_toStartOf="@+id/photo_image"
+		android:gravity="center"
+		android:textColor="@android:color/black"
+		android:textSize="17sp"
+		tools:text="08/14" />
+
+	<TextView
+		android:id="@+id/brewer_text"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_below="@+id/name_text"
+		android:layout_marginBottom="8dp"
+		android:layout_toEndOf="@+id/rating_text"
+		android:layout_toLeftOf="@+id/photo_image"
+		android:layout_toRightOf="@+id/rating_text"
+		android:layout_toStartOf="@+id/photo_image"
+		android:fontFamily="sans-serif-condensed"
+		android:textColor="@android:color/black"
+		android:textSize="17sp"
+		tools:text="Dunkel/Tmavy" />
+
+</RelativeLayout>
