@@ -1,10 +1,14 @@
 package com.ratebeer.android.api;
 
-final class Session {
+public class Session {
 
-	public int userId;
-	public String username;
-	public int rateCount;
-	public int placeCount;
+	private static class Holder {
+		// Holder with static instance which implements a thread safe lazy loading singleton
+		static final Session INSTANCE = new Session();
+	}
+
+	static Session get() {
+		return Holder.INSTANCE;
+	}
 
 }

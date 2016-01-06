@@ -12,15 +12,7 @@
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content">
 
-		<android.support.v7.widget.Toolbar
-			android:id="@+id/main_toolbar"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			app:layout_scrollFlags="scroll|enterAlways"
-			app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-			app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
-
-		<com.search.material.library.MaterialSearchView
+		<com.quinny898.library.persistentsearch.SearchBox
 			android:id="@+id/search_view"
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"

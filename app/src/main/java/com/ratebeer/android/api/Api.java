@@ -9,6 +9,7 @@ import com.ratebeer.android.api.model.UserRateCount;
 import com.ratebeer.android.api.model.UserRateCountDeserializer;
 import com.ratebeer.android.api.model.UserRating;
 import com.ratebeer.android.api.model.UserRatingDeserializer;
+import com.ratebeer.android.db.Session;
 import com.squareup.okhttp.HttpUrl;
 import com.squareup.okhttp.OkHttpClient;
 

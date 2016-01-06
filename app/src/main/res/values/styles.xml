@@ -8,4 +8,13 @@
 		<item name="colorControlHighlight">@color/yellow_main</item>
 	</style>
 
+	<style name="AppTheme.Toolbar" parent="Base.ThemeOverlay.AppCompat.Dark.ActionBar">
+		<item name="searchViewStyle">@style/AppTheme.SearchView</item>
+	</style>
+
+	<style name="AppTheme.SearchView" parent="Widget.AppCompat.SearchView">
+		<item name="queryBackground">@null</item>
+		<item name="searchIcon">@null</item>
+	</style>
+
 </resources>

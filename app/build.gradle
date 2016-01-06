@@ -38,6 +38,7 @@ dependencies {
     compile 'nl.2312:rxcupboard:0.7'
 
     compile 'com.squareup.picasso:picasso:2.5.2'
-    compile 'com.github.erickok:MaterialSeachView:fix-ui-preview-SNAPSHOT'
+    //compile 'com.github.erickok:MaterialSeachView:fix-ui-preview-SNAPSHOT'
+    compile 'com.github.Quinny898:PersistentSearch:master-SNAPSHOT'
     //compile 'pl.charmas.android:android-reactive-location:0.7@aar'
 }
