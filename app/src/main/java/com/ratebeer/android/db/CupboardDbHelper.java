@@ -5,21 +5,26 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import nl.nl2312.rxcupboard.RxCupboard;
+import nl.nl2312.rxcupboard.RxDatabase;
 import nl.qbusict.cupboard.DatabaseCompartment;
 
 import static nl.qbusict.cupboard.CupboardFactory.cupboard;
 
-public class CupboardDbHelper extends SQLiteOpenHelper {
+public final class CupboardDbHelper extends SQLiteOpenHelper {
 
 	private static final String DATABASE_NAME = "ratebeer.db";
-	private static final int DATABASE_VERSION = 7;
+	private static final int DATABASE_VERSION = 8;
 
 	private static SQLiteDatabase database;
 	private static DatabaseCompartment dbc;
+	private static RxDatabase rxDatabase;
 
 	static {
 		// Register our models with Cupboard as usual
 		//CupboardFactory.setCupboard(new CupboardBuilder().useAnnotations().build());
+		cupboard().register(HistoricSearch.class);
+		cupboard().register(StoredSession.class);
 		cupboard().register(Style.class);
 		cupboard().register(Brewery.class);
 		cupboard().register(Beer.class);
@@ -44,6 +49,13 @@ public class CupboardDbHelper extends SQLiteOpenHelper {
 			dbc = cupboard().withDatabase(connection(context));
 		}
 		return dbc;
+	}
+
+	public synchronized static RxDatabase rxdb(Context context) {
+		if (rxDatabase == null) {
+			rxDatabase = RxCupboard.with(cupboard(), connection(context));
+		}
+		return rxDatabase;
 	}
 
 	public CupboardDbHelper(Context context) {

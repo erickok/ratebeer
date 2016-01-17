@@ -3,4 +3,9 @@
 	<string name="app_account">Account</string>
 
 	<string name="search_hint">Search beer or brewery…</string>
+
+	<string name="main_myratings">My ratings</string>
+	<string name="main_friends">Friends</string>
+	<string name="main_local">Local</string>
+	<string name="main_global">Global</string>
 </resources>

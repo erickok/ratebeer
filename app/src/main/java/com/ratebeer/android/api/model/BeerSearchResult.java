@@ -2,7 +2,7 @@ package com.ratebeer.android.api.model;
 
 public final class BeerSearchResult {
 
-	public int beerId;
+	public long beerId;
 	public String beerName;
 	public long brewerId;
 	public String brewerName;

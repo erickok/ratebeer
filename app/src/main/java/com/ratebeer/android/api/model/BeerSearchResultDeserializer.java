@@ -3,6 +3,7 @@ package com.ratebeer.android.api.model;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.ratebeer.android.api.Normalizer;
@@ -20,7 +21,8 @@ public final class BeerSearchResultDeserializer implements JsonDeserializer<Beer
 		beerSearchResult.brewerId = object.get("BrewerID").getAsInt();
 		beerSearchResult.brewerName = Normalizer.get().cleanHtml(object.get("BeerName").getAsString());
 
-		beerSearchResult.overallPercentile = object.get("OverallPctl").getAsFloat();
+		if (!(object.get("OverallPctl") instanceof JsonNull))
+			beerSearchResult.overallPercentile = object.get("OverallPctl").getAsFloat();
 		beerSearchResult.rateCount = object.get("RateCount").getAsInt();
 		beerSearchResult.unrateable = object.get("Unrateable").getAsBoolean();
 		beerSearchResult.alias = object.get("IsAlias").getAsBoolean();

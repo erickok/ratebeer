@@ -1,10 +1,12 @@
 package com.ratebeer.android.db;
 
-final class StoredSession {
+public final class StoredSession {
 
-	public int userId;
-	public String username;
-	public int rateCount;
-	public int placeCount;
+	public Long _id;
+	public Integer userId;
+	public String userName;
+	public String password;
+	public Integer rateCount;
+	public Integer placeCount;
 
 }

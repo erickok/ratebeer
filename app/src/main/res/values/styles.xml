@@ -13,8 +13,15 @@
 	</style>
 
 	<style name="AppTheme.SearchView" parent="Widget.AppCompat.SearchView">
+		<item name="iconifiedByDefault">false</item>
 		<item name="queryBackground">@null</item>
 		<item name="searchIcon">@null</item>
+	</style>
+
+	<style name="AppTheme.SearchBarView" parent="Widget.AppCompat.SearchView">
+		<item name="iconifiedByDefault">false</item>
+		<item name="searchIcon">@null</item>
+		<item name="background">@drawable/search_bg</item>
 	</style>
 
 </resources>

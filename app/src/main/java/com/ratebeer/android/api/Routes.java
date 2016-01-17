@@ -6,11 +6,11 @@ import com.ratebeer.android.api.model.UserRating;
 
 import java.util.List;
 
-import retrofit.Response;
-import retrofit.http.Field;
-import retrofit.http.GET;
-import retrofit.http.POST;
-import retrofit.http.Query;
+import retrofit2.Response;
+import retrofit2.http.Field;
+import retrofit2.http.GET;
+import retrofit2.http.POST;
+import retrofit2.http.Query;
 import rx.Observable;
 
 interface Routes {
@@ -26,6 +26,6 @@ interface Routes {
 	Observable<List<UserRating>> getUserRatings(@Query("k") String key, @Query("p") int page);
 
 	@GET("s.asp")
-	Observable<BeerSearchResult> searchBeers(@Query("k") String key, @Query("u") Integer userId, @Query("b") String query);
+	Observable<List<BeerSearchResult>> searchBeers(@Query("k") String key, @Query("u") Integer userId, @Query("b") String query);
 
 }

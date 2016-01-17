@@ -3,19 +3,22 @@ package com.ratebeer.android.api;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.pacoworks.rxtuples.RxTuples;
+import com.ratebeer.android.BuildConfig;
+import com.ratebeer.android.Session;
 import com.ratebeer.android.api.model.BeerSearchResult;
 import com.ratebeer.android.api.model.BeerSearchResultDeserializer;
 import com.ratebeer.android.api.model.UserRateCount;
 import com.ratebeer.android.api.model.UserRateCountDeserializer;
 import com.ratebeer.android.api.model.UserRating;
 import com.ratebeer.android.api.model.UserRatingDeserializer;
-import com.ratebeer.android.db.Session;
-import com.squareup.okhttp.HttpUrl;
-import com.squareup.okhttp.OkHttpClient;
+import com.ratebeer.android.db.RBLog;
 
-import retrofit.GsonConverterFactory;
-import retrofit.Retrofit;
-import retrofit.RxJavaCallAdapterFactory;
+import okhttp3.HttpUrl;
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
+import retrofit2.GsonConverterFactory;
+import retrofit2.Retrofit;
+import retrofit2.RxJavaCallAdapterFactory;
 import rx.Observable;
 
 public final class Api {
@@ -24,26 +27,27 @@ public final class Api {
 	private static final String KEY = "tTmwRTWT-W7tpBhtL";
 
 	private final Routes routes;
-	private Session session;
 
 	private static class Holder {
 		// Holder with static instance which implements a thread safe lazy loading singleton
 		static final Api INSTANCE = new Api();
 	}
 
-	static Api get() {
+	public static Api get() {
 		return Holder.INSTANCE;
 	}
 
 	private Api() {
 
-		OkHttpClient httpclient = new OkHttpClient();
-		httpclient.setFollowRedirects(false); // Handle redirects ourselves, so we can grab the response headers/body
-		Gson gson = new GsonBuilder()
-				.registerTypeAdapter(UserRateCount.class, new UserRateCountDeserializer())
+		// OkHttp client with logging
+		HttpLoggingInterceptor logging = new HttpLoggingInterceptor(RBLog::v);
+		if (BuildConfig.DEBUG)
+			logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+		OkHttpClient httpclient = new OkHttpClient.Builder().addInterceptor(logging).addNetworkInterceptor(new LoginHeaderInterceptor()).build();
+		//httpclient.setFollowRedirects(false); // Handle redirects ourselves, so we can grab the response headers/body
+		Gson gson = new GsonBuilder().registerTypeAdapter(UserRateCount.class, new UserRateCountDeserializer())
 				.registerTypeAdapter(UserRating.class, new UserRatingDeserializer())
-				.registerTypeAdapter(BeerSearchResult.class, new BeerSearchResultDeserializer())
-				.create();
+				.registerTypeAdapter(BeerSearchResult.class, new BeerSearchResultDeserializer()).create();
 
 		// @formatter:off
 		Retrofit retrofit = new Retrofit.Builder()
@@ -55,16 +59,6 @@ public final class Api {
 		// @formatter:on
 		routes = retrofit.create(Routes.class);
 
-	}
-
-	private void updateSession(String username, int userId, UserRateCount counts) {
-		synchronized (this) {
-			session = new Session();
-			session.userId = userId;
-			session.username = username;
-			session.rateCount = counts.rateCount;
-			session.placeCount = counts.placeCount;
-		}
 	}
 
 	public Observable<Boolean> login(String username, String password) {
@@ -80,14 +74,14 @@ public final class Api {
 						routes.getUserRateCount(KEY, userId).flatMap(Observable::from),
 						RxTuples.toPair()))
 				// Store in our own instance the new user data
-				.doOnNext(user -> updateSession(username, user.getValue0(), user.getValue1()))
+				.doOnNext(user -> Session.get().startSession(user.getValue0(), username, password, user.getValue1()))
 				// Return login success
 				.map(ignore -> true);
 		// @formatter:on
 	}
 
 	public Observable<BeerSearchResult> searchBeers(String query) {
-		return routes.searchBeers(KEY, (session == null) ? null : session.userId, Normalizer.get().normalizeSearchQuery(query));
+		return routes.searchBeers(KEY, Session.get().getUserId(), Normalizer.get().normalizeSearchQuery(query)).flatMap(Observable::from);
 	}
 
 }

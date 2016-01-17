@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 public final class Normalizer {
 
 	private final Map<String, Integer> HTML_ENTITIES = new HashMap<>();
-	private final DateFormat ASP_DATE_FORMAT = new SimpleDateFormat("M/d/YYYY K:m:s a", Locale.US);
+	private final DateFormat ASP_DATE_FORMAT = new SimpleDateFormat("M/d/yyyy K:m:s a", Locale.US);
 
 	private static class Holder {
 		// Holder with static instance which implements a thread safe lazy loading singleton

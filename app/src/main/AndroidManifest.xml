@@ -8,7 +8,8 @@
 		android:allowBackup="true"
 		android:icon="@mipmap/ic_launcher"
 		android:label="@string/app_name"
-		android:theme="@style/AppTheme">
+		android:theme="@style/AppTheme"
+		android:name="com.ratebeer.android.RateBeerApp">
 
 		<activity android:name="com.ratebeer.android.gui.MainActivity">
 			<intent-filter>
@@ -16,6 +17,8 @@
 				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
 		</activity>
+
+		<activity android:name="com.ratebeer.android.gui.SearchActivity" />
 
 	</application>
 

@@ -1,18 +1,21 @@
 package com.ratebeer.android.gui;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 
 import com.ratebeer.android.R;
-import com.trello.rxlifecycle.components.support.RxAppCompatActivity;
 
-public class SearchActivity extends RxAppCompatActivity {
+public class SearchActivity extends RateBeerActivity {
+
+	public static Intent start(Context context, String query) {
+		return new Intent(context, SearchActivity.class).putExtra("query", query);
+	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
-
+		setContentView(R.layout.activity_search);
 	}
 
 }
