@@ -19,7 +19,7 @@ public final class BeerDetailsDeserializer implements JsonDeserializer<BeerDetai
 		beerDetails.beerId = object.get("BeerID").getAsInt();
 		beerDetails.beerName = Normalizer.get().cleanHtml(object.get("BeerName").getAsString());
 		beerDetails.brewerId = object.get("BrewerID").getAsInt();
-		beerDetails.brewerName = Normalizer.get().cleanHtml(object.get("BeerName").getAsString());
+		beerDetails.brewerName = Normalizer.get().cleanHtml(object.get("BrewerName").getAsString());
 		beerDetails.brewerCountryId = object.get("BrewerCountryID").getAsInt();
 		beerDetails.styleId = object.get("BeerStyleID").getAsInt();
 		beerDetails.styleName= Normalizer.get().cleanHtml(object.get("BeerStyleName").getAsString());

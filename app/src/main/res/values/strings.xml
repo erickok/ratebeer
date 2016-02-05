@@ -13,6 +13,10 @@
 	<string name="main_local">Local</string>
 	<string name="main_global">Global</string>
 
+	<string name="feed_isdrinking">is drinking</string>
+	<string name="feed_wasawarded">was awarded</string>
+	<string name="feed_checkedinat">checked in at</string>
+
 	<string name="beer_stylebrewer">A %1$s by %2$s</string>
 	<string name="beer_overall">Overall</string>
 	<string name="beer_instyle">Style</string>

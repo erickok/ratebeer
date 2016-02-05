@@ -20,7 +20,7 @@
 
 		<activity android:name=".gui.UpgradeActivity" />
 		<activity android:name=".gui.SearchActivity" />
-		<activity android:name=".gui.BeerActivity" />
+		<activity android:name=".gui.BeerActivity" android:theme="@style/AppTheme.NoStatusBar" />
 
 	</application>
 

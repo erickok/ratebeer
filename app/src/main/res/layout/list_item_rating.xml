@@ -3,7 +3,7 @@
 	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
 	android:layout_height="wrap_content"
-	android:layout_marginBottom="3dp"
+	android:layout_marginBottom="@dimen/list_item_margin_bottom"
 	android:orientation="vertical">
 
 	<TextView
@@ -31,7 +31,7 @@
 		android:layout_marginStart="8dp"
 		android:layout_marginTop="2dp"
 		android:scaleType="fitCenter"
-		android:src="@drawable/beer_208708" />
+		tools:src="@drawable/beer_208708" />
 
 	<TextView
 		android:id="@+id/beer_name_text"

@@ -34,6 +34,7 @@ public final class Db {
 	}
 
 	private static <T> Observable<T> getFresh(Observable<T> db, Observable<T> server, Func1<T, Boolean> isFresh) {
+		db = db.filter(beer -> beer != null);
 		return Observable.concat(Observable.concat(db, server).takeFirst(isFresh::call), db).first();
 	}
 

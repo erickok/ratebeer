@@ -1,6 +1,7 @@
 package com.ratebeer.android.gui.lists;
 
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,13 +32,23 @@ public final class BeerRatingsAdapter extends RecyclerView.Adapter<BeerRatingsAd
 	@Override
 	public void onBindViewHolder(ViewHolder holder, int position) {
 		BeerRating rating = ratings.get(position);
-		Picasso.with(holder.avatarImage.getContext()).load(ImageUrls.getUserPhotoUrl(rating.userName)).placeholder(ImageUrls.getColor(position)).fit()
+		Picasso.with(holder.avatarImage.getContext()).load(ImageUrls.getUserPhotoUrl(rating.userName)).placeholder(android.R.color.white).fit()
 				.centerCrop().into(holder.avatarImage);
 		holder.ratingMarkText.setText(String.format(Locale.getDefault(), "%1$.1f", rating.total));
-		holder.ratingCommentsText.setText(rating.comments);
+		holder.ratingMarkText.setBackgroundResource(ImageUrls.getColor(position, true));
+		holder.ratingCommentsText.setText(asHtml(rating.comments));
 		holder.userNameText.setText(rating.userName);
 		holder.userCountText.setText(String.format(Locale.getDefault(), "%1$d", rating.userRateCount));
 		holder.userCountryText.setText(rating.userCountryName);
+	}
+
+	private CharSequence asHtml(String raw) {
+		try {
+			return Html.fromHtml(raw);
+		} catch (Exception e) {
+			// Happens such as when running out of memory on large strings
+			return raw;
+		}
 	}
 
 	@Override

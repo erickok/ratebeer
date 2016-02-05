@@ -7,6 +7,7 @@
 		<item name="colorControlHighlight">@color/yellow_main</item>
 		<item name="colorButtonNormal">@color/red_main</item>
 		<item name="android:windowBackground">@android:color/white</item>
+		<item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
 	</style>
 
 	<style name="AppTheme.Dark" parent="Theme.AppCompat.NoActionBar">
@@ -14,6 +15,12 @@
 		<item name="colorPrimaryDark">@color/yellow_main</item>
 		<item name="colorAccent">@color/red_main</item>
 		<item name="colorControlHighlight">@color/yellow_main</item>
+	</style>
+
+	<style name="AppTheme.NoStatusBar">
+		<item name="android:windowTranslucentStatus" tools:targetApi="kitkat">true</item>
+		<item name="android:windowDrawsSystemBarBackgrounds" tools:targetApi="lollipop">true</item>
+		<item name="android:statusBarColor" tools:targetApi="lollipop">@android:color/transparent</item>
 	</style>
 
 	<style name="AppTheme.Toolbar" parent="Base.ThemeOverlay.AppCompat.Dark.ActionBar">

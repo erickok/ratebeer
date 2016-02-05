@@ -33,8 +33,8 @@ public final class BeerSearchResultAdapter extends RecyclerView.Adapter<BeerSear
 		holder.ratingText.setBackgroundResource(ImageUrls.getColor(position));
 		holder.ratingText.setText(beerSearchResult.getOverallPercentileString());
 		holder.titleText.setText(beerSearchResult.beerName);
-		Picasso.with(holder.photoImage.getContext()).load(ImageUrls.getBeerPhotoUrl(beerSearchResult.beerId))
-				.placeholder(ImageUrls.getColor(position, true)).fit().centerInside().into(holder.photoImage);
+		Picasso.with(holder.photoImage.getContext()).load(ImageUrls.getBeerPhotoUrl(beerSearchResult.beerId)).placeholder(android.R.color.white).fit()
+				.centerInside().into(holder.photoImage);
 		holder.unrateableBadge.setVisibility(beerSearchResult.unrateable ? View.VISIBLE : View.GONE);
 		holder.retiredBadge.setVisibility(beerSearchResult.retired ? View.VISIBLE : View.GONE);
 		holder.aliasBadge.setVisibility(beerSearchResult.alias ? View.VISIBLE : View.GONE);

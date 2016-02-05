@@ -38,26 +38,18 @@ public class SearchActivity extends RateBeerActivity {
 
 		// Set up search box
 		searchEdit.setQuery(getIntent().getStringExtra("query"), false);
-
 		// @formatter:off
 		RxSearchView.queryTextChanges(searchEdit)
 				.compose(onUi())
-				.doOnNext(val -> Log.d("RB", "onNext raw: " + val.toString()))
 				.debounce(400, TimeUnit.MILLISECONDS)
-				.doOnNext(val -> Log.d("RB", "onNext deb: " + val.toString()))
+				.filter(query -> query.length() > 3)
 				.flatMap(query ->
 						Api.get().searchBeers(query.toString()).toList()
-								.doOnNext(val -> Log.d("RB", "onNext rst: " + val.size()))
-								.doOnError(e -> Log.e("RB", "onError: " + e.toString()))
 								.doOnError(e -> Snackbar.show(SearchActivity.this, R.string.error_connectionfailure))
 								.onErrorResumeNext(Observable.empty()))
-				.doOnNext(val -> Log.d("RB", "onNext lst: " + val.size()))
 				.compose(onIoToUi())
 				.compose(bindToLifecycle())
-				.subscribe(
-						results -> resultsList.setAdapter(new BeerSearchResultAdapter(results)),
-						e -> { Log.e("RB", "onError"); e.printStackTrace(); },
-						() -> Log.e("RB", "onComplete"));
+				.subscribe(results -> resultsList.setAdapter(new BeerSearchResultAdapter(results)));
 		// @formatter:on
 
 		// Set up search results list

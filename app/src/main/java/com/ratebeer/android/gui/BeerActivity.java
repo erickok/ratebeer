@@ -2,11 +2,17 @@ package com.ratebeer.android.gui;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.StyleSpan;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -54,13 +60,22 @@ public final class BeerActivity extends RateBeerActivity {
 			ratings = ratings.startWith(Db.getRating(this, beerId, Session.get().getUserId()).map(this::localToBeerRating));
 		else
 			rateButton.setVisibility(View.GONE);
-		ratings.toList().compose(onIoToUi()).compose(bindToLifecycle()).subscribe(this::showRatings, e -> {});
+		ratings.toList().compose(onIoToUi()).compose(bindToLifecycle()).subscribe(this::showRatings, e -> e.printStackTrace());
 	}
 
 	private void showBeer(Beer beer) {
-		Picasso.with(this).load(ImageUrls.getBeerPhotoHighResUrl(beer._id)).fit().centerCrop().placeholder(R.color.grey_light).into((ImageView) findViewById(R.id.backdrop_image));
+		Picasso.with(this).load(ImageUrls.getBeerPhotoHighResUrl(beer._id)).fit().centerCrop().noPlaceholder()
+				.into((ImageView) findViewById(R.id.backdrop_image));
+		String brewerStyleText = getString(R.string.beer_stylebrewer, beer.styleName, beer.brewerName);
+		SpannableStringBuilder brewerStyleMarkup = new SpannableStringBuilder(brewerStyleText);
+		int styleStart = brewerStyleText.indexOf(beer.styleName);
+		int styleEnd = styleStart + beer.styleName.length();
+		int brewerStart = brewerStyleText.indexOf(beer.brewerName);
+		int brewerEnd = brewerStart + beer.brewerName.length();
+		brewerStyleMarkup.setSpan(new StyleSpan(Typeface.BOLD), styleStart, styleEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+		brewerStyleMarkup.setSpan(new StyleSpan(Typeface.BOLD), brewerStart, brewerEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+		((TextView) findViewById(R.id.brewer_name_text)).setText(brewerStyleMarkup);
 		((TextView) findViewById(R.id.beer_name_text)).setText(beer.name);
-		((TextView) findViewById(R.id.brewer_name_text)).setText(getString(R.string.beer_stylebrewer, beer.styleName, beer.brewerName));
 		((TextView) findViewById(R.id.mark_overall_text)).setText(beer.getOverallPercentileString());
 		((TextView) findViewById(R.id.mark_style_text)).setText(beer.getStylePercentileString());
 		((TextView) findViewById(R.id.mark_count_text)).setText(beer.getRateCountString());

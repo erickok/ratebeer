@@ -1,5 +1,6 @@
 package com.ratebeer.android.gui.lists;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.Spannable;
@@ -40,30 +41,53 @@ public final class FeedItemsAdapter extends RecyclerView.Adapter<FeedItemsAdapte
 				.placeholder(ImageUrls.getColor(position, true)).fit().centerCrop().into(holder.avatarImage);
 		if (feedItem.getBeerId() != null) {
 			holder.beerImage.setVisibility(View.VISIBLE);
-			Picasso.with(holder.beerImage.getContext()).load(ImageUrls.getBeerPhotoUrl(feedItem.getBeerId()))
-					.placeholder(ImageUrls.getColor(position, false)).fit().centerInside().into(holder.beerImage);
+			Picasso.with(holder.beerImage.getContext()).load(ImageUrls.getBeerPhotoUrl(feedItem.getBeerId())).placeholder(android.R.color.white).fit()
+					.centerInside().into(holder.beerImage);
 		} else {
-			holder.beerImage.setVisibility(View.GONE);
+			holder.beerImage.setVisibility(View.INVISIBLE);
 		}
-		holder.activityText.setText(buildActivityText(feedItem.userName, feedItem.linkText));
+		holder.activityText.setText(buildActivityText(holder.activityText.getContext(), feedItem));
 	}
 
-	private CharSequence buildActivityText(String userName, String linkText) {
+	private CharSequence buildActivityText(Context context, FeedItem feedItem) {
+
 		// Build a span that contains the user name and the action he/she performed
 		SpannableStringBuilder builder = new SpannableStringBuilder();
-		StyleSpan bold = new StyleSpan(android.graphics.Typeface.BOLD);
+
 		// Start with username, in bold
-		builder.append(userName);
-		builder.setSpan(bold, 0, userName.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+		builder.append(feedItem.userName);
+		builder.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), 0, feedItem.userName.length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
 		builder.append(" ");
-		// Parse HTML as spannable from raw link text
-		Spanned html = Html.fromHtml(linkText);
+
+		// For some activity types, insert the connecting string
+		if (feedItem.type == FeedItem.ITEMTYPE_ISDRINKING) {
+			builder.append(context.getString(R.string.feed_isdrinking));
+			builder.append(" ");
+			builder.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), builder.length() - 1, builder.length(),
+					Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
+		} else if (feedItem.type == FeedItem.ITEMTYPE_AWARD) {
+			builder.append(context.getString(R.string.feed_wasawarded));
+			builder.append(" ");
+			builder.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), builder.length() - 1, builder.length(),
+					Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
+		} else if (feedItem.type == FeedItem.ITEMTYPE_PLACECHECKIN) {
+			builder.append(context.getString(R.string.feed_checkedinat));
+			builder.append(" ");
+			builder.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), builder.length() - 1, builder.length(),
+					Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
+		}
+
+		// Parse HTML as spannable from raw link text and replace links with a bold text
+		Spanned html = Html.fromHtml(feedItem.linkText);
 		builder.append(html);
 		URLSpan[] links = builder.getSpans(0, html.length(), URLSpan.class);
 		for (URLSpan link : links) {
 			// Make link tags bold (they are not clickable though)
-			builder.setSpan(bold, builder.getSpanStart(link), builder.getSpanEnd(link), builder.getSpanFlags(link));
+			builder.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), builder.getSpanStart(link), builder.getSpanEnd(link),
+					builder.getSpanFlags(link));
+			builder.removeSpan(link);
 		}
+
 		return builder;
 	}
 

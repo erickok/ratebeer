@@ -9,6 +9,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SimpleCursorAdapter;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.view.View;
@@ -27,6 +28,7 @@ import com.ratebeer.android.db.Db;
 import com.ratebeer.android.db.HistoricSearch;
 import com.ratebeer.android.gui.lists.FeedItemsAdapter;
 import com.ratebeer.android.gui.lists.RatingsAdapter;
+import com.ratebeer.android.gui.widget.ItemClickSupport;
 import com.ratebeer.android.gui.widget.RxSearchView2;
 import com.ratebeer.android.gui.widget.RxViewPager;
 
@@ -44,10 +46,7 @@ public class MainActivity extends RateBeerActivity {
 	private static final int TAB_FEED_GLOBAL = 3;
 
 	private SearchView searchEdit;
-	private RecyclerView ratingsList;
-	private RecyclerView friendsFeedList;
-	private RecyclerView localFeedList;
-	private RecyclerView globalFeedList;
+	private ViewPager listsPager;
 	private List<Integer> tabTypes;
 	private List<View> tabs;
 	private List<String> tabsTitles;
@@ -69,18 +68,18 @@ public class MainActivity extends RateBeerActivity {
 
 		searchEdit = (SearchView) findViewById(R.id.search_edit);
 		TabLayout tabLayout = (TabLayout) findViewById(R.id.sliding_tabs);
-		ViewPager listsPager = (ViewPager) findViewById(R.id.lists_pager);
+		listsPager = (ViewPager) findViewById(R.id.lists_pager);
 
 		// Set up tabs
 		tabTypes = new ArrayList<>(4);
 		tabs = new ArrayList<>(4);
 		tabsTitles = new ArrayList<>(4);
 		if (Session.get().isLoggedIn()) {
-			addTab(TAB_RATINGS, ratingsList = new RecyclerView(this), R.string.main_myratings);
-			addTab(TAB_FEED_FRIENDS, friendsFeedList = new RecyclerView(this), R.string.main_friends);
-			addTab(TAB_FEED_LOCAL, localFeedList = new RecyclerView(this), R.string.main_friends);
+			addTab(TAB_RATINGS, R.string.main_myratings);
+			addTab(TAB_FEED_FRIENDS, R.string.main_friends);
+			addTab(TAB_FEED_LOCAL, R.string.main_friends);
 		} else {
-			addTab(TAB_FEED_GLOBAL, globalFeedList = new RecyclerView(this), R.string.main_global);
+			addTab(TAB_FEED_GLOBAL, R.string.main_global);
 		}
 		RxViewPager.pageSelected(listsPager).subscribe(this::refreshTab);
 		listsPager.setAdapter(new ActivityPagerAdapter());
@@ -100,16 +99,25 @@ public class MainActivity extends RateBeerActivity {
 
 	}
 
+	private void addTab(int tabType, int title) {
+		RecyclerView recyclerView = (RecyclerView) getLayoutInflater().inflate(R.layout.view_feedlist, listsPager, false);
+		recyclerView.setLayoutManager(new LinearLayoutManager(this));
+		tabTypes.add(tabType);
+		tabs.add(recyclerView);
+		tabsTitles.add(getString(title));
+	}
+
 	private void refreshTab(int position) {
 		int type = tabTypes.get(position);
+		RecyclerView view = ((RecyclerView) tabs.get(position));
 		if (type == TAB_RATINGS) {
 			Db.getLatestRatings(this, Session.get().getUserId()).toList().compose(onIoToUi()).compose(bindToLifecycle())
-					.subscribe(ratings -> ratingsList.setAdapter(new RatingsAdapter(this, ratings)),
+					.subscribe(ratings -> view.setAdapter(new RatingsAdapter(this, ratings)),
 							e -> Snackbar.show(this, R.string.error_connectionfailure));
 		} else {
+			ItemClickSupport.addTo(view).setOnItemClickListener((parent, pos, v) -> openItem(((FeedItemsAdapter) view.getAdapter()).get(pos)));
 			getTabFeed(type).toList().compose(onIoToUi()).compose(bindToLifecycle())
-					.subscribe(feed -> ((RecyclerView) tabs.get(position)).setAdapter(new FeedItemsAdapter(feed)),
-							e -> Snackbar.show(this, R.string.error_connectionfailure));
+					.subscribe(feed -> view.setAdapter(new FeedItemsAdapter(feed)), e -> Snackbar.show(this, R.string.error_connectionfailure));
 		}
 	}
 
@@ -120,6 +128,12 @@ public class MainActivity extends RateBeerActivity {
 			return Api.get().getFriendsFeed();
 		else
 			return Api.get().getGlobalFeed();
+	}
+
+	private void openItem(FeedItem feedItem) {
+		if (feedItem.getBeerId() != null) {
+			startActivity(BeerActivity.start(this, feedItem.getBeerId()));
+		}
 	}
 
 	private void performSearch(String query) {
@@ -134,12 +148,6 @@ public class MainActivity extends RateBeerActivity {
 
 		// Perform live search on server
 		startActivity(SearchActivity.start(this, query));
-	}
-
-	private void addTab(int tabType, View view, int title) {
-		tabTypes.add(tabType);
-		tabs.add(view);
-		tabsTitles.add(getString(title));
 	}
 
 	private class ActivityPagerAdapter extends PagerAdapter {

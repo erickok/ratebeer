@@ -19,15 +19,15 @@ public final class FeedItem {
 	public int userId;
 	public String userName;
 	public int type;
-	public int linkId;
+	public Integer linkId;
 	public String linkText;
 	public int activityNumber;
 	public Date timeEntered;
 	public int numComments;
 
 	public Integer getBeerId() {
-		if (type == ITEMTYPE_BEERADDED || type == ITEMTYPE_BEERRATING || type == ITEMTYPE_ISDRINKING) {
-			return linkId;
+		if (type == ITEMTYPE_BEERADDED || type == ITEMTYPE_BEERRATING) {
+			return linkId == 0? null: linkId;
 		}
 		// Doe snot apply to a specific beer
 		return null;

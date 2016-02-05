@@ -3,6 +3,7 @@ package com.ratebeer.android.api.model;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.ratebeer.android.api.Normalizer;
@@ -19,7 +20,8 @@ public final class BeerRatingDeserializer implements JsonDeserializer<BeerRating
 		userRating.userId = object.get("UserID").getAsInt();
 		userRating.userName = Normalizer.get().cleanHtml(object.get("UserName").getAsString());
 		userRating.userCountryId = object.get("CountryID").getAsInt();
-		userRating.userCountryName = Normalizer.get().cleanHtml(object.get("Country").getAsString());
+		if (!(object.get("Country") instanceof JsonNull))
+			userRating.userCountryName = Normalizer.get().cleanHtml(object.get("Country").getAsString());
 		userRating.userRateCount = object.get("RateCount").getAsInt();
 
 		userRating.aroma = object.get("Aroma").getAsInt();
@@ -30,7 +32,8 @@ public final class BeerRatingDeserializer implements JsonDeserializer<BeerRating
 		userRating.total = object.get("TotalScore").getAsFloat();
 		userRating.comments = Normalizer.get().cleanHtml(object.get("Comments").getAsString());
 		userRating.timeEntered = Normalizer.get().parseTime(object.get("TimeEntered").getAsString());
-		userRating.timeUpdated = Normalizer.get().parseTime(object.get("TimeUpdated").getAsString());
+		if (!(object.get("TimeUpdated") instanceof JsonNull))
+			userRating.timeUpdated = Normalizer.get().parseTime(object.get("TimeUpdated").getAsString());
 		return userRating;
 	}
 

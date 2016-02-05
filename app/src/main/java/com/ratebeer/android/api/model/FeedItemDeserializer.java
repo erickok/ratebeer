@@ -20,8 +20,8 @@ public final class FeedItemDeserializer implements JsonDeserializer<FeedItem> {
 		feedItem.userId = object.get("UserID").getAsInt();
 		feedItem.userName = Normalizer.get().cleanHtml(object.get("Username").getAsString());
 		feedItem.type = object.get("Type").getAsInt();
-		if (!(object.get("NumComments") instanceof JsonNull))
-			feedItem.linkId = object.get("NumComments").getAsInt();
+		if (!(object.get("LinkID") instanceof JsonNull))
+			feedItem.linkId = object.get("LinkID").getAsInt();
 		feedItem.linkText = object.get("LinkText").getAsString(); // Keep raw HTML
 		if (!(object.get("ActivityNumber") instanceof JsonNull))
 			feedItem.activityNumber = object.get("ActivityNumber").getAsInt();

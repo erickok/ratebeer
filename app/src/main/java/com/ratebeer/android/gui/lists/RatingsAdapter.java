@@ -37,8 +37,8 @@ public final class RatingsAdapter extends RecyclerView.Adapter<RatingsAdapter.Vi
 		Rating rating = ratings.get(position);
 		holder.ratingMarkText.setText(String.format(Locale.getDefault(), "%1$.1f", rating.total));
 		holder.beerNameText.setText(rating.beerName);
-		Picasso.with(holder.photoImage.getContext()).load(ImageUrls.getBeerPhotoUrl(rating.beerId)).placeholder(ImageUrls.getColor(position, true))
-				.fit().centerInside().into(holder.photoImage);
+		Picasso.with(holder.photoImage.getContext()).load(ImageUrls.getBeerPhotoUrl(rating.beerId)).placeholder(android.R.color.white).fit()
+				.centerInside().into(holder.photoImage);
 		holder.timeEnteredText.setText(timeEnteredFormat.format(rating.timeEntered));
 		holder.brewerNameText.setText(rating.brewerName);
 	}
