@@ -9,7 +9,6 @@
 	tools:context="com.ratebeer.android.gui.SearchActivity">
 
 	<android.support.design.widget.AppBarLayout
-		android:id="@+id/appBarLayout"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content">
 
@@ -29,7 +28,7 @@
 	</android.support.design.widget.AppBarLayout>
 
 	<android.support.v7.widget.RecyclerView
-		android:id="@+id/lists_pager"
+		android:id="@+id/results_list"
 		android:layout_width="match_parent"
 		android:layout_height="0dp"
 		android:layout_weight="1" />

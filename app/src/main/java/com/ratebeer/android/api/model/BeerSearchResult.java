@@ -1,5 +1,7 @@
 package com.ratebeer.android.api.model;
 
+import java.util.Locale;
+
 public final class BeerSearchResult {
 
 	public long beerId;
@@ -12,5 +14,11 @@ public final class BeerSearchResult {
 	public boolean alias;
 	public boolean retired;
 	public boolean ratedByUser;
+
+	public String getOverallPercentileString() {
+		if (overallPercentile == null)
+			return "-";
+		return String.format(Locale.getDefault(), "%1$.0f", overallPercentile);
+	}
 
 }

@@ -1,11 +1,35 @@
 <resources>
-	<string name="app_name">RateBeer OnTheGo</string>
+	<string name="app_name">RateBeer</string>
 	<string name="app_account">Account</string>
+	<string name="app_upgrade_welcome">Welcome to the new RateBeer</string>
+	<string name="app_upgrade">Sorry for the recent lack of updates. I promise to be better.\n\nI hope you find the new app more intuitive, quicker and reliable. Some features will be missing at first, but I will slowly rebuild them. At least you can expect full offline access to your ratings.\n\nDoes that sound nice?</string>
+	<string name="app_accept">I accept your apology</string>
+	<string name="app_decline">Forget it</string>
 
-	<string name="search_hint">Search beer or brewery…</string>
+	<string name="search_hint">Search a beer…</string>
 
 	<string name="main_myratings">My ratings</string>
 	<string name="main_friends">Friends</string>
 	<string name="main_local">Local</string>
 	<string name="main_global">Global</string>
+
+	<string name="beer_stylebrewer">A %1$s by %2$s</string>
+	<string name="beer_overall">Overall</string>
+	<string name="beer_instyle">Style</string>
+	<string name="beer_ratecount">Ratings</string>
+	<string name="beer_abv">ABV</string>
+	<string name="beer_ibu">IBU</string>
+	<string name="beer_calories">Calories</string>
+	<string name="beer_alias">alias</string>
+	<string name="beer_retired">retired</string>
+	<string name="beer_rated">rated</string>
+	<string name="beer_unrateable">unrateable</string>
+
+	<string name="rate_enterrating">Enter rating</string>
+	<string name="rate_"></string>
+
+	<string name="error_connectionfailure">Connection failure - your connection is poor or RateBeer is offline</string>
+	<string name="error_authenticationfailed">Your username or password is incorrect</string>
+	<string name="error_nouserorpass">Both username and password are required fields to sign in</string>
+
 </resources>

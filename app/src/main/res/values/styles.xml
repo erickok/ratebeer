@@ -1,10 +1,18 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
-	<!-- Base application theme. -->
 	<style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
 		<item name="colorPrimary">@color/blue_main</item>
 		<item name="colorPrimaryDark">@color/yellow_main</item>
-		<item name="colorAccent">@color/orange_main</item>
+		<item name="colorAccent">@color/red_main</item>
+		<item name="colorControlHighlight">@color/yellow_main</item>
+		<item name="colorButtonNormal">@color/red_main</item>
+		<item name="android:windowBackground">@android:color/white</item>
+	</style>
+
+	<style name="AppTheme.Dark" parent="Theme.AppCompat.NoActionBar">
+		<item name="colorPrimary">@color/blue_main</item>
+		<item name="colorPrimaryDark">@color/yellow_main</item>
+		<item name="colorAccent">@color/red_main</item>
 		<item name="colorControlHighlight">@color/yellow_main</item>
 	</style>
 
@@ -18,10 +26,63 @@
 		<item name="searchIcon">@null</item>
 	</style>
 
-	<style name="AppTheme.SearchBarView" parent="Widget.AppCompat.SearchView">
-		<item name="iconifiedByDefault">false</item>
-		<item name="searchIcon">@null</item>
-		<item name="background">@drawable/search_bg</item>
+	<style name="AppButton" parent="Widget.AppCompat.Button">
+	</style>
+
+	<style name="AppButton.Orange" parent="Widget.AppCompat.Button">
+		<item name="android:textColor">@android:color/white</item>
+	</style>
+
+	<style name="AppButton.White" parent="Widget.AppCompat.Button">
+		<item name="android:background">?android:attr/selectableItemBackground</item>
+		<item name="android:textColor">@android:color/black</item>
+	</style>
+
+	<style name="Badge">
+		<item name="android:padding">4dp</item>
+		<item name="android:textColor">@android:color/white</item>
+		<item name="android:textSize">12sp</item>
+		<item name="android:layout_marginLeft">8dp</item>
+		<item name="android:layout_marginStart" tools:targetApi="jelly_bean_mr1">8dp</item>
+	</style>
+
+	<style name="Badge.Alias">
+		<item name="android:background">@color/grey_light</item>
+	</style>
+
+	<style name="Badge.Retired">
+		<item name="android:background">@color/grey_dark</item>
+	</style>
+
+	<style name="Badge.Rated">
+		<item name="android:background">@color/orange_main</item>
+	</style>
+
+	<style name="Badge.Unrateable">
+		<item name="android:background">@color/grey_dark</item>
+	</style>
+
+	<style name="Marker">
+		<item name="android:layout_width">0dp</item>
+		<item name="android:layout_weight">1</item>
+		<item name="android:layout_marginRight">4dp</item>
+		<item name="android:layout_marginEnd" tools:targetApi="jelly_bean_mr1">4dp</item>
+	</style>
+
+	<style name="Marker.Number">
+		<item name="android:layout_height">28dp</item>
+		<item name="android:textSize">20sp</item>
+		<item name="android:gravity">center</item>
+		<item name="android:textColor">@android:color/black</item>
+	</style>
+
+	<style name="Marker.Label">
+		<item name="android:layout_height">wrap_content</item>
+		<item name="android:gravity">center_horizontal</item>
+		<item name="android:textSize">12sp</item>
+		<item name="android:textAllCaps">true</item>
+		<item name="android:textColor">@color/grey_dark</item>
+		<item name="android:fontFamily" tools:targetApi="jelly_bean">sans-serif-condensed</item>
 	</style>
 
 </resources>

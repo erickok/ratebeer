@@ -1,6 +1,9 @@
 package com.ratebeer.android.gui;
 
+import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
+import android.database.MergeCursor;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.PagerAdapter;
@@ -13,121 +16,128 @@ import android.view.ViewGroup;
 import android.widget.CursorAdapter;
 
 import com.jakewharton.rxbinding.support.v7.widget.RxSearchView;
-import com.quinny898.library.persistentsearch.SearchBox;
-import com.quinny898.library.persistentsearch.SearchResult;
+import com.jakewharton.rxbinding.support.v7.widget.SearchViewQueryTextEvent;
 import com.ratebeer.android.R;
 import com.ratebeer.android.Session;
 import com.ratebeer.android.api.Api;
+import com.ratebeer.android.api.model.FeedItem;
 import com.ratebeer.android.db.Beer;
 import com.ratebeer.android.db.CupboardDbHelper;
-import com.ratebeer.android.db.RBLog;
-import com.ratebeer.android.gui.widget.RxSearchBox;
-import com.ratebeer.android.gui.widget.SearchBoxSearchEvent;
+import com.ratebeer.android.db.Db;
+import com.ratebeer.android.db.HistoricSearch;
+import com.ratebeer.android.gui.lists.FeedItemsAdapter;
+import com.ratebeer.android.gui.lists.RatingsAdapter;
+import com.ratebeer.android.gui.widget.RxSearchView2;
+import com.ratebeer.android.gui.widget.RxViewPager;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
-import nl.nl2312.rxcupboard.RxCupboard;
-import nl.nl2312.rxcupboard.RxDatabase;
 import rx.Observable;
 
 public class MainActivity extends RateBeerActivity {
 
-	private SearchView searchText;
-	private SimpleCursorAdapter searchSuggestionsAdapter;
-	private SearchBox searchView;
+	private static final int TAB_RATINGS = 0;
+	private static final int TAB_FEED_FRIENDS = 1;
+	private static final int TAB_FEED_LOCAL = 2;
+	private static final int TAB_FEED_GLOBAL = 3;
+
+	private SearchView searchEdit;
 	private RecyclerView ratingsList;
 	private RecyclerView friendsFeedList;
 	private RecyclerView localFeedList;
 	private RecyclerView globalFeedList;
+	private List<Integer> tabTypes;
 	private List<View> tabs;
 	private List<String> tabsTitles;
-	private RxDatabase database;
+
+	public static Intent start(Context context) {
+		return new Intent(context, MainActivity.class);
+	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		searchText = (SearchView) findViewById(R.id.search_text);
-		searchView = (SearchBox) findViewById(R.id.search_view);
+		if (Session.get().isUpgrade()) {
+			startActivity(UpgradeActivity.start(this));
+			finish();
+			return;
+		}
+
+		searchEdit = (SearchView) findViewById(R.id.search_edit);
 		TabLayout tabLayout = (TabLayout) findViewById(R.id.sliding_tabs);
 		ViewPager listsPager = (ViewPager) findViewById(R.id.lists_pager);
 
-		database = RxCupboard.withDefault(CupboardDbHelper.connection(this));
-
-		// Set up navigation drawer
-		RxSearchBox.menuEvents(searchView).compose(bindToLifecycle()).subscribe();
-
 		// Set up tabs
+		tabTypes = new ArrayList<>(4);
 		tabs = new ArrayList<>(4);
 		tabsTitles = new ArrayList<>(4);
 		if (Session.get().isLoggedIn()) {
-			addTab(ratingsList = new RecyclerView(this), R.string.main_myratings);
-			addTab(friendsFeedList = new RecyclerView(this), R.string.main_friends);
-			addTab(localFeedList = new RecyclerView(this), R.string.main_friends);
+			addTab(TAB_RATINGS, ratingsList = new RecyclerView(this), R.string.main_myratings);
+			addTab(TAB_FEED_FRIENDS, friendsFeedList = new RecyclerView(this), R.string.main_friends);
+			addTab(TAB_FEED_LOCAL, localFeedList = new RecyclerView(this), R.string.main_friends);
 		} else {
-			addTab(globalFeedList = new RecyclerView(this), R.string.main_global);
+			addTab(TAB_FEED_GLOBAL, globalFeedList = new RecyclerView(this), R.string.main_global);
 		}
+		RxViewPager.pageSelected(listsPager).subscribe(this::refreshTab);
 		listsPager.setAdapter(new ActivityPagerAdapter());
 		tabLayout.setupWithViewPager(listsPager);
+		refreshTab(0);
 
 		// Set up search box
-		RxSearchView.queryTextChanges(searchText).debounce(400, TimeUnit.MILLISECONDS).filter(query -> query.length() >= 1).compose(toUi())
-				.compose(bindToLifecycle()).subscribe(query -> refreshSearchResults2(query.toString()));
-		Observable<SearchBoxSearchEvent> searchEvents = RxSearchBox.searchEvents(searchView).share();
-		searchEvents.ofType(SearchBoxSearchEvent.SearchBoxQueryChangeEvent.class).debounce(400, TimeUnit.MILLISECONDS).compose(bindToLifecycle())
-				.subscribe(queryChangeEvent -> refreshSearchResults(((SearchBoxSearchEvent.SearchBoxQueryChangeEvent) queryChangeEvent).query()));
-		searchEvents.ofType(SearchBoxSearchEvent.SearchBoxResultClickEvent.class).compose(bindToLifecycle()).subscribe(
-				resultClickEvent -> performSearch(((SearchBoxSearchEvent.SearchBoxResultClickEvent) resultClickEvent).searchResult().title));
+		Cursor historicSuggestions = CupboardDbHelper.database(this).query(HistoricSearch.class).orderBy("time desc").getCursor();
+		Cursor beerSuggestions = CupboardDbHelper.database(this).query(Beer.class).orderBy("name asc").getCursor();
+		SimpleCursorAdapter searchSuggestionsAdapter = new SimpleCursorAdapter(this, android.R.layout.simple_list_item_1,
+				new MergeCursor(new Cursor[]{historicSuggestions, beerSuggestions}), new String[]{"name"}, new int[]{android.R.id.text1},
+				CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
+		searchEdit.setSuggestionsAdapter(searchSuggestionsAdapter);
+		RxSearchView.queryTextChangeEvents(searchEdit).filter(SearchViewQueryTextEvent::isSubmitted).compose(onUi())
+				.subscribe(event -> performSearch(event.queryText().toString()));
+		RxSearchView2.suggestionClicks(searchEdit, false).compose(onUi()).subscribe(position -> performSearch(searchEdit.getQuery().toString()));
 
 	}
 
-	private void refreshSearchResults2(String query) {
-		Cursor suggestions = CupboardDbHelper.database(this).query(Beer.class).withSelection("name like ?", "%" + query + "%").limit(10).getCursor();
-		if (searchSuggestionsAdapter == null) {
-			searchSuggestionsAdapter = new SimpleCursorAdapter(this, android.R.layout.simple_list_item_1, suggestions, new String[]{"name"},
-					new int[]{android.R.id.text1}, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
-			searchText.setSuggestionsAdapter(searchSuggestionsAdapter);
+	private void refreshTab(int position) {
+		int type = tabTypes.get(position);
+		if (type == TAB_RATINGS) {
+			Db.getLatestRatings(this, Session.get().getUserId()).toList().compose(onIoToUi()).compose(bindToLifecycle())
+					.subscribe(ratings -> ratingsList.setAdapter(new RatingsAdapter(this, ratings)),
+							e -> Snackbar.show(this, R.string.error_connectionfailure));
 		} else {
-			searchSuggestionsAdapter.changeCursor(suggestions);
+			getTabFeed(type).toList().compose(onIoToUi()).compose(bindToLifecycle())
+					.subscribe(feed -> ((RecyclerView) tabs.get(position)).setAdapter(new FeedItemsAdapter(feed)),
+							e -> Snackbar.show(this, R.string.error_connectionfailure));
 		}
-		Observable.just(query)
-				// Ratebeer search route only allows queries with > 4 characters
-				.filter(q -> query.length() >= 4)
-				// Perform live search
-				.flatMap(q -> Api.get().searchBeers(q))
-				.map(result -> {
-					Beer beer = CupboardDbHelper.database(this).get(Beer.class, result.beerId);
-					if (beer == null) {
-						beer = Beer.fromSearchResult(result);
-					}
-					return beer;
-				})
-				.doOnNext(database::put).compose(onIoToUi()).compose(bindToLifecycle()).subscribe(ignore -> {
-			Cursor updatedSuggestions =
-					CupboardDbHelper.database(this).query(Beer.class).withSelection("name like ?", "%" + query + "%").limit(10).getCursor();
-			searchSuggestionsAdapter.changeCursor(updatedSuggestions);
-		});
 	}
 
-	private void refreshSearchResults(String query) {
-		Api.get().searchBeers(query)
-				// Create a searchable item for the search box from each beer found
-				.map(beerSearchResult -> new SearchResult(beerSearchResult.beerName))
-				// Sort by beer name
-				.toSortedList((left, right) -> left.title.compareTo(right.title)).flatMapIterable(results -> results).compose(onIoToUi())
-				.compose(bindToLifecycle())
-				.subscribe(searchable -> searchView.addSearchable((SearchResult) searchable), e -> RBLog.e("Search failed for '" + query + "'", e),
-						() -> searchView.updateResults());
+	private Observable<FeedItem> getTabFeed(int type) {
+		if (type == TAB_FEED_LOCAL)
+			return Api.get().getLocalFeed();
+		else if (type == TAB_FEED_FRIENDS)
+			return Api.get().getFriendsFeed();
+		else
+			return Api.get().getGlobalFeed();
 	}
 
 	private void performSearch(String query) {
+		// Store as historic search query (or update it)
+		HistoricSearch historicSearch = CupboardDbHelper.database(this).query(HistoricSearch.class).withSelection("name = ?", query).get();
+		if (historicSearch == null) {
+			historicSearch = new HistoricSearch();
+			historicSearch.name = query;
+		}
+		historicSearch.time = new Date();
+		CupboardDbHelper.database(this).put(historicSearch);
+
+		// Perform live search on server
 		startActivity(SearchActivity.start(this, query));
 	}
 
-	private void addTab(View view, int title) {
+	private void addTab(int tabType, View view, int title) {
+		tabTypes.add(tabType);
 		tabs.add(view);
 		tabsTitles.add(getString(title));
 	}

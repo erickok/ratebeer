@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:orientation="vertical"
+	tools:context=".gui.UpgradeActivity">
+
+	<ImageView
+		android:layout_width="match_parent"
+		android:layout_height="0dp"
+		android:layout_weight="1"
+		android:background="@color/blue_main"
+		android:scaleType="center"
+		android:src="@drawable/icon_large" />
+
+	<TextView
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginLeft="16dp"
+		android:layout_marginStart="16dp"
+		android:layout_marginEnd="16dp"
+		android:layout_marginRight="16dp"
+		android:layout_marginTop="16dp"
+		android:fontFamily="sans-serif-condensed"
+		android:textSize="21sp"
+		android:text="@string/app_upgrade_welcome"
+		android:textColor="@android:color/black" />
+
+	<TextView
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:padding="16dp"
+		android:text="@string/app_upgrade"
+		android:textColor="@android:color/black" />
+
+	<RelativeLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:paddingBottom="16dp"
+		android:paddingEnd="16dp"
+		android:paddingLeft="16dp"
+		android:paddingRight="16dp"
+		android:paddingStart="16dp">
+
+		<Button
+			android:id="@+id/accept_button"
+			style="@style/AppButton.Orange"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentEnd="true"
+			android:layout_alignParentRight="true"
+			android:onClick="accept"
+			android:text="@string/app_accept" />
+
+		<Button
+			android:id="@+id/decline_button"
+			style="@style/AppButton.White"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginEnd="8dp"
+			android:layout_marginRight="8dp"
+			android:layout_toLeftOf="@id/accept_button"
+			android:layout_toStartOf="@id/accept_button"
+			android:onClick="decline"
+			android:text="@string/app_decline" />
+
+	</RelativeLayout>
+
+</LinearLayout>

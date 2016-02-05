@@ -8,12 +8,12 @@ import rx.schedulers.Schedulers;
 
 public class RateBeerActivity extends RxAppCompatActivity {
 
-	public final <T> Observable.Transformer<? super T, ? extends T> onIoToUi() {
-		return source -> source.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+	public final <T> Observable.Transformer<T, T> onUi() {
+		return source -> source.subscribeOn(AndroidSchedulers.mainThread());
 	}
 
-	public final <T> Observable.Transformer<? super T, ? extends T> toUi() {
-		return source -> source.observeOn(AndroidSchedulers.mainThread());
+	public final <T> Observable.Transformer<T, T> onIoToUi() {
+		return source -> source.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
 	}
 
 }

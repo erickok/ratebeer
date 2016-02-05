@@ -1,6 +1,8 @@
 package com.ratebeer.android;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 
 import com.ratebeer.android.api.model.UserRateCount;
 import com.ratebeer.android.db.StoredSession;
@@ -10,6 +12,7 @@ import static com.ratebeer.android.db.CupboardDbHelper.database;
 public class Session {
 
 	private Context databaseContext;
+	private SharedPreferences prefs;
 	private StoredSession stored;
 
 	private static class Holder {
@@ -26,6 +29,7 @@ public class Session {
 	public void init(Context context) {
 		synchronized (this) {
 			databaseContext = context.getApplicationContext();
+			prefs = PreferenceManager.getDefaultSharedPreferences(context);
 			// Resume session from the database
 			stored = database(databaseContext).query(StoredSession.class).get();
 			if (stored == null) {
@@ -60,6 +64,15 @@ public class Session {
 		}
 	}
 
+	public boolean isUpgrade() {
+		// The "is_first_start" key was used on the old app to identify new installs and thus will always be present on upgrades
+		return prefs.contains("is_first_start");
+	}
+
+	public void completeUpgrade() {
+		prefs.edit().remove("is_first_start").apply();
+	}
+
 	public boolean isLoggedIn() {
 		return stored.userId != null;
 	}
@@ -70,6 +83,10 @@ public class Session {
 
 	public String getUserName() {
 		return stored.userName;
+	}
+
+	public Integer getUserRateCount() {
+		return stored.rateCount;
 	}
 
 }

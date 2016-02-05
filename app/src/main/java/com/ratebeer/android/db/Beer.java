@@ -1,38 +1,93 @@
 package com.ratebeer.android.db;
 
-import com.ratebeer.android.api.model.BeerSearchResult;
+import com.ratebeer.android.api.model.BeerDetails;
 
 import java.util.Date;
+import java.util.Locale;
 
 public final class Beer {
 
+	private static final float CALORIES_PER_FLOZ = 30f;
+
 	public Long _id;
 	public String name;
-	public Long beerStyleId;
+	public Long styleId;
+	public String styleName;
 	public Long brewerId;
-	public Long ratingId;
+	public String brewerName;
+	public Long brewerCountryId;
 
-	public Boolean unrateable;
+	public Float alcohol;
+	public Float ibu;
+	public String description;
 	public Boolean alias;
-	public Boolean retired;
 
-	public Float averageRating;
+	public Float realRating;
+	public Float weightedRating;
 	public Float overallPercentile;
 	public Float stylePercentile;
-	public Integer rateCount;
+	public int rateCount;
 
-	public Date timeLoaded;
+	public Date timeCached;
 
-	public static Beer fromSearchResult(BeerSearchResult result) {
+	public static Beer fromDetails(BeerDetails details) {
 		Beer beer = new Beer();
-		beer._id = result.beerId;
-		beer.name = result.beerName;
-		beer.brewerId = result.brewerId;
-		beer.overallPercentile = result.overallPercentile;
-		beer.rateCount = result.rateCount;
-		beer.unrateable = result.unrateable;
-		beer.alias = result.alias;
-		beer.retired = result.retired;
+		beer._id = details.beerId;
+		beer.name = details.beerName;
+		beer.styleId = details.styleId;
+		beer.styleName = details.styleName;
+		beer.brewerId = details.brewerId;
+		beer.brewerName = details.brewerName;
+		beer.brewerCountryId = details.brewerCountryId;
+
+		beer.alcohol = details.alcohol;
+		beer.ibu = details.ibu;
+		beer.description = details.description;
+		beer.alias = details.alias;
+
+		beer.realRating = details.realRating;
+		beer.stylePercentile = details.stylePercentile;
+		beer.weightedRating = details.weightedRating;
+		beer.overallPercentile = details.overallPercentile;
+		beer.stylePercentile = details.stylePercentile;
+		beer.rateCount = details.rateCount;
+
+		beer.timeCached = new Date();
 		return beer;
 	}
+
+	public String getOverallPercentileString() {
+		if (overallPercentile == null)
+			return "-";
+		return String.format(Locale.getDefault(), "%1.0f", overallPercentile);
+	}
+
+	public String getStylePercentileString() {
+		if (stylePercentile == null)
+			return "-";
+		return String.format(Locale.getDefault(), "%1.0f", stylePercentile);
+	}
+
+	public String getRateCountString() {
+		return String.format(Locale.getDefault(), "%1$d", rateCount);
+	}
+
+	public String getAlcoholString() {
+		if (alcohol == null || alcohol == 0)
+			return "-";
+		return String.format(Locale.getDefault(), "%1.0f", alcohol);
+	}
+
+	public String getIbuString() {
+		if (ibu == null || ibu == 0)
+			return "-";
+		return String.format(Locale.getDefault(), "%1.0f", ibu);
+	}
+
+	public String getCaloriesString() {
+		if (alcohol == null || alcohol == 0)
+			return "-";
+		return String.format(Locale.getDefault(), "%1.0f", alcohol * CALORIES_PER_FLOZ);
+	}
+
 }

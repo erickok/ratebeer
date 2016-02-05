@@ -5,8 +5,14 @@ import com.google.gson.GsonBuilder;
 import com.pacoworks.rxtuples.RxTuples;
 import com.ratebeer.android.BuildConfig;
 import com.ratebeer.android.Session;
+import com.ratebeer.android.api.model.BeerDetails;
+import com.ratebeer.android.api.model.BeerDetailsDeserializer;
+import com.ratebeer.android.api.model.BeerRating;
+import com.ratebeer.android.api.model.BeerRatingDeserializer;
 import com.ratebeer.android.api.model.BeerSearchResult;
 import com.ratebeer.android.api.model.BeerSearchResultDeserializer;
+import com.ratebeer.android.api.model.FeedItem;
+import com.ratebeer.android.api.model.FeedItemDeserializer;
 import com.ratebeer.android.api.model.UserRateCount;
 import com.ratebeer.android.api.model.UserRateCountDeserializer;
 import com.ratebeer.android.api.model.UserRating;
@@ -37,6 +43,10 @@ public final class Api {
 		return Holder.INSTANCE;
 	}
 
+	public static Api api() {
+		return get();
+	}
+
 	private Api() {
 
 		// OkHttp client with logging
@@ -45,11 +55,16 @@ public final class Api {
 			logging.setLevel(HttpLoggingInterceptor.Level.BODY);
 		OkHttpClient httpclient = new OkHttpClient.Builder().addInterceptor(logging).addNetworkInterceptor(new LoginHeaderInterceptor()).build();
 		//httpclient.setFollowRedirects(false); // Handle redirects ourselves, so we can grab the response headers/body
-		Gson gson = new GsonBuilder().registerTypeAdapter(UserRateCount.class, new UserRateCountDeserializer())
-				.registerTypeAdapter(UserRating.class, new UserRatingDeserializer())
-				.registerTypeAdapter(BeerSearchResult.class, new BeerSearchResultDeserializer()).create();
 
 		// @formatter:off
+		Gson gson = new GsonBuilder()
+				.registerTypeAdapter(FeedItem.class, new FeedItemDeserializer())
+				.registerTypeAdapter(UserRateCount.class, new UserRateCountDeserializer())
+				.registerTypeAdapter(UserRating.class, new UserRatingDeserializer())
+				.registerTypeAdapter(BeerSearchResult.class, new BeerSearchResultDeserializer())
+				.registerTypeAdapter(BeerDetails.class, new BeerDetailsDeserializer())
+				.registerTypeAdapter(BeerRating.class, new BeerRatingDeserializer())
+				.create();
 		Retrofit retrofit = new Retrofit.Builder()
 				.baseUrl(ENDPOINT)
 				.client(httpclient)
@@ -80,8 +95,53 @@ public final class Api {
 		// @formatter:on
 	}
 
+	/**
+	 * Returns an observable sequence (list) of items that appear on the global news feed; does not require user login
+	 */
+	public Observable<FeedItem> getGlobalFeed() {
+		return routes.getFeed(KEY, 1).flatMapIterable(items -> items);
+	}
+
+	/**
+	 * Returns an observable sequence (list) of items that appear on the local news feed; requires a user to be logged in for its locale
+	 */
+	public Observable<FeedItem> getLocalFeed() {
+		return routes.getFeed(KEY, 2).flatMapIterable(items -> items);
+	}
+
+	/**
+	 * Returns an observable sequence (list) of items that appear on the personalized friends feed; requires a user to be logged in
+	 */
+	public Observable<FeedItem> getFriendsFeed() {
+		return routes.getFeed(KEY, 0).flatMapIterable(items -> items);
+	}
+
+	/**
+	 * Returns an observable sequence (list) of beers (search results) for a text query
+	 */
 	public Observable<BeerSearchResult> searchBeers(String query) {
-		return routes.searchBeers(KEY, Session.get().getUserId(), Normalizer.get().normalizeSearchQuery(query)).flatMap(Observable::from);
+		return routes.searchBeers(KEY, Session.get().getUserId(), Normalizer.get().normalizeSearchQuery(query)).flatMapIterable(results -> results);
+	}
+
+	/**
+	 * Returns the full details for a beer, or throws an exception if it could not be retrieved
+	 */
+	public Observable<BeerDetails> getBeerDetails(long beerId) {
+		return routes.getBeerDetails(KEY, (int) beerId).flatMapIterable(beers -> beers).first();
+	}
+
+	/**
+	 * Returns a (possibly empty) observable sequence (list) of the most recent ratings for a beer
+	 */
+	public Observable<BeerRating> getBeerRatings(long beerId) {
+		return routes.getBeerRatings(KEY, (int) beerId, null, 1, 1).flatMapIterable(ratings -> ratings);
+	}
+
+	/**
+	 * Returns the beer rating of a specific user, or null if the user did not rate it yet
+	 */
+	public Observable<BeerRating> getBeerUserRating(long beerId, long userId) {
+		return routes.getBeerRatings(KEY, (int) beerId, (int) userId, 1, 1).flatMapIterable(ratings -> ratings).firstOrDefault(null);
 	}
 
 }

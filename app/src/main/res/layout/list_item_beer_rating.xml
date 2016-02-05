@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:layout_marginBottom="3dp"
+	android:orientation="vertical">
+
+	<ImageView
+		android:id="@+id/avatar_image"
+		android:layout_width="@dimen/block_size"
+		android:layout_height="@dimen/block_size"
+		android:layout_marginEnd="8dp"
+		android:layout_marginRight="8dp"
+		android:scaleType="fitCenter"
+		android:src="@drawable/beer_165358" />
+
+	<TextView
+		android:id="@+id/rating_mark_text"
+		android:layout_width="@dimen/block_size"
+		android:layout_height="@dimen/block_size"
+		android:layout_alignParentEnd="true"
+		android:layout_alignParentRight="true"
+		android:layout_marginBottom="2dp"
+		android:layout_marginEnd="4dp"
+		android:layout_marginLeft="4dp"
+		android:layout_marginRight="4dp"
+		android:layout_marginStart="4dp"
+		android:gravity="center"
+		android:textColor="@android:color/white"
+		android:textSize="30sp"
+		tools:background="@color/blue_main"
+		tools:text="4.3" />
+
+	<LinearLayout
+		android:id="@+id/user_layout"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal"
+		android:layout_toEndOf="@+id/avatar_image"
+		android:layout_toLeftOf="@+id/rating_mark_text"
+		android:layout_toRightOf="@+id/avatar_image"
+		android:layout_marginTop="8dp"
+		android:layout_toStartOf="@+id/rating_mark_text"
+		android:baselineAligned="true">
+
+		<TextView
+			android:id="@+id/user_name_text"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:fontFamily="sans-serif-condensed"
+			android:textColor="@android:color/black"
+			android:textSize="17sp"
+			android:textStyle="bold"
+			tools:text="EricKok82" />
+
+		<TextView
+			android:id="@+id/user_count_text"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:textColor="@android:color/black"
+			android:fontFamily="sans-serif-medium"
+			android:layout_marginLeft="4dp"
+			android:layout_marginRight="4dp"
+			android:textSize="12sp"
+			tools:text="12345" />
+
+		<TextView
+			android:id="@+id/user_country_text"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:textColor="@color/grey_dark"
+			android:layout_marginLeft="4dp"
+			android:layout_marginRight="4dp"
+			android:textSize="12sp"
+			android:textAllCaps="true"
+			tools:text="The Netherlands" />
+
+	</LinearLayout>
+
+	<TextView
+		android:id="@+id/rating_comments_text"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_below="@+id/user_layout"
+		android:layout_toEndOf="@+id/avatar_image"
+		android:layout_toLeftOf="@+id/rating_mark_text"
+		android:layout_toRightOf="@+id/avatar_image"
+		android:fontFamily="sans-serif-condensed"
+		android:layout_marginTop="4dp"
+		android:layout_toStartOf="@+id/rating_mark_text"
+		android:textColor="@android:color/black"
+		android:textSize="16sp"
+		tools:text="Black bodied, creamy beige head. Dark bread, chocoalte, brown sugar toffee. Enough bitterness, no alcohol, very rich taste. Perhaps even better than the 13% version. Love it. World " />
+
+</RelativeLayout>
