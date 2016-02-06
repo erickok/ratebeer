@@ -18,6 +18,7 @@
 			</intent-filter>
 		</activity>
 
+		<activity android:name=".gui.SignInActivity" />
 		<activity android:name=".gui.UpgradeActivity" />
 		<activity android:name=".gui.SearchActivity" />
 		<activity android:name=".gui.BeerActivity" android:theme="@style/AppTheme.NoStatusBar" />

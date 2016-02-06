@@ -64,6 +64,10 @@ public class MainActivity extends RateBeerActivity {
 			startActivity(UpgradeActivity.start(this));
 			finish();
 			return;
+		} else if (!Session.get().hasIgnoredAccount() && !Session.get().isLoggedIn()) {
+			startActivity(SignInActivity.start(this));
+			finish();
+			return;
 		}
 
 		searchEdit = (SearchView) findViewById(R.id.search_edit);

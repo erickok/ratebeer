@@ -33,7 +33,7 @@ public final class Snackbar {
 
 	public void show() {
 		android.support.design.widget.Snackbar snackbar =
-				android.support.design.widget.Snackbar.make(view, text, android.support.design.widget.Snackbar.LENGTH_SHORT);
+				android.support.design.widget.Snackbar.make(view, text, android.support.design.widget.Snackbar.LENGTH_LONG);
 		TextView snackbarText = (TextView) snackbar.getView().findViewById(android.support.design.R.id.snackbar_text);
 		snackbarText.setTextColor(Color.WHITE);
 		snackbar.show();

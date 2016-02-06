@@ -6,6 +6,11 @@
 	<string name="app_accept">I accept your apology</string>
 	<string name="app_decline">Forget it</string>
 
+	<string name="signin_welcome">Welcome to RateBeer</string>
+	<string name="signin_getaccount">The biggest source on craft beer is at your fingertips! To get the most out of your beer experience, please sign in to your RateBeer account.</string>
+	<string name="signin_comingsoon">Please hold on while work on this brand new app. You can already search the most complete online craft beer database.\n\nRating beers and viewing your account is coming very soon, promise!</string>
+	<string name="signin_letsgo">Let\'s go</string>
+
 	<string name="search_hint">Search a beer…</string>
 
 	<string name="main_myratings">My ratings</string>
@@ -40,6 +45,7 @@
 	<string name="help_useragreement">User agreement</string>
 
 	<string name="error_connectionfailure">Connection failure - your connection is poor or RateBeer is offline</string>
+	<string name="error_upgradefailed">Sorry, your account could not be upgraded</string>
 	<string name="error_authenticationfailed">Your username or password is incorrect</string>
 	<string name="error_nouserorpass">Both username and password are required fields to sign in</string>
 

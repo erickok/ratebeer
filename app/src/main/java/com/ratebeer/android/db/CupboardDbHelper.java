@@ -14,7 +14,7 @@ import static nl.qbusict.cupboard.CupboardFactory.cupboard;
 public final class CupboardDbHelper extends SQLiteOpenHelper {
 
 	private static final String DATABASE_NAME = "ratebeer.db";
-	private static final int DATABASE_VERSION = 9;
+	private static final int DATABASE_VERSION = 7;
 
 	private static SQLiteDatabase database;
 	private static DatabaseCompartment dbc;
@@ -29,6 +29,8 @@ public final class CupboardDbHelper extends SQLiteOpenHelper {
 		cupboard().register(Brewery.class);
 		cupboard().register(Beer.class);
 		cupboard().register(Rating.class);
+		// Legacy OfflineRating table to migrate
+		cupboard().register(OfflineRating.class);
 	}
 
 	/**
@@ -76,6 +78,7 @@ public final class CupboardDbHelper extends SQLiteOpenHelper {
 				db.execSQL("DROP TABLE IF EXISTS ErrorLogEntry");
 				db.execSQL("DROP TABLE IF EXISTS CustomList");
 				db.execSQL("DROP TABLE IF EXISTS CustomListBeer");
+				// Keep OfflineRating for migration to new app
 			} catch (SQLException e) {
 				RBLog.e("Could not clear up old tables from old RateBeer app", e);
 			}

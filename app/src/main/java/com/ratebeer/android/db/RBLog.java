@@ -13,6 +13,11 @@ public final class RBLog {
 			Log.v(LOG_NAME, message);
 	}
 
+	public static void d(String message) {
+		if (BuildConfig.DEBUG)
+			Log.d(LOG_NAME, message);
+	}
+
 	public static void e(String message) {
 		e(message, null);
 	}

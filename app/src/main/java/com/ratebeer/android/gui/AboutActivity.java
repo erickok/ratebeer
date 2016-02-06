@@ -44,10 +44,14 @@ public final class AboutActivity extends RateBeerActivity {
 				String.format(Locale.US, "Please describe your problem:\n\n\n\nRateBeer username: %1$s\nRateBeer version: %2$s (%3$d)\n\n",
 						Session.get().isLoggedIn() ? Session.get().getUserName() : "<not connected>", BuildConfig.VERSION_NAME,
 						BuildConfig.VERSION_CODE));
-		startActivity(emailIntent);
+		try {
+			startActivity(emailIntent);
+		} catch (Exception e) {
+			// No email app available
+		}
 	}
 
-	public void openRateBeer(View view) {
+	public void openRatebeer(View view) {
 		startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.ratebeer.com")));
 	}
 

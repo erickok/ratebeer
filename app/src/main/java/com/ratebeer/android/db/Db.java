@@ -25,7 +25,7 @@ public final class Db {
 		return getFresh(rxdb(context).get(Rating.class, beerId),
 				Observable.zip(getBeer(context, beerId), api().getBeerUserRating(beerId, userId), RxTuples.toPair())
 						.map(pair -> Rating.fromBeerRating(pair.getValue0(), pair.getValue1())).flatMap(rating -> rxdb(context).putRx(rating)),
-				rating -> isFresh(rating.timeCached));
+				rating -> !rating.isUploaded() || isFresh(rating.timeCached));
 	}
 
 	public static Observable<Rating> getLatestRatings(Context context, long userId) {

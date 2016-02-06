@@ -11,21 +11,22 @@
 		android:layout_height="0dp"
 		android:layout_weight="1"
 		android:background="@color/blue_main"
+		android:contentDescription="@null"
 		android:scaleType="center"
 		android:src="@drawable/icon_large" />
 
 	<TextView
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:layout_marginLeft="16dp"
-		android:layout_marginStart="16dp"
 		android:layout_marginEnd="16dp"
+		android:layout_marginLeft="16dp"
 		android:layout_marginRight="16dp"
+		android:layout_marginStart="16dp"
 		android:layout_marginTop="16dp"
 		android:fontFamily="sans-serif-condensed"
-		android:textSize="21sp"
 		android:text="@string/app_upgrade_welcome"
-		android:textColor="@android:color/black" />
+		android:textColor="@android:color/black"
+		android:textSize="21sp" />
 
 	<TextView
 		android:layout_width="match_parent"
@@ -34,7 +35,17 @@
 		android:text="@string/app_upgrade"
 		android:textColor="@android:color/black" />
 
+	<ProgressBar
+		android:id="@+id/upgrade_progress"
+		style="@style/Widget.AppCompat.ProgressBar"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_gravity="center_horizontal"
+		android:layout_marginBottom="16dp"
+		android:visibility="gone" />
+
 	<RelativeLayout
+		android:id="@+id/decision_layout"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:paddingBottom="16dp"

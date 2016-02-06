@@ -23,6 +23,10 @@ public final class Rating {
 	public Date timeEntered;
 	public Date timeUpdated;
 
+	public boolean isUploaded() {
+		return timeEntered != null;
+	}
+
 	public static Rating fromBeerRating(Beer beer, BeerRating beerRating) {
 		Rating rating = new Rating();
 		rating._id = (long) beerRating.ratingId;
@@ -42,6 +46,32 @@ public final class Rating {
 		rating.timeEntered = beerRating.timeEntered;
 		rating.timeUpdated = beerRating.timeUpdated;
 		return rating;
+	}
+
+	public static Rating fromOfflineRating(OfflineRating offlineRating) {
+		// Convert legacy offline rating into local rating database object
+		Rating rating = new Rating();
+		rating.beerId = offlineRating.beerId;
+		rating.beerName = offlineRating.beerName;
+		rating.brewerName = offlineRating.beerName; // Yeah, we don' have the brewer name, but it's only for legacy ratings anyway
+
+		rating.aroma = offlineRating.aroma;
+		rating.flavor = offlineRating.taste;
+		rating.mouthfeel = offlineRating.palate;
+		rating.appearance = offlineRating.appearance;
+		rating.overall = offlineRating.overall;
+		rating.total =
+				calculateTotal(offlineRating.aroma, offlineRating.taste, offlineRating.palate, offlineRating.appearance, offlineRating.overall);
+		rating.comments = offlineRating.comments;
+
+		rating.timeCached = offlineRating.timeSaved;
+		return rating;
+	}
+
+	public static Float calculateTotal(Integer aroma, Integer flavor, Integer mouthfeel, Integer appearance, Integer overall) {
+		if (aroma == null || flavor == null || mouthfeel == null || appearance == null || overall == null)
+			return null;
+		return (float) (aroma + flavor + mouthfeel + appearance + overall) / 10F;
 	}
 
 }

@@ -64,15 +64,6 @@ public class Session {
 		}
 	}
 
-	public boolean isUpgrade() {
-		// The "is_first_start" key was used on the old app to identify new installs and thus will always be present on upgrades
-		return prefs.contains("is_first_start");
-	}
-
-	public void completeUpgrade() {
-		prefs.edit().remove("is_first_start").apply();
-	}
-
 	public boolean isLoggedIn() {
 		return stored.userId != null;
 	}
@@ -87,6 +78,19 @@ public class Session {
 
 	public Integer getUserRateCount() {
 		return stored.rateCount;
+	}
+
+	public boolean isUpgrade() {
+		// The "is_first_start" key was used on the old app to identify new installs and thus will always be present on upgrades
+		return prefs.contains("is_first_start");
+	}
+
+	public boolean hasIgnoredAccount() {
+		return prefs.getBoolean("has_ignored_account", false);
+	}
+
+	public void registerIgnoreAccount() {
+		prefs.edit().putBoolean("has_ignored_account", true).apply();
 	}
 
 }
