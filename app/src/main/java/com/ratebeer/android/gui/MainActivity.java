@@ -85,6 +85,8 @@ public class MainActivity extends RateBeerActivity {
 		listsPager.setAdapter(new ActivityPagerAdapter());
 		tabLayout.setupWithViewPager(listsPager);
 		refreshTab(0);
+		if (tabs.size() == 1)
+			tabLayout.setVisibility(View.GONE);
 
 		// Set up search box
 		Cursor historicSuggestions = CupboardDbHelper.database(this).query(HistoricSearch.class).orderBy("time desc").getCursor();
@@ -148,6 +150,10 @@ public class MainActivity extends RateBeerActivity {
 
 		// Perform live search on server
 		startActivity(SearchActivity.start(this, query));
+	}
+
+	public void openHelp(View view) {
+		startActivity(AboutActivity.start(this));
 	}
 
 	private class ActivityPagerAdapter extends PagerAdapter {

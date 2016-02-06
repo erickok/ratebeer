@@ -41,4 +41,15 @@
 		android:layout_height="match_parent"
 		app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
+	<android.support.design.widget.FloatingActionButton
+		android:id="@+id/help_button"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_margin="16dp"
+		android:contentDescription="@string/rate_enterrating"
+		android:src="@drawable/ic_help_white_24dp"
+		android:onClick="openHelp"
+		app:layout_anchor="@id/lists_pager"
+		app:layout_anchorGravity="bottom|right|end" />
+
 </android.support.design.widget.CoordinatorLayout>
