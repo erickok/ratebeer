@@ -3,6 +3,7 @@ package com.ratebeer.android.db;
 import android.content.Context;
 
 import com.pacoworks.rxtuples.RxTuples;
+import com.ratebeer.android.gui.lists.SearchSuggestion;
 
 import java.util.Date;
 
@@ -10,11 +11,24 @@ import rx.Observable;
 import rx.functions.Func1;
 
 import static com.ratebeer.android.api.Api.api;
+import static com.ratebeer.android.db.CupboardDbHelper.database;
 import static com.ratebeer.android.db.CupboardDbHelper.rxdb;
 
 public final class Db {
 
 	private static final long MAX_AGE = 5 * 60 * 1000; // 5 minutes cache
+
+	public static Observable<SearchSuggestion> getAllHistoricSearches(Context context) {
+		return rxdb(context).query(database(context).query(HistoricSearch.class).orderBy("time desc")).map(SearchSuggestion::fromHistoricSearch);
+	}
+
+	public static Observable<SearchSuggestion> getSuggestions(Context context, String query) {
+		Observable<HistoricSearch> lastHistoric = rxdb(context)
+				.query(database(context).query(HistoricSearch.class).withSelection("name like ?", "%" + query + "%").orderBy("time desc").limit(2));
+		Observable<Beer> localBeers = rxdb(context)
+				.query(database(context).query(Beer.class).withSelection("name like ?", "%" + query + "%").orderBy("rateCount desc").limit(25));
+		return Observable.merge(lastHistoric.map(SearchSuggestion::fromHistoricSearch), localBeers.map(SearchSuggestion::fromBeer));
+	}
 
 	public static Observable<Beer> getBeer(Context context, long beerId) {
 		return getFresh(rxdb(context).get(Beer.class, beerId),

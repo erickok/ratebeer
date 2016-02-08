@@ -13,13 +13,14 @@ import com.ratebeer.android.api.model.BeerSearchResult;
 import com.ratebeer.android.api.model.BeerSearchResultDeserializer;
 import com.ratebeer.android.api.model.FeedItem;
 import com.ratebeer.android.api.model.FeedItemDeserializer;
+import com.ratebeer.android.api.model.UserInfo;
+import com.ratebeer.android.api.model.UserInfoDeserializer;
 import com.ratebeer.android.api.model.UserRateCount;
 import com.ratebeer.android.api.model.UserRateCountDeserializer;
 import com.ratebeer.android.api.model.UserRating;
 import com.ratebeer.android.api.model.UserRatingDeserializer;
 import com.ratebeer.android.db.RBLog;
 
-import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.GsonConverterFactory;
@@ -59,6 +60,7 @@ public final class Api {
 		// @formatter:off
 		Gson gson = new GsonBuilder()
 				.registerTypeAdapter(FeedItem.class, new FeedItemDeserializer())
+				.registerTypeAdapter(UserInfo.class, new UserInfoDeserializer())
 				.registerTypeAdapter(UserRateCount.class, new UserRateCountDeserializer())
 				.registerTypeAdapter(UserRating.class, new UserRatingDeserializer())
 				.registerTypeAdapter(BeerSearchResult.class, new BeerSearchResultDeserializer())
@@ -78,18 +80,17 @@ public final class Api {
 
 	public Observable<Boolean> login(String username, String password) {
 		// @formatter:off
-		return routes.login(KEY, username, password, "1")
-				// Get redirect URL, which is of form HTTP://WWW.RATEBEER.COM/?UID=101051
-				.map(result -> result.headers().get("Location"))
-				// Parse the user id from the response 301 redirect url
-				.map(redirect -> Integer.parseInt(HttpUrl.parse(redirect).queryParameter("UID")))
+		return Observable.zip(
+					routes.login(username, password, "on"),
+					routes.getUserInfo(KEY, username).flatMapIterable(infos -> infos).first(),
+					RxTuples.toPair())
 				// Add to the user id the user's rate counts
-				.flatMap(userId -> Observable.zip(
-						Observable.just(userId),
-						routes.getUserRateCount(KEY, userId).flatMap(Observable::from),
+				.flatMap(user -> Observable.zip(
+						Observable.just(user.getValue1()),
+						routes.getUserRateCount(KEY, user.getValue1().userId).flatMapIterable(userRateCounts -> userRateCounts),
 						RxTuples.toPair()))
 				// Store in our own instance the new user data
-				.doOnNext(user -> Session.get().startSession(user.getValue0(), username, password, user.getValue1()))
+				.doOnNext(user -> Session.get().startSession(user.getValue0().userId, username, password, user.getValue1()))
 				// Return login success
 				.map(ignore -> true);
 		// @formatter:on

@@ -11,11 +11,15 @@ public final class LoginHeaderInterceptor implements Interceptor {
 	public Response intercept(Interceptor.Chain chain) throws IOException {
 
 		Request request = chain.request();
-		Response response = chain.proceed(request);
 
+		Response response;
 		if (request.url().encodedPath().endsWith("Signin_r.asp")) {
-			response.newBuilder().code(200);
+			response = chain.proceed(request);
+			//response = response.newBuilder().code(200).build();
+		} else {
+			response = chain.proceed(request);
 		}
+
 		return response;
 	}
 }

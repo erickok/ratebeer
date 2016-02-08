@@ -4,6 +4,7 @@ import com.ratebeer.android.api.model.BeerDetails;
 import com.ratebeer.android.api.model.BeerRating;
 import com.ratebeer.android.api.model.BeerSearchResult;
 import com.ratebeer.android.api.model.FeedItem;
+import com.ratebeer.android.api.model.UserInfo;
 import com.ratebeer.android.api.model.UserRateCount;
 import com.ratebeer.android.api.model.UserRating;
 
@@ -11,6 +12,7 @@ import java.util.List;
 
 import retrofit2.Response;
 import retrofit2.http.Field;
+import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Query;
@@ -18,9 +20,13 @@ import rx.Observable;
 
 interface Routes {
 
+	@FormUrlEncoded
 	@POST("/Signin_r.asp")
-	Observable<Response<Void>> login(@Field("k") String key, @Field("username") String username, @Field("pwd") String password,
-									 @Field("saveinfo") String assignCookie);
+	Observable<Response<Void>> login(@Field("username") String username, @Field("pwd") String password,
+									 @Field("SaveInfo") String assignCookie);
+
+	@GET("users.asp")
+	Observable<List<UserInfo>> getUserInfo(@Query("k") String key, @Query("u") String userName);
 
 	@GET("feed.asp")
 	Observable<List<FeedItem>> getFeed(@Query("k") String key, @Query("m") int mode);

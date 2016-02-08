@@ -35,47 +35,55 @@
 		android:text="@string/app_upgrade"
 		android:textColor="@android:color/black" />
 
-	<ProgressBar
-		android:id="@+id/upgrade_progress"
-		style="@style/Widget.AppCompat.ProgressBar"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_gravity="center_horizontal"
-		android:layout_marginBottom="16dp"
-		android:visibility="gone" />
-
-	<RelativeLayout
-		android:id="@+id/decision_layout"
+	<FrameLayout
 		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:paddingBottom="16dp"
-		android:paddingEnd="16dp"
-		android:paddingLeft="16dp"
-		android:paddingRight="16dp"
-		android:paddingStart="16dp">
+		android:layout_height="wrap_content">
 
-		<Button
-			android:id="@+id/accept_button"
-			style="@style/AppButton.Orange"
+		<RelativeLayout
+			android:id="@+id/decision_layout"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:paddingBottom="16dp"
+			android:paddingEnd="16dp"
+			android:paddingLeft="16dp"
+			android:paddingRight="16dp"
+			android:paddingStart="16dp">
+
+			<Button
+				android:id="@+id/accept_button"
+				style="@style/AppButton.Orange"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_alignParentEnd="true"
+				android:layout_alignParentRight="true"
+				android:onClick="accept"
+				android:text="@string/app_accept" />
+
+			<Button
+				android:id="@+id/decline_button"
+				style="@style/AppButton.White"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_marginEnd="8dp"
+				android:layout_marginRight="8dp"
+				android:layout_toLeftOf="@id/accept_button"
+				android:layout_toStartOf="@id/accept_button"
+				android:onClick="decline"
+				android:text="@string/app_decline" />
+
+		</RelativeLayout>
+
+		<ProgressBar
+			android:id="@+id/upgrade_progress"
+			style="@style/Widget.AppCompat.ProgressBar"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:layout_alignParentEnd="true"
-			android:layout_alignParentRight="true"
-			android:onClick="accept"
-			android:text="@string/app_accept" />
+			android:layout_gravity="center_horizontal"
+			android:layout_marginBottom="16dp"
+			android:visibility="gone"
+			tools:background="@color/grey_dark"
+			tools:visibility="visible" />
 
-		<Button
-			android:id="@+id/decline_button"
-			style="@style/AppButton.White"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_marginEnd="8dp"
-			android:layout_marginRight="8dp"
-			android:layout_toLeftOf="@id/accept_button"
-			android:layout_toStartOf="@id/accept_button"
-			android:onClick="decline"
-			android:text="@string/app_decline" />
-
-	</RelativeLayout>
+	</FrameLayout>
 
 </LinearLayout>

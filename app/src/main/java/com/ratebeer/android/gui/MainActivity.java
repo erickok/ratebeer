@@ -2,19 +2,16 @@ package com.ratebeer.android.gui;
 
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.MergeCursor;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CursorAdapter;
+import android.widget.ProgressBar;
 
 import com.jakewharton.rxbinding.support.v7.widget.RxSearchView;
 import com.jakewharton.rxbinding.support.v7.widget.SearchViewQueryTextEvent;
@@ -22,14 +19,15 @@ import com.ratebeer.android.R;
 import com.ratebeer.android.Session;
 import com.ratebeer.android.api.Api;
 import com.ratebeer.android.api.model.FeedItem;
-import com.ratebeer.android.db.Beer;
 import com.ratebeer.android.db.CupboardDbHelper;
 import com.ratebeer.android.db.Db;
 import com.ratebeer.android.db.HistoricSearch;
 import com.ratebeer.android.gui.lists.FeedItemsAdapter;
 import com.ratebeer.android.gui.lists.RatingsAdapter;
+import com.ratebeer.android.gui.lists.SearchSuggestion;
+import com.ratebeer.android.gui.lists.SearchSuggestionsAdapter;
+import com.ratebeer.android.gui.widget.Animations;
 import com.ratebeer.android.gui.widget.ItemClickSupport;
-import com.ratebeer.android.gui.widget.RxSearchView2;
 import com.ratebeer.android.gui.widget.RxViewPager;
 
 import java.util.ArrayList;
@@ -45,8 +43,9 @@ public class MainActivity extends RateBeerActivity {
 	private static final int TAB_FEED_LOCAL = 2;
 	private static final int TAB_FEED_GLOBAL = 3;
 
-	private SearchView searchEdit;
 	private ViewPager listsPager;
+	private ProgressBar loadingProgress;
+	private SearchSuggestionsAdapter searchSuggestionsAdaper;
 	private List<Integer> tabTypes;
 	private List<View> tabs;
 	private List<String> tabsTitles;
@@ -65,23 +64,25 @@ public class MainActivity extends RateBeerActivity {
 			finish();
 			return;
 		} else if (!Session.get().hasIgnoredAccount() && !Session.get().isLoggedIn()) {
-			startActivity(SignInActivity.start(this));
+			startActivity(WelcomeActivity.start(this));
 			finish();
 			return;
 		}
 
-		searchEdit = (SearchView) findViewById(R.id.search_edit);
+		SearchView searchEdit = (SearchView) findViewById(R.id.search_edit);
 		TabLayout tabLayout = (TabLayout) findViewById(R.id.sliding_tabs);
 		listsPager = (ViewPager) findViewById(R.id.lists_pager);
+		loadingProgress = (ProgressBar) findViewById(R.id.loading_progress);
+		RecyclerView searchList = (RecyclerView) findViewById(R.id.search_list);
 
 		// Set up tabs
-		tabTypes = new ArrayList<>(4);
-		tabs = new ArrayList<>(4);
-		tabsTitles = new ArrayList<>(4);
+		tabTypes = new ArrayList<>(3);
+		tabs = new ArrayList<>(3);
+		tabsTitles = new ArrayList<>(3);
 		if (Session.get().isLoggedIn()) {
-			addTab(TAB_RATINGS, R.string.main_myratings);
+			//addTab(TAB_RATINGS, R.string.main_myratings);
 			addTab(TAB_FEED_FRIENDS, R.string.main_friends);
-			addTab(TAB_FEED_LOCAL, R.string.main_friends);
+			addTab(TAB_FEED_LOCAL, R.string.main_local);
 		} else {
 			addTab(TAB_FEED_GLOBAL, R.string.main_global);
 		}
@@ -92,16 +93,21 @@ public class MainActivity extends RateBeerActivity {
 		if (tabs.size() == 1)
 			tabLayout.setVisibility(View.GONE);
 
-		// Set up search box
-		Cursor historicSuggestions = CupboardDbHelper.database(this).query(HistoricSearch.class).orderBy("time desc").getCursor();
-		Cursor beerSuggestions = CupboardDbHelper.database(this).query(Beer.class).orderBy("name asc").getCursor();
-		SimpleCursorAdapter searchSuggestionsAdapter = new SimpleCursorAdapter(this, android.R.layout.simple_list_item_1,
-				new MergeCursor(new Cursor[]{historicSuggestions, beerSuggestions}), new String[]{"name"}, new int[]{android.R.id.text1},
-				CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
-		searchEdit.setSuggestionsAdapter(searchSuggestionsAdapter);
-		RxSearchView.queryTextChangeEvents(searchEdit).filter(SearchViewQueryTextEvent::isSubmitted).compose(onUi())
-				.subscribe(event -> performSearch(event.queryText().toString()));
-		RxSearchView2.suggestionClicks(searchEdit, false).compose(onUi()).subscribe(position -> performSearch(searchEdit.getQuery().toString()));
+		// Set up search box: show results with search view focus, start search on query submit and show suggestions on query text changes
+		searchList.setLayoutManager(new LinearLayoutManager(this));
+		searchList.setAdapter(searchSuggestionsAdaper = new SearchSuggestionsAdapter());
+		searchEdit.setOnQueryTextFocusChangeListener((view, b) -> searchList.setVisibility(b ? View.VISIBLE : View.GONE));
+		ItemClickSupport.addTo(searchList).setOnItemClickListener((parent, pos, v) -> searchFromSuggestion(searchSuggestionsAdaper.get(pos)));
+		Observable<SearchViewQueryTextEvent> queryTextChangeEvents =
+				RxSearchView.queryTextChangeEvents(searchEdit).compose(onUi()).replay(1).refCount();
+		queryTextChangeEvents.filter(SearchViewQueryTextEvent::isSubmitted).subscribe(event -> performSearch(event.queryText().toString()));
+		queryTextChangeEvents.map(event -> event.queryText().toString()).switchMap(query -> {
+			if (query.length() == 0) {
+				return Db.getAllHistoricSearches(this).toList();
+			} else {
+				return Db.getSuggestions(this, query).toList();
+			}
+		}).compose(onIoToUi()).compose(bindToLifecycle()).subscribe(suggestions -> searchSuggestionsAdaper.update(suggestions));
 
 	}
 
@@ -116,14 +122,16 @@ public class MainActivity extends RateBeerActivity {
 	private void refreshTab(int position) {
 		int type = tabTypes.get(position);
 		RecyclerView view = ((RecyclerView) tabs.get(position));
+		Animations.fadeFlip(loadingProgress, listsPager);
 		if (type == TAB_RATINGS) {
 			Db.getLatestRatings(this, Session.get().getUserId()).toList().compose(onIoToUi()).compose(bindToLifecycle())
 					.subscribe(ratings -> view.setAdapter(new RatingsAdapter(this, ratings)),
-							e -> Snackbar.show(this, R.string.error_connectionfailure));
+							e -> Snackbar.show(this, R.string.error_connectionfailure), () -> Animations.fadeFlip(listsPager, loadingProgress));
 		} else {
 			ItemClickSupport.addTo(view).setOnItemClickListener((parent, pos, v) -> openItem(((FeedItemsAdapter) view.getAdapter()).get(pos)));
 			getTabFeed(type).toList().compose(onIoToUi()).compose(bindToLifecycle())
-					.subscribe(feed -> view.setAdapter(new FeedItemsAdapter(feed)), e -> Snackbar.show(this, R.string.error_connectionfailure));
+					.subscribe(feed -> view.setAdapter(new FeedItemsAdapter(this, feed)), e -> Snackbar.show(this, R.string.error_connectionfailure),
+							() -> Animations.fadeFlip(listsPager, loadingProgress));
 		}
 	}
 
@@ -139,6 +147,16 @@ public class MainActivity extends RateBeerActivity {
 	private void openItem(FeedItem feedItem) {
 		if (feedItem.getBeerId() != null) {
 			startActivity(BeerActivity.start(this, feedItem.getBeerId()));
+		}
+	}
+
+	private void searchFromSuggestion(SearchSuggestion searchSuggestion) {
+		if (searchSuggestion.beerId == null) {
+			// Start a new search
+			performSearch(searchSuggestion.suggestion);
+		} else {
+			// Directly open the searched beer
+			startActivity(BeerActivity.start(this, searchSuggestion.beerId));
 		}
 	}
 

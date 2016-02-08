@@ -9,7 +9,12 @@
 	<string name="signin_welcome">Welcome to RateBeer</string>
 	<string name="signin_getaccount">The biggest source on craft beer is at your fingertips! To get the most out of your beer experience, please sign in to your RateBeer account.</string>
 	<string name="signin_comingsoon">Please hold on while work on this brand new app. You can already search the most complete online craft beer database.\n\nRating beers and viewing your account is coming very soon, promise!</string>
-	<string name="signin_letsgo">Let\'s go</string>
+	<string name="signin_connect">Connect to your account</string>
+	<string name="signin_signin">Sign in</string>
+	<string name="signin_create">Create account</string>
+	<string name="signin_skip">Skip</string>
+	<string name="signin_username">User name</string>
+	<string name="signin_password">Password</string>
 
 	<string name="search_hint">Search a beer…</string>
 
@@ -38,6 +43,7 @@
 	<string name="rate_"></string>
 
 	<string name="help_developer" translatable="false">created by Eric Kok of 2312 development</string>
+	<string name="help_signin">Sign in to RateBeer account</string>
 	<string name="help_whereratings">Where are my (offline) ratings?</string>
 	<string name="help_whereratings_text">Don\'t worry - they are safe.\n\nAll ratings you have uploading to RateBeer using the old app or entered directly on ratebeer.com are stored on the website. Very soon this app will allow you to log in again and view them. In fact,  they will be fully synchronized for quick searching and available offline access when a connection is not available.\n\nAny offline ratings you had made and not yet uploaded are still stored on your device, in the app\' database. Very soon you will be able to see them again and upload them. Very soon, I promise!</string>
 	<string name="help_report">Report bug or request help</string>
@@ -47,6 +53,6 @@
 	<string name="error_connectionfailure">Connection failure - your connection is poor or RateBeer is offline</string>
 	<string name="error_upgradefailed">Sorry, your account could not be upgraded</string>
 	<string name="error_authenticationfailed">Your username or password is incorrect</string>
-	<string name="error_nouserorpass">Both username and password are required fields to sign in</string>
+	<string name="error_nouserorpass">Both username and password are required fields</string>
 
 </resources>

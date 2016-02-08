@@ -13,6 +13,13 @@
 		android:layout_height="wrap_content"
 		android:theme="@style/AppTheme.Dark">
 
+		<!-- Invisible view to steal focus from SearchView -->
+		<View
+			android:layout_width="0dp"
+			android:layout_height="0dp"
+			android:focusable="true"
+			android:focusableInTouchMode="true"/>
+
 		<android.support.v7.widget.SearchView
 			android:id="@+id/search_edit"
 			android:layout_width="match_parent"
@@ -41,14 +48,36 @@
 		android:layout_height="match_parent"
 		app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
+	<ProgressBar
+		android:id="@+id/loading_progress"
+		style="@style/Widget.AppCompat.ProgressBar"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:visibility="gone"
+		app:layout_anchor="@id/lists_pager"
+		app:layout_anchorGravity="center"
+		tools:visibility="visible" />
+
+	<android.support.v7.widget.RecyclerView
+		android:id="@+id/search_list"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:background="@android:color/white"
+		android:clipToPadding="false"
+		android:paddingBottom="8dp"
+		android:paddingTop="8dp"
+		android:visibility="gone"
+		app:layout_behavior="@string/appbar_scrolling_view_behavior"
+		tools:visibility="visible" />
+
 	<android.support.design.widget.FloatingActionButton
 		android:id="@+id/help_button"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_margin="16dp"
 		android:contentDescription="@string/rate_enterrating"
-		android:src="@drawable/ic_help_white_24dp"
 		android:onClick="openHelp"
+		android:src="@drawable/ic_help_white_24dp"
 		app:layout_anchor="@id/lists_pager"
 		app:layout_anchorGravity="bottom|right|end" />
 

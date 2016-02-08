@@ -34,6 +34,7 @@
 	</style>
 
 	<style name="AppButton" parent="Widget.AppCompat.Button">
+		<item name="android:minWidth">32dip</item>
 	</style>
 
 	<style name="AppButton.Orange" parent="Widget.AppCompat.Button">

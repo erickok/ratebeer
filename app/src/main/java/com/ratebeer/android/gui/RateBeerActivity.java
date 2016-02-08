@@ -12,6 +12,14 @@ public class RateBeerActivity extends RxAppCompatActivity {
 		return source -> source.subscribeOn(AndroidSchedulers.mainThread());
 	}
 
+	public final <T> Observable.Transformer<T, T> toUi() {
+		return source -> source.observeOn(AndroidSchedulers.mainThread());
+	}
+
+	public final <T> Observable.Transformer<T, T> toIo() {
+		return source -> source.observeOn(Schedulers.io());
+	}
+
 	public final <T> Observable.Transformer<T, T> onIoToUi() {
 		return source -> source.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
 	}

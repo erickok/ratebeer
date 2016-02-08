@@ -16,10 +16,10 @@ import java.util.List;
 
 public final class BeerSearchResultAdapter extends RecyclerView.Adapter<BeerSearchResultAdapter.ViewHolder> {
 
-	private final List<BeerSearchResult> applications;
+	private final List<BeerSearchResult> beerSearchResults;
 
-	public BeerSearchResultAdapter(List<BeerSearchResult> applications) {
-		this.applications = applications;
+	public BeerSearchResultAdapter(List<BeerSearchResult> beerSearchResults) {
+		this.beerSearchResults = beerSearchResults;
 	}
 
 	@Override
@@ -29,7 +29,7 @@ public final class BeerSearchResultAdapter extends RecyclerView.Adapter<BeerSear
 
 	@Override
 	public void onBindViewHolder(ViewHolder holder, int position) {
-		BeerSearchResult beerSearchResult = applications.get(position);
+		BeerSearchResult beerSearchResult = beerSearchResults.get(position);
 		holder.ratingText.setBackgroundResource(ImageUrls.getColor(position));
 		holder.ratingText.setText(beerSearchResult.getOverallPercentileString());
 		holder.titleText.setText(beerSearchResult.beerName);
@@ -43,11 +43,11 @@ public final class BeerSearchResultAdapter extends RecyclerView.Adapter<BeerSear
 
 	@Override
 	public int getItemCount() {
-		return applications.size();
+		return beerSearchResults.size();
 	}
 
 	public BeerSearchResult get(int position) {
-		return applications.get(position);
+		return beerSearchResults.get(position);
 	}
 
 	static class ViewHolder extends RecyclerView.ViewHolder {

@@ -11,9 +11,9 @@
 		android:layout_height="0dp"
 		android:layout_weight="1"
 		android:background="@color/blue_main"
+		android:contentDescription="@null"
 		android:scaleType="center"
-		android:src="@drawable/icon_large"
-		android:contentDescription="@null" />
+		android:src="@drawable/icon_large" />
 
 	<TextView
 		android:layout_width="match_parent"
@@ -24,26 +24,92 @@
 		android:layout_marginStart="16dp"
 		android:layout_marginTop="16dp"
 		android:fontFamily="sans-serif-condensed"
-		android:text="@string/signin_welcome"
+		android:text="@string/signin_connect"
 		android:textColor="@android:color/black"
 		android:textSize="21sp" />
 
-	<TextView
+	<android.support.design.widget.TextInputLayout
+		android:id="@+id/username_layout"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:padding="16dp"
-		android:text="@string/signin_comingsoon"
-		android:textColor="@android:color/black" />
-
-	<Button
-		style="@style/AppButton.Orange"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_gravity="end"
 		android:layout_marginEnd="16dp"
-		android:layout_marginRight="16dp"
+		android:layout_marginStart="16dp"
+		android:layout_marginTop="8dp">
+
+		<EditText
+			android:id="@+id/username_edit"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:hint="@string/signin_username"
+			android:inputType="textPassword" />
+
+	</android.support.design.widget.TextInputLayout>
+
+	<android.support.design.widget.TextInputLayout
+		android:id="@+id/password_layout"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
 		android:layout_marginBottom="16dp"
-		android:onClick="advance"
-		android:text="@string/signin_letsgo" />
+		android:layout_marginEnd="16dp"
+		android:layout_marginStart="16dp">
+
+		<EditText
+			android:id="@+id/password_edit"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:hint="@string/signin_password"
+			android:inputType="textPassword" />
+
+	</android.support.design.widget.TextInputLayout>
+
+	<FrameLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content">
+
+		<RelativeLayout
+			android:id="@+id/decision_layout"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:paddingBottom="16dp"
+			android:paddingEnd="16dp"
+			android:paddingLeft="16dp"
+			android:paddingRight="16dp"
+			android:paddingStart="16dp">
+
+			<Button
+				android:id="@+id/connect_button"
+				style="@style/AppButton.Orange"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_alignParentEnd="true"
+				android:layout_alignParentRight="true"
+				android:onClick="signIn"
+				android:text="Sign in" />
+
+			<Button
+				style="@style/AppButton.White"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_marginEnd="16dp"
+				android:layout_marginRight="16dp"
+				android:layout_toLeftOf="@id/connect_button"
+				android:layout_toStartOf="@id/connect_button"
+				android:onClick="createAccount"
+				android:text="@string/signin_create" />
+
+		</RelativeLayout>
+
+		<ProgressBar
+			android:id="@+id/login_progress"
+			style="@style/Widget.AppCompat.ProgressBar"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_gravity="center_horizontal"
+			android:layout_marginBottom="16dp"
+			android:visibility="gone"
+			tools:background="@color/grey_dark"
+			tools:visibility="visible" />
+
+	</FrameLayout>
 
 </LinearLayout>

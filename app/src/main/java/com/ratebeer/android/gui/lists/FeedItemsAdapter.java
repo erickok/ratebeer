@@ -1,6 +1,8 @@
 package com.ratebeer.android.gui.lists;
 
 import android.content.Context;
+import android.content.res.TypedArray;
+import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.Spannable;
@@ -24,9 +26,14 @@ import java.util.List;
 public final class FeedItemsAdapter extends RecyclerView.Adapter<FeedItemsAdapter.ViewHolder> {
 
 	private final List<FeedItem> feedItems;
+	private final Drawable selectableBackgroundDrawable;
 
-	public FeedItemsAdapter(List<FeedItem> feedItems) {
+	public FeedItemsAdapter(Context context, List<FeedItem> feedItems) {
 		this.feedItems = feedItems;
+		int[] attrs = new int[] { android.R.attr.selectableItemBackground};
+		TypedArray ta = context.obtainStyledAttributes(attrs);
+		selectableBackgroundDrawable = ta.getDrawable(0);
+		ta.recycle();
 	}
 
 	@Override
@@ -40,10 +47,14 @@ public final class FeedItemsAdapter extends RecyclerView.Adapter<FeedItemsAdapte
 		Picasso.with(holder.avatarImage.getContext()).load(ImageUrls.getUserPhotoUrl(feedItem.userName))
 				.placeholder(ImageUrls.getColor(position, true)).fit().centerCrop().into(holder.avatarImage);
 		if (feedItem.getBeerId() != null) {
+			// A clickable row, bound to a specific beer (and show its photo)
+			holder.rowLayout.setBackgroundDrawable(selectableBackgroundDrawable.getConstantState().newDrawable().mutate());
 			holder.beerImage.setVisibility(View.VISIBLE);
 			Picasso.with(holder.beerImage.getContext()).load(ImageUrls.getBeerPhotoUrl(feedItem.getBeerId())).placeholder(android.R.color.white).fit()
 					.centerInside().into(holder.beerImage);
 		} else {
+			// Not bound to a beer, so not clickable
+			holder.rowLayout.setBackgroundResource(0);
 			holder.beerImage.setVisibility(View.INVISIBLE);
 		}
 		holder.activityText.setText(buildActivityText(holder.activityText.getContext(), feedItem));
@@ -80,7 +91,7 @@ public final class FeedItemsAdapter extends RecyclerView.Adapter<FeedItemsAdapte
 		// Parse HTML as spannable from raw link text and replace links with a bold text
 		Spanned html = Html.fromHtml(feedItem.linkText);
 		builder.append(html);
-		URLSpan[] links = builder.getSpans(0, html.length(), URLSpan.class);
+		URLSpan[] links = builder.getSpans(0, builder.length(), URLSpan.class);
 		for (URLSpan link : links) {
 			// Make link tags bold (they are not clickable though)
 			builder.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), builder.getSpanStart(link), builder.getSpanEnd(link),
@@ -102,12 +113,14 @@ public final class FeedItemsAdapter extends RecyclerView.Adapter<FeedItemsAdapte
 
 	static class ViewHolder extends RecyclerView.ViewHolder {
 
+		final View rowLayout;
 		final ImageView avatarImage;
 		final ImageView beerImage;
 		final TextView activityText;
 
 		public ViewHolder(View v) {
 			super(v);
+			rowLayout = v;
 			avatarImage = (ImageView) v.findViewById(R.id.avatar_image);
 			beerImage = (ImageView) v.findViewById(R.id.beer_image);
 			activityText = (TextView) v.findViewById(R.id.activity_text);

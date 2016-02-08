@@ -31,6 +31,10 @@ public final class AboutActivity extends RateBeerActivity {
 		RxToolbar.navigationClicks(mainToolbar).subscribe(ignore -> onBackPressed());
 	}
 
+	public void openSignIn(View view) {
+		startActivity(SignInActivity.start(this));
+	}
+
 	public void openHelpWhereRatings(View view) {
 		startActivity(HelpWhereRatingsActivity.start(this));
 	}
