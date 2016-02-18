@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.widget.ActionMenuView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -76,7 +77,8 @@ public class MainActivity extends RateBeerActivity {
 			return;
 		}
 
-		Toolbar mainToolbar = (Toolbar) findViewById(R.id.main_toolbar);
+		//Toolbar mainToolbar = (Toolbar) findViewById(R.id.main_toolbar);
+		ActionMenuView optionsMenu = (ActionMenuView) findViewById(R.id.options_menu);
 		SearchView searchEdit = (SearchView) findViewById(R.id.search_edit);
 		TabLayout tabLayout = (TabLayout) findViewById(R.id.sliding_tabs);
 		listsPager = (ViewPager) findViewById(R.id.lists_pager);
@@ -103,8 +105,15 @@ public class MainActivity extends RateBeerActivity {
 			tabLayout.setVisibility(View.GONE);
 
 		// Set up toolbar actions
-		mainToolbar.inflateMenu(R.menu.menu_refresh);
-		RxToolbar.itemClicks(mainToolbar).filter(item -> item.getItemId() == R.id.menu_refresh).subscribe(item -> refreshTab(currentTab, true));
+		getMenuInflater().inflate(R.menu.menu_refresh, optionsMenu.getMenu());
+		optionsMenu.setOnMenuItemClickListener(item -> {
+			if (item.getItemId() == R.id.menu_refresh) {
+				refreshTab(currentTab, true);
+			}
+			return true;
+		});
+		//optionsMenu.menuinflateMenu(R.menu.menu_refresh);
+		//RxToolbar.itemClicks(mainToolbar).filter(item -> item.getItemId() == R.id.menu_refresh).subscribe(item -> refreshTab(currentTab, true));
 
 		// Set up search box: show results with search view focus, start search on query submit and show suggestions on query text changes
 		searchList.setLayoutManager(new LinearLayoutManager(this));
