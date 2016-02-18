@@ -27,12 +27,21 @@ public final class Db {
 	}
 
 	public static Observable<SearchSuggestion> getSuggestions(Context context, String query) {
+		String whereName = "";
+		String whereBeerName = "";
+		String[] parts = query.split(" ");
+		String[] whereArgs = new String[parts.length];
+		for (int i = 0; i < parts.length; i++) {
+			whereName += (whereName.length() == 0 ? "" : " and ") + "name like ?";
+			whereBeerName += (whereBeerName.length() == 0 ? "" : " and ") + "beerName like ?";
+			whereArgs[i] = "%" + parts[i] + "%";
+		}
 		Observable<HistoricSearch> lastHistoric = rxdb(context)
 				.query(database(context).query(HistoricSearch.class).withSelection("name like ?", "%" + query + "%").orderBy("time desc").limit(2));
-		Observable<Beer> localBeers = rxdb(context)
-				.query(database(context).query(Beer.class).withSelection("name like ?", "%" + query + "%").orderBy("rateCount desc").limit(25));
+		Observable<Beer> localBeers =
+				rxdb(context).query(database(context).query(Beer.class).withSelection(whereName, whereArgs).orderBy("rateCount desc").limit(25));
 		Observable<Rating> localRatings = rxdb(context)
-				.query(database(context).query(Rating.class).withSelection("beerId is not null and beerName like ?", "%" + query + "%")
+				.query(database(context).query(Rating.class).withSelection("beerId is not null and (" + whereBeerName + ")", whereArgs)
 						.orderBy("timeEntered IS NULL, timeEntered desc").limit(25));
 		return Observable.merge(lastHistoric.map(SearchSuggestion::fromHistoricSearch), localBeers.map(SearchSuggestion::fromBeer),
 				localRatings.map(SearchSuggestion::fromRating)).distinct(searchSuggestion -> searchSuggestion.suggestion);
