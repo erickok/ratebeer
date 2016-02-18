@@ -38,6 +38,10 @@ public class Session {
 		}
 	}
 
+	public Context getApplicationContext() {
+		return databaseContext;
+	}
+
 	public void startSession(int userId, String userName, String password, UserRateCount counts) {
 		synchronized (this) {
 			stored.userId = userId;
@@ -60,7 +64,7 @@ public class Session {
 	public void endSession() {
 		synchronized (this) {
 			database(databaseContext).delete(stored);
-			stored = null;
+			stored = new StoredSession();
 		}
 	}
 
@@ -74,6 +78,10 @@ public class Session {
 
 	public String getUserName() {
 		return stored.userName;
+	}
+
+	public String getPassword() {
+		return stored.password;
 	}
 
 	public Integer getUserRateCount() {

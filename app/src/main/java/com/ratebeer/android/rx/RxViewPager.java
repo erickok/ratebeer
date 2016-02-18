@@ -1,4 +1,4 @@
-package com.ratebeer.android.gui.widget;
+package com.ratebeer.android.rx;
 
 import android.support.annotation.NonNull;
 import android.support.v4.view.ViewPager;

@@ -59,12 +59,29 @@
 
 	</RelativeLayout>
 
-	<Button
-		style="@style/AppButton.Line"
+	<FrameLayout
 		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:onClick="openSignIn"
-		android:text="@string/help_signin" />
+		android:layout_height="wrap_content">
+
+		<Button
+			android:id="@+id/signinout_button"
+			style="@style/AppButton.Line"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:onClick="openSignInOut"
+			tools:text="@string/help_signin" />
+
+		<ProgressBar
+			android:id="@+id/signout_progress"
+			style="@style/Widget.AppCompat.ProgressBar"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_gravity="center_horizontal"
+			android:visibility="gone"
+			tools:background="@color/grey_dark"
+			tools:visibility="visible" />
+
+	</FrameLayout>
 
 	<View
 		android:layout_width="match_parent"

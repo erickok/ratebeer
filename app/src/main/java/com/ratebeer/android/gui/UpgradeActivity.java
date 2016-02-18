@@ -51,14 +51,14 @@ public class UpgradeActivity extends RateBeerActivity {
 			if (parts.length > 2) {
 				String legacyUserName = parts[1];
 				String legacyUserPassword = parts[2];
-				legacyLogin = Api.api().login(legacyUserName, legacyUserPassword);
+				legacyLogin = Api.get().login(legacyUserName, legacyUserPassword);
 			}
 		}
 
 		// Execute upgrade (emit error when unsuccessful)
-		Observable<Boolean> upgrade = upgradeRatings.count().doOnNext(count -> RBLog.v("Copied " + count + " offline ratings")).map(count -> true);
+		Observable<Boolean> upgrade = upgradeRatings.count().doOnNext(count -> RBLog.d("Copied " + count + " offline ratings")).map(count -> true);
 		if (legacyLogin != null)
-			upgrade = Observable.combineLatest(upgrade, legacyLogin, (upgraded, signedIn) -> upgraded && signedIn);
+			upgrade = Observable.combineLatest(upgrade, legacyLogin, (upgraded, signedIn) -> upgraded && signedIn).filter(done -> done);
 		upgrade.compose(onIoToUi()).compose(bindToLifecycle()).subscribe(success -> {
 			// Remove the old "is_first_start" key to indicate that we have upgraded
 			prefs.edit().remove("is_first_start").apply();

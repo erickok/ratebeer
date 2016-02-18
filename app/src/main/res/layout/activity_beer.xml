@@ -42,122 +42,147 @@
 
 		</android.support.design.widget.CollapsingToolbarLayout>
 
-		<LinearLayout
-			android:id="@+id/details_layout"
+		<FrameLayout
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:orientation="vertical"
-			android:paddingBottom="8dp"
-			android:paddingEnd="16dp"
-			android:paddingLeft="16dp"
-			android:paddingRight="16dp"
-			android:paddingStart="16dp"
-			android:paddingTop="8dp"
 			app:layout_anchor="@id/appbar_layout"
 			app:layout_anchorGravity="bottom">
 
-			<TextView
-				android:id="@+id/beer_name_text"
+			<LinearLayout
+				android:id="@+id/details_layout"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:fontFamily="sans-serif-condensed"
-				android:text="\n"
-				android:textColor="@android:color/white"
-				android:textSize="30sp"
-				tools:ignore="HardcodedText"
-				tools:text="8 Wired The Big Smoke Barrel Aged Edition" />
+				android:orientation="vertical"
+				android:visibility="invisible"
+				tools:visibility="visible">
 
-			<TextView
-				android:id="@+id/brewer_name_text"
-				android:layout_width="match_parent"
+				<LinearLayout
+					android:id="@+id/details_layout"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:orientation="vertical"
+					android:paddingBottom="8dp"
+					android:paddingEnd="16dp"
+					android:paddingLeft="16dp"
+					android:paddingRight="16dp"
+					android:paddingStart="16dp"
+					android:paddingTop="8dp">
+
+					<TextView
+						android:id="@+id/beer_name_text"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:fontFamily="sans-serif-condensed"
+						android:text="\n"
+						android:textColor="@android:color/white"
+						android:textSize="30sp"
+						tools:ignore="HardcodedText"
+						tools:text="8 Wired The Big Smoke Barrel Aged Edition" />
+
+					<TextView
+						android:id="@+id/brewer_name_text"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:layout_marginTop="2dp"
+						android:fontFamily="sans-serif-condensed"
+						android:textColor="@android:color/black"
+						android:textSize="20sp"
+						tools:text="A Spice/Herb/Special Grain by 8 Wired Brewery Co" />
+
+				</LinearLayout>
+
+				<LinearLayout
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:background="@color/yellow_main"
+					android:orientation="horizontal"
+					android:paddingEnd="16dp"
+					android:paddingLeft="16dp"
+					android:paddingRight="16dp"
+					android:paddingStart="16dp"
+					android:paddingTop="4dp">
+
+					<TextView
+						android:id="@+id/mark_overall_text"
+						style="@style/Marker.Number"
+						tools:text="80" />
+
+					<TextView
+						android:id="@+id/mark_style_text"
+						style="@style/Marker.Number"
+						tools:text="93" />
+
+					<TextView
+						android:id="@+id/mark_count_text"
+						style="@style/Marker.Number"
+						tools:text="93" />
+
+					<TextView
+						android:id="@+id/mark_abv_text"
+						style="@style/Marker.Number"
+						tools:text="25.5" />
+
+					<TextView
+						android:id="@+id/mark_ibu_text"
+						style="@style/Marker.Number"
+						tools:text="120" />
+
+					<TextView
+						android:id="@+id/mark_calories_text"
+						style="@style/Marker.Number"
+						tools:text="488" />
+
+				</LinearLayout>
+
+				<LinearLayout
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:background="@color/yellow_main"
+					android:orientation="horizontal"
+					android:paddingBottom="8dp"
+					android:paddingEnd="16dp"
+					android:paddingLeft="16dp"
+					android:paddingRight="16dp"
+					android:paddingStart="16dp">
+
+					<TextView
+						style="@style/Marker.Label"
+						android:text="@string/beer_overall" />
+
+					<TextView
+						style="@style/Marker.Label"
+						android:text="@string/beer_instyle" />
+
+					<TextView
+						style="@style/Marker.Label"
+						android:text="@string/beer_ratecount" />
+
+					<TextView
+						style="@style/Marker.Label"
+						android:text="@string/beer_abv" />
+
+					<TextView
+						style="@style/Marker.Label"
+						android:text="@string/beer_ibu" />
+
+					<TextView
+						style="@style/Marker.Label"
+						android:text="@string/beer_calories" />
+
+				</LinearLayout>
+
+			</LinearLayout>
+
+			<ProgressBar
+				android:id="@+id/loading_progress"
+				style="@style/Widget.AppCompat.ProgressBar"
+				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:layout_marginTop="2dp"
-				android:fontFamily="sans-serif-condensed"
-				android:textColor="@android:color/black"
-				android:textSize="20sp"
-				tools:text="A Spice/Herb/Special Grain by 8 Wired Brewery Co" />
+				android:layout_gravity="center"
+				android:layout_marginBottom="16dp"
+				tools:background="@color/grey_dark" />
 
-		</LinearLayout>
-
-		<LinearLayout
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:background="@color/yellow_main"
-			android:orientation="horizontal"
-			android:paddingEnd="16dp"
-			android:paddingLeft="16dp"
-			android:paddingRight="16dp"
-			android:paddingStart="16dp"
-			android:paddingTop="4dp">
-
-			<TextView
-				android:id="@+id/mark_overall_text"
-				style="@style/Marker.Number"
-				tools:text="80" />
-
-			<TextView
-				android:id="@+id/mark_style_text"
-				style="@style/Marker.Number"
-				tools:text="93" />
-
-			<TextView
-				android:id="@+id/mark_count_text"
-				style="@style/Marker.Number"
-				tools:text="93" />
-
-			<TextView
-				android:id="@+id/mark_abv_text"
-				style="@style/Marker.Number"
-				tools:text="25.5" />
-
-			<TextView
-				android:id="@+id/mark_ibu_text"
-				style="@style/Marker.Number"
-				tools:text="120" />
-
-			<TextView
-				android:id="@+id/mark_calories_text"
-				style="@style/Marker.Number"
-				tools:text="488" />
-
-		</LinearLayout>
-
-		<LinearLayout
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:background="@color/yellow_main"
-			android:orientation="horizontal"
-			android:paddingBottom="8dp"
-			android:paddingEnd="16dp"
-			android:paddingLeft="16dp"
-			android:paddingRight="16dp"
-			android:paddingStart="16dp">
-
-			<TextView
-				style="@style/Marker.Label"
-				android:text="@string/beer_overall" />
-
-			<TextView
-				style="@style/Marker.Label"
-				android:text="@string/beer_instyle" />
-
-			<TextView
-				style="@style/Marker.Label"
-				android:text="@string/beer_ratecount" />
-
-			<TextView
-				style="@style/Marker.Label"
-				android:text="@string/beer_abv" />
-
-			<TextView
-				style="@style/Marker.Label"
-				android:text="@string/beer_ibu" />
-
-			<TextView
-				style="@style/Marker.Label"
-				android:text="@string/beer_calories" />
-
-		</LinearLayout>
+		</FrameLayout>
 
 	</android.support.design.widget.AppBarLayout>
 

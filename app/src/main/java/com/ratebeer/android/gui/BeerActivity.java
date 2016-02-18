@@ -1,8 +1,8 @@
 package com.ratebeer.android.gui;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -11,10 +11,10 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
-import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.jakewharton.rxbinding.support.v7.widget.RxToolbar;
@@ -27,6 +27,7 @@ import com.ratebeer.android.db.Beer;
 import com.ratebeer.android.db.Db;
 import com.ratebeer.android.db.Rating;
 import com.ratebeer.android.gui.lists.BeerRatingsAdapter;
+import com.ratebeer.android.gui.widget.Animations;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -35,10 +36,14 @@ import rx.Observable;
 
 public final class BeerActivity extends RateBeerActivity {
 
+	private ProgressBar loadingProgress;
+	private View detailsLayout;
+
 	public static Intent start(Context context, long beerId) {
 		return new Intent(context, BeerActivity.class).putExtra("beerId", beerId);
 	}
 
+	@SuppressLint("PrivateResource")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -47,20 +52,34 @@ public final class BeerActivity extends RateBeerActivity {
 		// Set up toolbar
 		Toolbar mainToolbar = (Toolbar) findViewById(R.id.main_toolbar);
 		mainToolbar.setNavigationIcon(R.drawable.abc_ic_ab_back_mtrl_am_alpha);
-		RxToolbar.navigationClicks(mainToolbar).subscribe(ignore -> onBackPressed());
+		mainToolbar.inflateMenu(R.menu.menu_refresh);
+		RxToolbar.navigationClicks(mainToolbar).subscribe(ignore -> navigateUp());
+		RxToolbar.itemClicks(mainToolbar).filter(item -> item.getItemId() == R.id.menu_refresh).subscribe(item -> {
+			Animations.fadeFlip(loadingProgress, detailsLayout);
+			refresh(true);
+		});
+
+		loadingProgress = (ProgressBar) findViewById(R.id.loading_progress);
+		detailsLayout = findViewById(R.id.details_layout);
 		FloatingActionButton rateButton = (FloatingActionButton) findViewById(R.id.rate_button);
+		rateButton.setVisibility(View.GONE); // TODO
+
+		refresh(false);
+	}
+
+	private void refresh(boolean forceFresh) {
 
 		// Load beer and ratings from database or live
 		long beerId = getIntent().getLongExtra("beerId", 0);
-		Db.getBeer(this, beerId).compose(onIoToUi()).compose(bindToLifecycle())
+		Db.getBeer(this, beerId, forceFresh).compose(onIoToUi()).compose(bindToLifecycle())
 				.subscribe(this::showBeer, e -> Snackbar.show(this, R.string.error_connectionfailure));
 
-		Observable<BeerRating> ratings = Api.get().getBeerRatings(beerId);
+		Observable<BeerRating> ratings =
+				Api.get().getBeerRatings(beerId).filter(beerRating -> !Session.get().isLoggedIn() || beerRating.userId != Session.get().getUserId());
 		if (Session.get().isLoggedIn())
-			ratings = ratings.startWith(Db.getRating(this, beerId, Session.get().getUserId()).map(this::localToBeerRating));
-		else
-			rateButton.setVisibility(View.GONE);
-		ratings.toList().compose(onIoToUi()).compose(bindToLifecycle()).subscribe(this::showRatings, e -> e.printStackTrace());
+			ratings = ratings.startWith(Db.getUserRating(this, beerId, Session.get().getUserId()).map(this::localToBeerRating));
+		ratings.toList().compose(onIoToUi()).compose(bindToLifecycle()).subscribe(this::showRatings, Throwable::printStackTrace);
+
 	}
 
 	private void showBeer(Beer beer) {
@@ -82,6 +101,7 @@ public final class BeerActivity extends RateBeerActivity {
 		((TextView) findViewById(R.id.mark_abv_text)).setText(beer.getAlcoholString());
 		((TextView) findViewById(R.id.mark_ibu_text)).setText(beer.getIbuString());
 		((TextView) findViewById(R.id.mark_calories_text)).setText(beer.getCaloriesString());
+		Animations.fadeFlip(detailsLayout, loadingProgress);
 	}
 
 	private void showRatings(List<BeerRating> ratings) {

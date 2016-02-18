@@ -4,17 +4,22 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.Button;
+import android.widget.ProgressBar;
 
-import com.jakewharton.rxbinding.support.v7.widget.RxToolbar;
 import com.ratebeer.android.BuildConfig;
 import com.ratebeer.android.R;
 import com.ratebeer.android.Session;
+import com.ratebeer.android.api.Api;
+import com.ratebeer.android.gui.widget.Animations;
 
 import java.util.Locale;
 
 public final class AboutActivity extends RateBeerActivity {
+
+	private Button signInOutButton;
+	private ProgressBar signoutProgress;
 
 	public static Intent start(Context context) {
 		return new Intent(context, AboutActivity.class);
@@ -25,14 +30,31 @@ public final class AboutActivity extends RateBeerActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_about);
 
-		// Set up toolbar
-		Toolbar mainToolbar = (Toolbar) findViewById(R.id.main_toolbar);
-		mainToolbar.setNavigationIcon(R.drawable.abc_ic_ab_back_mtrl_am_alpha);
-		RxToolbar.navigationClicks(mainToolbar).subscribe(ignore -> onBackPressed());
+		signInOutButton = (Button) findViewById(R.id.signinout_button);
+		signoutProgress = (ProgressBar) findViewById(R.id.signout_progress);
+
+		setupDefaultUpButton();
 	}
 
-	public void openSignIn(View view) {
-		startActivity(SignInActivity.start(this));
+	@Override
+	protected void onResume() {
+		super.onResume();
+
+		signInOutButton.setText(Session.get().isLoggedIn() ? R.string.help_signout : R.string.help_signin);
+	}
+
+	public void openSignInOut(View view) {
+		if (!Session.get().isLoggedIn()) {
+			startActivity(SignInActivity.start(this, true));
+		} else {
+			Animations.fadeFlip(signoutProgress, signInOutButton);
+			Api.get().logout().compose(onIoToUi()).compose(bindToLifecycle()).subscribe(success -> {
+				navigateUp(); // Restart main activity to refresh activities state
+			}, e -> {
+				Snackbar.show(this, R.string.error_connectionfailure);
+				Animations.fadeFlip(signInOutButton, signoutProgress);
+			});
+		}
 	}
 
 	public void openHelpWhereRatings(View view) {

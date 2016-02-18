@@ -12,8 +12,8 @@ public final class UserRating {
 	public String brewerName;
 
 	public float averageRating;
-	public float overallPercentile;
-	public float stylePercentile;
+	public Float overallPercentile;
+	public Float stylePercentile;
 	public int rateCount;
 
 	public int ratingId;

@@ -49,17 +49,33 @@
 		android:textStyle="bold"
 		tools:text="À l’Abri de la Tempête Palabre de la Corne de Glace" />
 
-	<TextView
-		android:id="@+id/date_text"
+	<FrameLayout
+		android:id="@+id/date_badge_wrapper"
 		android:layout_width="wrap_content"
-		android:layout_height="24dp"
+		android:layout_height="wrap_content"
 		android:layout_below="@+id/beer_name_text"
+		android:layout_marginLeft="8dp"
+		android:layout_marginStart="8dp"
 		android:layout_toLeftOf="@+id/photo_image"
-		android:layout_toStartOf="@+id/photo_image"
-		android:gravity="center"
-		android:textColor="@android:color/black"
-		android:textSize="16sp"
-		tools:text="08/14" />
+		android:layout_toStartOf="@+id/photo_image">
+
+		<TextView
+			android:id="@+id/date_text"
+			android:layout_width="wrap_content"
+			android:layout_height="24dp"
+			android:textColor="@android:color/black"
+			android:textSize="16sp"
+			tools:text="08/14" />
+
+		<TextView
+			android:id="@+id/offline_badge"
+			style="@style/Badge.Offline"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="@string/rate_offline_badge"
+			tools:alpha="0.4"/>
+
+	</FrameLayout>
 
 	<TextView
 		android:id="@+id/brewer_name_text"
@@ -68,12 +84,12 @@
 		android:layout_below="@+id/beer_name_text"
 		android:layout_marginBottom="8dp"
 		android:layout_toEndOf="@+id/rating_mark_text"
-		android:layout_toLeftOf="@+id/photo_image"
+		android:layout_toLeftOf="@+id/date_badge_wrapper"
 		android:layout_toRightOf="@+id/rating_mark_text"
-		android:layout_toStartOf="@+id/photo_image"
+		android:layout_toStartOf="@+id/date_badge_wrapper"
 		android:fontFamily="sans-serif-condensed"
 		android:textColor="@android:color/black"
 		android:textSize="16sp"
-		tools:text="Dunkel/Tmavy" />
+		tools:text="À l’Abri de la Tempête" />
 
 </RelativeLayout>

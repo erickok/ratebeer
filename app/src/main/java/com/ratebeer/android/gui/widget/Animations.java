@@ -13,12 +13,15 @@ public final class Animations {
 		ObjectAnimator animIn = ObjectAnimator.ofFloat(in, "alpha", 0F, 1F);
 		in.setAlpha(0F);
 		in.setVisibility(View.VISIBLE);
+		in.setTag(View.VISIBLE);
+		out.setTag(View.INVISIBLE);
 		AnimatorSet animSetXY = new AnimatorSet();
 		animSetXY.playTogether(animOut, animIn);
 		animSetXY.addListener(new AnimatorListenerAdapter() {
 			@Override
 			public void onAnimationEnd(Animator animation) {
-				out.setVisibility(View.GONE);
+				//noinspection WrongConstant
+				out.setVisibility((Integer) out.getTag());
 			}
 		});
 		animSetXY.start();

@@ -44,10 +44,7 @@ public class SearchActivity extends RateBeerActivity {
 		resultsList = (RecyclerView) findViewById(R.id.results_list);
 		loadingProgress = (ProgressBar) findViewById(R.id.loading_progress);
 
-		// Set up toolbar
-		Toolbar mainToolbar = (Toolbar) findViewById(R.id.main_toolbar);
-		mainToolbar.setNavigationIcon(R.drawable.abc_ic_ab_back_mtrl_am_alpha);
-		RxToolbar.navigationClicks(mainToolbar).subscribe(ignore -> onBackPressed());
+		setupDefaultUpButton();
 
 		// Set up search box
 		searchEdit.setQuery(getIntent().getStringExtra("query"), false);

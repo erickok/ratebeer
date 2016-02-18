@@ -28,7 +28,7 @@ public final class WelcomeActivity extends RateBeerActivity {
 	}
 
 	public void signIn(View view) {
-		startActivity(SignInActivity.start(this));
+		startActivity(SignInActivity.start(this, false));
 		finish();
 	}
 

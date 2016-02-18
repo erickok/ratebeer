@@ -1,13 +1,14 @@
 package com.ratebeer.android.db;
 
 import com.ratebeer.android.api.model.BeerRating;
+import com.ratebeer.android.api.model.UserRating;
 
 import java.util.Date;
 
 public final class Rating {
 
 	public Long _id;
-	public long beerId;
+	public Long beerId;
 	public String beerName;
 	public String brewerName;
 
@@ -25,6 +26,27 @@ public final class Rating {
 
 	public boolean isUploaded() {
 		return timeEntered != null;
+	}
+
+	public static Rating fromUserRating(UserRating userRating) {
+		Rating rating = new Rating();
+		rating._id = (long) userRating.ratingId;
+		rating.beerId = (long) userRating.beerId;
+		rating.beerName = userRating.beerName;
+		rating.brewerName = userRating.brewerName;
+
+		rating.aroma = userRating.aroma;
+		rating.flavor = userRating.flavor;
+		rating.mouthfeel = userRating.mouthfeel;
+		rating.appearance = userRating.appearance;
+		rating.overall = userRating.overall;
+		rating.total = userRating.total;
+		rating.comments = userRating.comments;
+
+		rating.timeCached = new Date();
+		rating.timeEntered = userRating.timeEntered;
+		rating.timeUpdated = userRating.timeUpdated;
+		return rating;
 	}
 
 	public static Rating fromBeerRating(Beer beer, BeerRating beerRating) {
@@ -51,9 +73,8 @@ public final class Rating {
 	public static Rating fromOfflineRating(OfflineRating offlineRating) {
 		// Convert legacy offline rating into local rating database object
 		Rating rating = new Rating();
-		rating.beerId = offlineRating.beerId;
+		rating.beerId = offlineRating.beerId == null ? null : offlineRating.beerId.longValue();
 		rating.beerName = offlineRating.beerName;
-		rating.brewerName = offlineRating.beerName; // Yeah, we don' have the brewer name, but it's only for legacy ratings anyway
 
 		rating.aroma = offlineRating.aroma;
 		rating.flavor = offlineRating.taste;
@@ -64,7 +85,6 @@ public final class Rating {
 				calculateTotal(offlineRating.aroma, offlineRating.taste, offlineRating.palate, offlineRating.appearance, offlineRating.overall);
 		rating.comments = offlineRating.comments;
 
-		rating.timeCached = offlineRating.timeSaved;
 		return rating;
 	}
 

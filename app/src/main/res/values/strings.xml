@@ -5,6 +5,7 @@
 	<string name="app_upgrade">Sorry for the recent lack of updates. I promise to be better.\n\nI hope you find the new app more intuitive, quicker and reliable. Some features will be missing at first, but I will slowly rebuild them. At least you can expect full offline access to your ratings.\n\nDoes that sound nice?</string>
 	<string name="app_accept">I accept your apology</string>
 	<string name="app_decline">Forget it</string>
+	<string name="app_refresh">Refresh</string>
 
 	<string name="signin_welcome">Welcome to RateBeer</string>
 	<string name="signin_getaccount">The biggest source on craft beer is at your fingertips! To get the most out of your beer experience, please sign in to your RateBeer account.</string>
@@ -22,6 +23,7 @@
 	<string name="main_friends">Friends</string>
 	<string name="main_local">Local</string>
 	<string name="main_global">Global</string>
+	<string name="main_syncprogress">Synchronization: %1$.0f%%</string>
 
 	<string name="feed_isdrinking">is drinking</string>
 	<string name="feed_wasawarded">was awarded</string>
@@ -40,12 +42,14 @@
 	<string name="beer_unrateable">unrateable</string>
 
 	<string name="rate_enterrating">Enter rating</string>
+	<string name="rate_offline_badge">offline only</string>
 	<string name="rate_"></string>
 
 	<string name="help_developer" translatable="false">created by Eric Kok of 2312 development</string>
 	<string name="help_signin">Sign in to RateBeer account</string>
+	<string name="help_signout">Sign out</string>
 	<string name="help_whereratings">Where are my (offline) ratings?</string>
-	<string name="help_whereratings_text">Don\'t worry - they are safe.\n\nAll ratings you have uploading to RateBeer using the old app or entered directly on ratebeer.com are stored on the website. Very soon this app will allow you to log in again and view them. In fact,  they will be fully synchronized for quick searching and available offline access when a connection is not available.\n\nAny offline ratings you had made and not yet uploaded are still stored on your device, in the app\' database. Very soon you will be able to see them again and upload them. Very soon, I promise!</string>
+	<string name="help_whereratings_text">Don\'t worry - they are safe.\n\nAll ratings you have uploading to RateBeer using the old app or entered directly on ratebeer.com are stored on the website. In fact, when you sign in, they are fully synchronized for quick searching and available offline access when a connection is not available.\n\nAny offline ratings you had made and not yet uploaded are still stored on your device, in the app\'s database. They should be transferred when upgrading the app and visible in your main ratings screen. Very soon you will be able to upload them again, when the rating feature is finished. Very soon, I promise!</string>
 	<string name="help_report">Report bug or request help</string>
 	<string name="help_visitrb">Visit ratebeer.com</string>
 	<string name="help_useragreement">User agreement</string>

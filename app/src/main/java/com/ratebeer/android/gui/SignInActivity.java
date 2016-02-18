@@ -14,14 +14,20 @@ import com.ratebeer.android.gui.widget.Animations;
 
 public final class SignInActivity extends RateBeerActivity {
 
-	public static Intent start(Context context) {
-		return new Intent(context, SignInActivity.class);
+	public static Intent start(Context context, boolean withBackNavigation) {
+		return new Intent(context, SignInActivity.class).putExtra("back_navigation", withBackNavigation);
 	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_signin);
+
+		if (getIntent().getBooleanExtra("back_navigation", false))
+			setupDefaultUpButton();
+		else
+			findViewById(R.id.main_toolbar).setVisibility(View.GONE);
+
 	}
 
 	public void signIn(View view) {
@@ -38,8 +44,8 @@ public final class SignInActivity extends RateBeerActivity {
 
 		Animations.fadeFlip(loginProgress, decisionLayout);
 
-		Api.api().login(username, password).compose(onIoToUi()).compose(bindToLifecycle()).subscribe(success -> {
-			finish();
+		Api.get().login(username, password).compose(onIoToUi()).compose(bindToLifecycle()).subscribe(success -> {
+			navigateUp(); // Restart main activity to refresh activities state
 		}, e -> {
 			Snackbar.show(this, R.string.error_authenticationfailed);
 			Animations.fadeFlip(decisionLayout, loginProgress);

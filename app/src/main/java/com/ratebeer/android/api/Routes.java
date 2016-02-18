@@ -22,8 +22,10 @@ interface Routes {
 
 	@FormUrlEncoded
 	@POST("/Signin_r.asp")
-	Observable<Response<Void>> login(@Field("username") String username, @Field("pwd") String password,
-									 @Field("SaveInfo") String assignCookie);
+	Observable<Response<Void>> login(@Field("username") String username, @Field("pwd") String password, @Field("SaveInfo") String assignCookie);
+
+	@GET("/Signout.asp?v=1")
+	Observable<Response<Void>> logout();
 
 	@GET("users.asp")
 	Observable<List<UserInfo>> getUserInfo(@Query("k") String key, @Query("u") String userName);

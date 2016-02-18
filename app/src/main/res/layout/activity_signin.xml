@@ -3,17 +3,31 @@
 	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
 	android:orientation="vertical"
 	tools:context=".gui.SignInActivity">
 
-	<ImageView
+	<FrameLayout
 		android:layout_width="match_parent"
 		android:layout_height="0dp"
-		android:layout_weight="1"
-		android:background="@color/blue_main"
-		android:contentDescription="@null"
-		android:scaleType="center"
-		android:src="@drawable/icon_large" />
+		android:layout_weight="1">
+
+		<ImageView
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:background="@color/blue_main"
+			android:contentDescription="@null"
+			android:scaleType="center"
+			android:src="@drawable/icon_large" />
+
+		<android.support.v7.widget.Toolbar
+			android:id="@+id/main_toolbar"
+			android:layout_width="match_parent"
+			android:layout_height="?attr/actionBarSize"
+			android:background="?attr/colorPrimary"
+			app:theme="@style/AppTheme.Toolbar" />
+
+	</FrameLayout>
 
 	<TextView
 		android:layout_width="match_parent"
@@ -41,7 +55,8 @@
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:hint="@string/signin_username"
-			android:inputType="textPassword" />
+			android:text="erickok"
+			android:inputType="textFilter" />
 
 	</android.support.design.widget.TextInputLayout>
 
@@ -58,6 +73,7 @@
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:hint="@string/signin_password"
+			android:text="EekCat335228"
 			android:inputType="textPassword" />
 
 	</android.support.design.widget.TextInputLayout>

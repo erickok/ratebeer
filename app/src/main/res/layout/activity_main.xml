@@ -18,18 +18,30 @@
 			android:layout_width="0dp"
 			android:layout_height="0dp"
 			android:focusable="true"
-			android:focusableInTouchMode="true"/>
+			android:focusableInTouchMode="true" />
 
-		<android.support.v7.widget.SearchView
-			android:id="@+id/search_edit"
+		<android.support.v7.widget.Toolbar
+			android:id="@+id/main_toolbar"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:background="@drawable/search_bg"
-			android:theme="@style/ThemeOverlay.AppCompat.Light"
-			app:iconifiedByDefault="false"
-			app:queryBackground="@null"
-			app:queryHint="@string/search_hint"
-			app:searchIcon="@null" />
+			app:contentInsetEnd="0dp"
+			app:contentInsetLeft="0dp"
+			app:contentInsetRight="0dp"
+			app:contentInsetStart="0dp"
+			app:theme="@style/AppTheme.Toolbar">
+
+			<android.support.v7.widget.SearchView
+				android:id="@+id/search_edit"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:background="@drawable/search_bg"
+				android:theme="@style/ThemeOverlay.AppCompat.Light"
+				app:iconifiedByDefault="false"
+				app:queryBackground="@null"
+				app:queryHint="@string/search_hint"
+				app:searchIcon="@null" />
+
+		</android.support.v7.widget.Toolbar>
 
 		<android.support.design.widget.TabLayout
 			android:id="@+id/sliding_tabs"
@@ -48,16 +60,6 @@
 		android:layout_height="match_parent"
 		app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
-	<ProgressBar
-		android:id="@+id/loading_progress"
-		style="@style/Widget.AppCompat.ProgressBar"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:visibility="gone"
-		app:layout_anchor="@id/lists_pager"
-		app:layout_anchorGravity="center"
-		tools:visibility="visible" />
-
 	<android.support.v7.widget.RecyclerView
 		android:id="@+id/search_list"
 		android:layout_width="match_parent"
@@ -69,6 +71,33 @@
 		android:visibility="gone"
 		app:layout_behavior="@string/appbar_scrolling_view_behavior"
 		tools:visibility="visible" />
+
+	<LinearLayout
+		android:id="@+id/loading_progress"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="vertical"
+		android:visibility="gone"
+		app:layout_anchor="@id/lists_pager"
+		app:layout_anchorGravity="center_vertical"
+		tools:visibility="visible">
+
+		<ProgressBar
+			style="@style/Widget.AppCompat.ProgressBar"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_gravity="center_horizontal"
+			tools:background="@color/grey_dark" />
+
+		<TextView
+			android:id="@+id/progress_text"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_gravity="center_horizontal"
+			android:layout_marginTop="16dp"
+			tools:text="@string/main_syncprogress" />
+
+	</LinearLayout>
 
 	<android.support.design.widget.FloatingActionButton
 		android:id="@+id/help_button"

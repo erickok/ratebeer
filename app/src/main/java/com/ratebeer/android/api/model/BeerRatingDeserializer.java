@@ -20,7 +20,7 @@ public final class BeerRatingDeserializer implements JsonDeserializer<BeerRating
 		userRating.userId = object.get("UserID").getAsInt();
 		userRating.userName = Normalizer.get().cleanHtml(object.get("UserName").getAsString());
 		userRating.userCountryId = object.get("CountryID").getAsInt();
-		if (!(object.get("Country") instanceof JsonNull))
+		if (object.get("Country") != null && !(object.get("Country") instanceof JsonNull))
 			userRating.userCountryName = Normalizer.get().cleanHtml(object.get("Country").getAsString());
 		userRating.userRateCount = object.get("RateCount").getAsInt();
 
