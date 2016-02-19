@@ -4,6 +4,7 @@
 	android:layout_width="match_parent"
 	android:layout_height="wrap_content"
 	android:layout_marginBottom="@dimen/list_item_margin_bottom"
+	android:background="?android:attr/selectableItemBackground"
 	android:orientation="vertical">
 
 	<TextView
@@ -73,7 +74,7 @@
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:text="@string/rate_offline_badge"
-			tools:alpha="0.4"/>
+			tools:alpha="0.4" />
 
 	</FrameLayout>
 

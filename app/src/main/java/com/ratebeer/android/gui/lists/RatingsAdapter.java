@@ -1,6 +1,8 @@
 package com.ratebeer.android.gui.lists;
 
 import android.content.Context;
+import android.content.res.TypedArray;
+import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
@@ -25,10 +27,15 @@ public final class RatingsAdapter extends RecyclerView.Adapter<RecyclerView.View
 
 	private final List<Rating> ratings;
 	private final Context context;
+	private final Drawable selectableBackgroundDrawable;
 
 	public RatingsAdapter(Context context, List<Rating> ratings) {
 		this.ratings = ratings;
 		this.context = context;
+		int[] attrs = new int[] { android.R.attr.selectableItemBackground};
+		TypedArray ta = context.obtainStyledAttributes(attrs);
+		selectableBackgroundDrawable = ta.getDrawable(0);
+		ta.recycle();
 	}
 
 	@Override
@@ -50,6 +57,11 @@ public final class RatingsAdapter extends RecyclerView.Adapter<RecyclerView.View
 		} else {
 			Rating rating = ratings.get(position - 1);
 			ItemHolder itemHolder = (ItemHolder) holder;
+			if (rating.beerId != null && rating.beerId > 0) {
+				itemHolder.rowLayout.setBackgroundDrawable(selectableBackgroundDrawable.getConstantState().newDrawable().mutate());
+			} else {
+				itemHolder.rowLayout.setBackgroundResource(0);
+			}
 			itemHolder.ratingMarkText.setText(String.format(Locale.getDefault(), "%1$.1f", rating.total));
 			itemHolder.ratingMarkText.setBackgroundResource(ImageUrls.getColor(position, true));
 			itemHolder.beerNameText.setText(rating.beerName);
@@ -103,6 +115,7 @@ public final class RatingsAdapter extends RecyclerView.Adapter<RecyclerView.View
 
 	static class ItemHolder extends RecyclerView.ViewHolder {
 
+		final View rowLayout;
 		final TextView ratingMarkText;
 		final TextView beerNameText;
 		final ImageView photoImage;
@@ -112,6 +125,7 @@ public final class RatingsAdapter extends RecyclerView.Adapter<RecyclerView.View
 
 		public ItemHolder(View v) {
 			super(v);
+			rowLayout = v;
 			ratingMarkText = (TextView) v.findViewById(R.id.rating_mark_text);
 			beerNameText = (TextView) v.findViewById(R.id.beer_name_text);
 			photoImage = (ImageView) v.findViewById(R.id.photo_image);
