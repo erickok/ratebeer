@@ -1,5 +1,6 @@
 # RateBeer for Android
-by Eric Kok
+
+![Screenshot](http://2312.nl/img/portfolio-transdroid/240x400-transdroid-main.png)
 
 ## History and goals
 
