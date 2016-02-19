@@ -1,6 +1,6 @@
 # RateBeer for Android
 
-![Screenshot](https://raw.githubusercontent.com/erickok/ratebeer/master/assets/screenshot.png)
+![Screenshot](/assets/screenshot.jpg?raw=true)
 
 ## History and goals
 
