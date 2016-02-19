@@ -191,7 +191,7 @@ public class MainActivity extends RateBeerActivity {
 	}
 
 	private void openRating(Rating rating) {
-		if (rating != null && rating.beerId != null) {
+		if (rating != null && rating.beerId != null && rating.beerId > 0) {
 			startActivity(BeerActivity.start(this, rating.beerId));
 		} else if (rating != null && !rating.isUploaded()) {
 			// TODO Open rating screen
