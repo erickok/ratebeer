@@ -1,6 +1,6 @@
 # RateBeer for Android
 
-![Screenshot](http://2312.nl/img/portfolio-transdroid/240x400-transdroid-main.png)
+![Screenshot](https://raw.githubusercontent.com/erickok/ratebeer/master/assets/screenshot.png)
 
 ## History and goals
 
