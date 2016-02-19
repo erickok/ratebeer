@@ -1,6 +1,6 @@
 # RateBeer for Android
 
-![Screenshot](/assets/screenshot.jpg?raw=true)
+![Screenshot](/assets/screenshot.png?raw=true)
 
 ## History and goals
 
