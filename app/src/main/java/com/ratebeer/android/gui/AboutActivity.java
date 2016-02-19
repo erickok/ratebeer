@@ -50,6 +50,7 @@ public final class AboutActivity extends RateBeerActivity {
 			Animations.fadeFlip(signoutProgress, signInOutButton);
 			Api.get().logout().compose(onIoToUi()).compose(bindToLifecycle()).subscribe(success -> {
 				navigateUp(); // Restart main activity to refresh activities state
+				finish();
 			}, e -> {
 				Snackbar.show(this, R.string.error_connectionfailure);
 				Animations.fadeFlip(signInOutButton, signoutProgress);
@@ -83,6 +84,10 @@ public final class AboutActivity extends RateBeerActivity {
 
 	public void openUserAgreement(View view) {
 		startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.ratebeer.com/UserAgreement.asp")));
+	}
+
+	public void openGithub(View view) {
+		startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/erickok/ratebeer")));
 	}
 
 }

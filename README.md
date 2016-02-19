@@ -1,5 +1,6 @@
 # RateBeer for Android
-by Eric Kok
+
+![Screenshot](/assets/screenshot.jpg?raw=true)
 
 ## History and goals
 
