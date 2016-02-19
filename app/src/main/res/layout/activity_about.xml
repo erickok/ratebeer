@@ -30,7 +30,8 @@
 			android:layout_marginStart="16dp"
 			android:text="@string/help_developer"
 			android:textColor="@android:color/white"
-			android:textSize="16sp" />
+			android:textSize="16sp"
+			android:onClick="openGithub" />
 
 		<ImageView
 			android:id="@+id/icon_image"
