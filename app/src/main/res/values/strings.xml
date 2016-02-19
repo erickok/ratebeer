@@ -2,7 +2,7 @@
 	<string name="app_name" translatable="false">RateBeer</string>
 	<string name="app_account">Account</string>
 	<string name="app_upgrade_welcome">Welcome to the new RateBeer</string>
-	<string name="app_upgrade">Sorry for the recent lack of updates. I promise to be better.\n\nI hope you find the new app more intuitive, quicker and reliable. Some features will be missing at first, but I will slowly rebuild them. At least you can expect full offline access to your ratings.\n\nDoes that sound nice?</string>
+	<string name="app_upgrade">Sorry for the recent lack of updates. I promise do be better.\n\nI hope you find the new app more intuitive, quicker and reliable. Some features will be missing at first, but I will slowly rebuild them. At least you can expect full offline access to your ratings.\n\nDoes that sound nice?</string>
 	<string name="app_accept">I accept your apology</string>
 	<string name="app_decline">Forget it</string>
 	<string name="app_refresh">Refresh</string>

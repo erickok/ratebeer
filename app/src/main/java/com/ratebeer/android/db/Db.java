@@ -71,7 +71,7 @@ public final class Db {
 	}
 
 	public static Observable<Rating> getUserRatings(Context context) {
-		return rxdb(context).query(database(context).query(Rating.class).orderBy("timeEntered IS NULL, timeEntered desc"));
+		return rxdb(context).query(database(context).query(Rating.class).orderBy("timeEntered IS NOT NULL, timeEntered desc"));
 	}
 
 	public static Observable<Rating> syncUserRatings(Context context, Action1<Float> onPageProgress) {

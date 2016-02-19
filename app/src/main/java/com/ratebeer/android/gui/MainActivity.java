@@ -77,7 +77,6 @@ public class MainActivity extends RateBeerActivity {
 			return;
 		}
 
-		//Toolbar mainToolbar = (Toolbar) findViewById(R.id.main_toolbar);
 		ActionMenuView optionsMenu = (ActionMenuView) findViewById(R.id.options_menu);
 		SearchView searchEdit = (SearchView) findViewById(R.id.search_edit);
 		TabLayout tabLayout = (TabLayout) findViewById(R.id.sliding_tabs);
@@ -112,8 +111,6 @@ public class MainActivity extends RateBeerActivity {
 			}
 			return true;
 		});
-		//optionsMenu.menuinflateMenu(R.menu.menu_refresh);
-		//RxToolbar.itemClicks(mainToolbar).filter(item -> item.getItemId() == R.id.menu_refresh).subscribe(item -> refreshTab(currentTab, true));
 
 		// Set up search box: show results with search view focus, start search on query submit and show suggestions on query text changes
 		searchList.setLayoutManager(new LinearLayoutManager(this));
@@ -194,8 +191,10 @@ public class MainActivity extends RateBeerActivity {
 	}
 
 	private void openRating(Rating rating) {
-		if (rating.isUploaded() && rating.beerId != null) {
+		if (rating != null && rating.beerId != null) {
 			startActivity(BeerActivity.start(this, rating.beerId));
+		} else if (rating != null && !rating.isUploaded()) {
+			// TODO Open rating screen
 		}
 	}
 

@@ -41,5 +41,4 @@ Some code/libraries/resources are used in the project:
 *  [Cupboard](https://bitbucket.org/littlerobots/cupboard) by Hugo Visser et al.
 *  [RxCupboard](https://github.com/erickok/RxCupboard) by Eric Kok et al.
 *  [Picasso](http://square.github.io/picasso/) by Square, Inc
-*  [MaterialSeachView](https://github.com/erickok/MaterialSeachView) by krishnakapil, Eric Kok
 *  [HTMLEntities](http://sourceforge.net/projects/htmlentities/) by Nicola Asuni, copied into project under GNU LGPL v2.1

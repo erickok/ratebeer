@@ -44,7 +44,7 @@ public final class RatingsAdapter extends RecyclerView.Adapter<RecyclerView.View
 		if (holder instanceof HeaderHolder) {
 			HeaderHolder headerHolder = (HeaderHolder) holder;
 			Picasso.with(headerHolder.avatarImage.getContext()).load(ImageUrls.getUserPhotoUrl(Session.get().getUserName()))
-					.placeholder(android.R.color.white).fit().centerCrop().into(headerHolder.avatarImage);
+					.placeholder(R.color.grey_dark).fit().centerCrop().into(headerHolder.avatarImage);
 			headerHolder.userNameText.setText(Session.get().getUserName());
 			headerHolder.userCountText.setText(String.format(Locale.getDefault(), "%1$d", Session.get().getUserRateCount()));
 		} else {
@@ -81,6 +81,8 @@ public final class RatingsAdapter extends RecyclerView.Adapter<RecyclerView.View
 	}
 
 	public Rating get(int position) {
+		if (position == 0)
+			return null; // Header, not a rating
 		return ratings.get(position - 1);
 	}
 
