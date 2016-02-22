@@ -12,6 +12,7 @@ import com.ratebeer.android.BuildConfig;
 import com.ratebeer.android.R;
 import com.ratebeer.android.Session;
 import com.ratebeer.android.api.Api;
+import com.ratebeer.android.db.Db;
 import com.ratebeer.android.gui.widget.Animations;
 
 import java.util.Locale;
@@ -48,7 +49,7 @@ public final class AboutActivity extends RateBeerActivity {
 			startActivity(SignInActivity.start(this, true));
 		} else {
 			Animations.fadeFlip(signoutProgress, signInOutButton);
-			Api.get().logout().compose(onIoToUi()).compose(bindToLifecycle()).subscribe(success -> {
+			Api.get().logout().doOnNext(ignore -> Db.clearRatings(this)).compose(onIoToUi()).compose(bindToLifecycle()).subscribe(success -> {
 				navigateUp(); // Restart main activity to refresh activities state
 				finish();
 			}, e -> {

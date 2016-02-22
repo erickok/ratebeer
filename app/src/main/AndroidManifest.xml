@@ -25,6 +25,7 @@
 		<activity
 			android:name=".gui.BeerActivity"
 			android:theme="@style/AppTheme.NoStatusBar" />
+		<activity android:name=".gui.RateActivity" />
 		<activity android:name=".gui.AboutActivity" />
 		<activity android:name=".gui.HelpWhereRatingsActivity" />
 

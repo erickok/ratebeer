@@ -10,19 +10,16 @@ import android.support.v7.widget.ActionMenuView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.jakewharton.rxbinding.support.v7.widget.RxSearchView;
-import com.jakewharton.rxbinding.support.v7.widget.RxToolbar;
 import com.jakewharton.rxbinding.support.v7.widget.SearchViewQueryTextEvent;
 import com.ratebeer.android.R;
 import com.ratebeer.android.Session;
 import com.ratebeer.android.api.Api;
 import com.ratebeer.android.api.model.FeedItem;
-import com.ratebeer.android.db.CupboardDbHelper;
 import com.ratebeer.android.db.Db;
 import com.ratebeer.android.db.HistoricSearch;
 import com.ratebeer.android.db.Rating;
@@ -194,7 +191,7 @@ public class MainActivity extends RateBeerActivity {
 		if (rating != null && rating.beerId != null && rating.beerId > 0) {
 			startActivity(BeerActivity.start(this, rating.beerId));
 		} else if (rating != null && !rating.isUploaded()) {
-			// TODO Open rating screen
+			startActivity(RateActivity.start(this, rating));
 		}
 	}
 

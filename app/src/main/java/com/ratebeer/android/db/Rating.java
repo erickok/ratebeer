@@ -8,6 +8,7 @@ import java.util.Date;
 public final class Rating {
 
 	public Long _id;
+	public Long ratingId;
 	public Long beerId;
 	public String beerName;
 	public String brewerName;
@@ -28,9 +29,18 @@ public final class Rating {
 		return timeEntered != null;
 	}
 
+	public Float calculateTotal() {
+		return calculateTotal(aroma, flavor, mouthfeel, appearance, overall);
+	}
+
+	@Override
+	public String toString() {
+		return "[" + _id + "] " + beerName + ": A" + aroma + " A" + appearance + " T" + flavor + " P" + mouthfeel + " O" + overall + " T" + total;
+	}
+
 	public static Rating fromUserRating(UserRating userRating) {
 		Rating rating = new Rating();
-		rating._id = (long) userRating.ratingId;
+		rating.ratingId = (long) userRating.ratingId;
 		rating.beerId = (long) userRating.beerId;
 		rating.beerName = userRating.beerName;
 		rating.brewerName = userRating.brewerName;
@@ -51,7 +61,7 @@ public final class Rating {
 
 	public static Rating fromBeerRating(Beer beer, BeerRating beerRating) {
 		Rating rating = new Rating();
-		rating._id = (long) beerRating.ratingId;
+		rating.ratingId = (long) beerRating.ratingId;
 		rating.beerId = beer._id;
 		rating.beerName = beer.name;
 		rating.brewerName = beer.brewerName;

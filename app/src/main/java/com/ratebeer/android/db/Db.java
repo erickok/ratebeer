@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import rx.Observable;
+import rx.functions.Action;
 import rx.functions.Action1;
 import rx.functions.Func1;
 
@@ -59,6 +60,10 @@ public final class Db {
 			return getFresh(rxdb(context).get(Beer.class, beerId), fresh, beer -> isFresh(beer.timeCached));
 	}
 
+	public static Observable<Rating> getUserRating(Context context, long ratingId) {
+		return rxdb(context).get(Rating.class, ratingId);
+	}
+
 	public static Observable<Rating> getUserRating(Context context, long beerId, long userId) {
 		return getFresh(rxdb(context).query(Rating.class, "beerId = ?", Long.toString(beerId)),
 				Observable.combineLatest(getBeer(context, beerId), api().getBeerUserRating(beerId, userId), RxTuples.toPair())
@@ -87,6 +92,10 @@ public final class Db {
 
 	private static boolean isFresh(Date timeCached) {
 		return timeCached != null && timeCached.after(new Date(System.currentTimeMillis() - MAX_AGE));
+	}
+
+	public static boolean clearRatings(Context context) {
+		return database(context).delete(Rating.class);
 	}
 
 }

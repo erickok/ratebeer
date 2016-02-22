@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="wrap_content"
+	android:layout_height="wrap_content"
+	android:orientation="vertical"
+	android:background="@drawable/search_bg">
+
+	<LinearLayout
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal">
+
+		<Button
+			style="@style/NumberPicker"
+			android:text="1" />
+
+		<Button
+			style="@style/NumberPicker"
+			android:text="2" />
+
+		<Button
+			style="@style/NumberPicker"
+			android:text="3" />
+
+		<Button
+			style="@style/NumberPicker"
+			android:text="4" />
+
+		<Button
+			style="@style/NumberPicker"
+			android:text="5" />
+
+	</LinearLayout>
+
+	<LinearLayout
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal">
+
+		<Button
+			style="@style/NumberPicker"
+			android:text="6" />
+
+		<Button
+			style="@style/NumberPicker"
+			android:text="7" />
+
+		<Button
+			style="@style/NumberPicker"
+			android:text="8" />
+
+		<Button
+			style="@style/NumberPicker"
+			android:text="9" />
+
+		<Button
+			style="@style/NumberPicker"
+			android:text="10" />
+
+	</LinearLayout>
+
+</LinearLayout>

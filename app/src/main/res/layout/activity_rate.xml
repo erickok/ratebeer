@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:orientation="vertical">
+
+	<android.support.design.widget.AppBarLayout
+		android:id="@+id/appbar_layout"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
+		<!-- Invisible view to steal focus from SearchView -->
+		<View
+			android:layout_width="0dp"
+			android:layout_height="0dp"
+			android:focusable="true"
+			android:focusableInTouchMode="true" />
+
+		<FrameLayout
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:orientation="vertical"
+			android:paddingBottom="8dp"
+			android:paddingEnd="16dp"
+			android:paddingLeft="16dp"
+			android:paddingRight="16dp"
+			android:paddingStart="16dp"
+			android:paddingTop="8dp">
+
+			<TextView
+				android:id="@+id/beer_name_text"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:fontFamily="sans-serif-condensed"
+				android:text="\n"
+				android:textColor="@android:color/white"
+				android:textSize="30sp"
+				android:visibility="gone"
+				tools:ignore="HardcodedText"
+				tools:text="8 Wired The Big Smoke Barrel Aged Edition"
+				tools:visibility="visible" />
+
+			<android.support.design.widget.TextInputLayout
+				android:id="@+id/beer_name_entry"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:visibility="gone"
+				tools:visibility="visible">
+
+				<EditText
+					android:id="@+id/beer_name_edit"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:fontFamily="sans-serif-condensed"
+					android:hint="@string/rate_beername"
+					android:inputType="textPersonName"
+					android:textColor="@android:color/white"
+					android:textSize="30sp"
+					tools:text="8 Wired The Big Smoke Barrel Aged Edition" />
+
+			</android.support.design.widget.TextInputLayout>
+
+		</FrameLayout>
+
+	</android.support.design.widget.AppBarLayout>
+
+	<ScrollView
+		android:id="@+id/rating_layout"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:layout_marginTop="8dp"
+		android:fillViewport="true"
+		android:padding="16dp"
+		app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:orientation="vertical">
+
+			<LinearLayout
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_marginLeft="3dp"
+				android:layout_marginStart="3dp">
+
+				<FrameLayout
+					android:id="@+id/aroma_button"
+					style="@style/Rating"
+					android:background="@color/red_main">
+
+					<TextView
+						android:id="@+id/aroma_text"
+						style="@style/RatingNumber"
+						tools:text="9" />
+
+					<TextView
+						style="@style/RatingLabel"
+						android:text="@string/rate_aroma" />
+
+				</FrameLayout>
+
+				<FrameLayout
+					android:id="@+id/appearance_button"
+					style="@style/Rating"
+					android:background="@color/grey_dark">
+
+					<TextView
+						android:id="@+id/appearance_text"
+						style="@style/RatingNumber"
+						tools:text="4" />
+
+					<TextView
+						style="@style/RatingLabel"
+						android:text="@string/rate_appearance" />
+
+				</FrameLayout>
+
+				<FrameLayout
+					android:id="@+id/taste_button"
+					style="@style/Rating"
+					android:background="@color/yellow_main">
+
+					<TextView
+						android:id="@+id/taste_text"
+						style="@style/RatingNumber"
+						tools:text="8" />
+
+					<TextView
+						style="@style/RatingLabel"
+						android:text="@string/rate_taste" />
+
+				</FrameLayout>
+
+				<FrameLayout
+					android:id="@+id/palate_button"
+					style="@style/Rating"
+					android:background="@color/grey_light">
+
+					<TextView
+						android:id="@+id/palate_text"
+						style="@style/RatingNumber"
+						tools:text="3" />
+
+					<TextView
+						style="@style/RatingLabel"
+						android:text="@string/rate_palate" />
+
+				</FrameLayout>
+
+				<FrameLayout
+					android:id="@+id/overall_button"
+					style="@style/Rating"
+					android:background="@color/orange_main">
+
+					<TextView
+						android:id="@+id/overall_text"
+						style="@style/RatingNumber"
+						tools:text="16" />
+
+					<TextView
+						style="@style/RatingLabel"
+						android:text="@string/rate_overall" />
+
+				</FrameLayout>
+
+			</LinearLayout>
+
+			<LinearLayout
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="end"
+				android:layout_marginTop="8dp"
+				android:baselineAligned="true"
+				android:orientation="horizontal">
+
+				<TextView
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_marginEnd="6dp"
+					android:layout_marginRight="6dp"
+					android:text="@string/rate_total"
+					android:textAllCaps="true"
+					android:textColor="@color/grey_dark"
+					android:textSize="16sp" />
+
+				<TextView
+					android:id="@+id/total_text"
+					android:layout_width="64dp"
+					android:layout_height="wrap_content"
+					android:layout_marginEnd="1dp"
+					android:layout_marginRight="1dp"
+					android:gravity="center_horizontal"
+					android:textColor="@android:color/black"
+					android:textSize="36sp"
+					tools:text="4.0" />
+
+			</LinearLayout>
+
+			<android.support.design.widget.TextInputLayout
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				app:counterEnabled="true"
+				app:counterMaxLength="80"
+				app:counterOverflowTextAppearance="@style/RatingLength.Sufficient"
+				app:counterTextAppearance="@style/RatingLength" android:layout_marginBottom="32dp">
+
+				<EditText
+					android:id="@+id/comments_edit"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:fontFamily="sans-serif-condensed"
+					android:hint="@string/rate_comments"
+					android:inputType="textCapSentences|textMultiLine"
+					android:scrollHorizontally="false"
+					android:textColor="@android:color/black"
+					android:textSize="18sp"
+					tools:text="Black bodied, creamy beige head. Dark bread, chocoalte, brown sugar toffee. Enough bitterness, no alcohol, very rich taste. Perhaps even better than the 13% version. Love it. World " />
+
+			</android.support.design.widget.TextInputLayout>
+
+		</LinearLayout>
+
+	</ScrollView>
+
+	<FrameLayout
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_marginBottom="12dp"
+		android:layout_marginEnd="16dp"
+		android:layout_marginRight="16dp"
+		app:layout_anchor="@id/rating_layout"
+		app:layout_anchorGravity="bottom|right|end">
+
+		<Button
+			android:id="@+id/upload_button"
+			style="@style/AppButton.Orange"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:onClick="signIn"
+			android:text="@string/rate_upload" />
+
+		<ProgressBar
+			android:id="@+id/login_progress"
+			style="@style/Widget.AppCompat.ProgressBar"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_gravity="center_horizontal"
+			android:visibility="gone"
+			tools:background="@color/grey_dark"
+			tools:visibility="visible" />
+
+	</FrameLayout>
+
+</android.support.design.widget.CoordinatorLayout>

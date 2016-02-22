@@ -18,6 +18,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.jakewharton.rxbinding.support.v7.widget.RxToolbar;
+import com.jakewharton.rxbinding.view.RxView;
 import com.ratebeer.android.R;
 import com.ratebeer.android.Session;
 import com.ratebeer.android.api.Api;
@@ -38,6 +39,7 @@ public final class BeerActivity extends RateBeerActivity {
 
 	private ProgressBar loadingProgress;
 	private View detailsLayout;
+	private FloatingActionButton rateButton;
 
 	public static Intent start(Context context, long beerId) {
 		return new Intent(context, BeerActivity.class).putExtra("beerId", beerId);
@@ -61,8 +63,8 @@ public final class BeerActivity extends RateBeerActivity {
 
 		loadingProgress = (ProgressBar) findViewById(R.id.loading_progress);
 		detailsLayout = findViewById(R.id.details_layout);
-		FloatingActionButton rateButton = (FloatingActionButton) findViewById(R.id.rate_button);
-		rateButton.setVisibility(View.GONE); // TODO
+		rateButton = (FloatingActionButton) findViewById(R.id.rate_button);
+		rateButton.setVisibility(View.GONE);
 
 		refresh(false);
 	}
@@ -102,6 +104,8 @@ public final class BeerActivity extends RateBeerActivity {
 		((TextView) findViewById(R.id.mark_ibu_text)).setText(beer.getIbuString());
 		((TextView) findViewById(R.id.mark_calories_text)).setText(beer.getCaloriesString());
 		Animations.fadeFlip(detailsLayout, loadingProgress);
+		rateButton.setVisibility(Session.get().isLoggedIn() ? View.VISIBLE : View.GONE);
+		RxView.clicks(rateButton).subscribe(clicked -> startActivity(RateActivity.start(this, beer)));
 	}
 
 	private void showRatings(List<BeerRating> ratings) {

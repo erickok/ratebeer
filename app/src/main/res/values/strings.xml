@@ -43,6 +43,16 @@
 
 	<string name="rate_enterrating">Enter rating</string>
 	<string name="rate_offline_badge">offline only</string>
+	<string name="rate_beername">Beer name</string>
+	<string name="rate_aroma">Aroma</string>
+	<string name="rate_appearance">Appear.</string>
+	<string name="rate_taste">Taste</string>
+	<string name="rate_palate">Palate</string>
+	<string name="rate_overall">Overall</string>
+	<string name="rate_total">Total score</string>
+	<string name="rate_comments">Comments</string>
+	<string name="rate_upload">Upload</string>
+	<string name="rate_findbeer">Find beer</string>
 	<string name="rate_"></string>
 
 	<string name="help_developer" translatable="false">created by Eric Kok of 2312 development</string>
