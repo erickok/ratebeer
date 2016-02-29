@@ -7,10 +7,8 @@ import com.pacoworks.rxtuples.RxTuples;
 import com.ratebeer.android.gui.lists.SearchSuggestion;
 
 import java.util.Date;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import rx.Observable;
-import rx.functions.Action;
 import rx.functions.Action1;
 import rx.functions.Func1;
 
@@ -80,9 +78,7 @@ public final class Db {
 	}
 
 	public static Observable<Rating> syncUserRatings(Context context, Action1<Float> onPageProgress) {
-		final AtomicInteger i = new AtomicInteger();
-		return api().getUserRatings(onPageProgress).map(Rating::fromUserRating).doOnNext(r -> RBLog.d("R:" + i.getAndIncrement()))
-				.flatMap(rating -> rxdb(context).putRx(rating));
+		return api().getUserRatings(onPageProgress).map(Rating::fromUserRating).flatMap(rating -> rxdb(context).putRx(rating));
 	}
 
 	private static <T> Observable<T> getFresh(Observable<T> db, Observable<T> server, Func1<T, Boolean> isFresh) {

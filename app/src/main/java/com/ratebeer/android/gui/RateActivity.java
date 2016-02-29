@@ -82,7 +82,14 @@ public final class RateActivity extends RateBeerActivity {
 		Observable<Rating> ratingObservable;
 		if (getIntent().hasExtra("ratingId")) {
 			// Load existing rating
-			ratingObservable = Db.getUserRating(this, getIntent().getLongExtra("ratingId", 0));
+			ratingObservable = Db.getUserRating(this, getIntent().getLongExtra("ratingId", 0)).map(existing -> {
+				// Upgrade legacy data fields
+				if (existing.ratingId == null)
+					existing.ratingId = existing._id;
+				if (existing.beerId <= 0)
+					existing.beerId = null;
+				return existing;
+			});
 		} else if (getIntent().hasExtra("beerId")) {
 			// Start rating for a beer, perhaps based on an existing rating
 			long beerId = getIntent().getLongExtra("beerId", 0);

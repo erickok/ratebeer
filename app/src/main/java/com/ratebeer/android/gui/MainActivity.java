@@ -50,7 +50,6 @@ public class MainActivity extends RateBeerActivity {
 	private View loadingProgress;
 	private TextView progressText;
 	private SearchSuggestionsAdapter searchSuggestionsAdaper;
-	private int currentTab;
 	private List<Integer> tabTypes;
 	private List<View> tabs;
 	private List<String> tabsTitles;
@@ -93,18 +92,18 @@ public class MainActivity extends RateBeerActivity {
 		} else {
 			addTab(TAB_FEED_GLOBAL, R.string.main_global);
 		}
-		RxViewPager.pageSelected(listsPager).subscribe(page -> refreshTab(page, false));
+		RxViewPager.pageSelected(listsPager).subscribe(page -> refreshTab(page));
 		listsPager.setAdapter(new ActivityPagerAdapter());
 		tabLayout.setupWithViewPager(listsPager);
-		refreshTab(0, false);
+		refreshTab(0);
 		if (tabs.size() == 1)
 			tabLayout.setVisibility(View.GONE);
 
 		// Set up toolbar actions
-		getMenuInflater().inflate(R.menu.menu_refresh, optionsMenu.getMenu());
+		getMenuInflater().inflate(R.menu.menu_more, optionsMenu.getMenu());
 		optionsMenu.setOnMenuItemClickListener(item -> {
-			if (item.getItemId() == R.id.menu_refresh) {
-				refreshTab(currentTab, true);
+			if (item.getItemId() == R.id.menu_more) {
+				startActivity(AboutActivity.start(this));
 			}
 			return true;
 		});
@@ -112,7 +111,7 @@ public class MainActivity extends RateBeerActivity {
 		// Set up search box: show results with search view focus, start search on query submit and show suggestions on query text changes
 		searchList.setLayoutManager(new LinearLayoutManager(this));
 		searchList.setAdapter(searchSuggestionsAdaper = new SearchSuggestionsAdapter());
-		searchEdit.setOnQueryTextFocusChangeListener((view, b) -> searchList.setVisibility(b ? View.VISIBLE : View.GONE));
+		searchEdit.setOnQueryTextFocusChangeListener((view, b) -> searchList.setVisibility(View.VISIBLE));
 		ItemClickSupport.addTo(searchList).setOnItemClickListener((parent, pos, v) -> searchFromSuggestion(searchSuggestionsAdaper.get(pos)));
 		Observable<SearchViewQueryTextEvent> queryTextChangeEvents =
 				RxSearchView.queryTextChangeEvents(searchEdit).compose(onUi()).replay(1).refCount();
@@ -135,30 +134,23 @@ public class MainActivity extends RateBeerActivity {
 		tabsTitles.add(getString(title));
 	}
 
-	private void refreshTab(int position, boolean fresh) {
-		currentTab = position;
+	private void refreshTab(int position) {
 		int type = tabTypes.get(position);
 		RecyclerView view = ((RecyclerView) tabs.get(position));
 		if (type == TAB_RATINGS) {
 
-			Observable<List<Rating>> source;
 			boolean needsFirstSync = Session.get().isLoggedIn() && Session.get().getUserRateCount() > 0 && !Db.hasSyncedRatings(this);
-			if (fresh || needsFirstSync) {
-				progressText.setVisibility(View.VISIBLE);
-				progressText.setText(getString(R.string.main_syncprogress, 0F));
-				Animations.fadeFlip(loadingProgress, listsPager);
-				// Perform sync, while reporting progress, and then query the db for all ratings in the usual fashion
-				source = Db.syncUserRatings(this, progress -> progressText.setText(getString(R.string.main_syncprogress, progress))).takeLast(1)
-						.flatMap(last -> Db.getUserRatings(this)).toList().compose(toUi());
-			} else {
-				source = Db.getUserRatings(this).toList().compose(onIoToUi()).compose(bindToLifecycle());
+			if (needsFirstSync) {
+				// TODO Show message that sync is needed?
 			}
+
 			ItemClickSupport.addTo(view).setOnItemClickListener((parent, pos, v) -> openRating(((RatingsAdapter) view.getAdapter()).get(pos)));
-			source.subscribe(ratings -> view.setAdapter(new RatingsAdapter(this, ratings)), e -> {
-				Animations.fadeFlip(listsPager, loadingProgress);
-				Snackbar.show(this, R.string.error_connectionfailure);
-				e.printStackTrace();
-			}, () -> Animations.fadeFlip(listsPager, loadingProgress));
+			Db.getUserRatings(this).toList().compose(onIoToUi()).compose(bindToLifecycle())
+					.subscribe(ratings -> view.setAdapter(new RatingsAdapter(this, getMenuInflater(), ratings)), e -> {
+						Animations.fadeFlip(listsPager, loadingProgress);
+						Snackbar.show(this, R.string.error_connectionfailure);
+						e.printStackTrace();
+					}, () -> Animations.fadeFlip(listsPager, loadingProgress));
 
 		} else {
 
@@ -217,10 +209,6 @@ public class MainActivity extends RateBeerActivity {
 
 		// Perform live search on server
 		startActivity(SearchActivity.start(this, query));
-	}
-
-	public void openHelp(View view) {
-		startActivity(AboutActivity.start(this));
 	}
 
 	private class ActivityPagerAdapter extends PagerAdapter {
