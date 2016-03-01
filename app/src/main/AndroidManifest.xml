@@ -33,6 +33,10 @@
 		<activity android:name=".gui.AboutActivity" />
 		<activity android:name=".gui.HelpWhereRatingsActivity" />
 
+		<service
+			android:name=".gui.services.SyncService"
+			android:exported="false" />
+
 	</application>
 
 </manifest>

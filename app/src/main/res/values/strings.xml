@@ -23,7 +23,6 @@
 	<string name="main_friends">Friends</string>
 	<string name="main_local">Local</string>
 	<string name="main_global">Global</string>
-	<string name="main_syncprogress">Synchronization: %1$.0f%%</string>
 
 	<string name="feed_isdrinking">is drinking</string>
 	<string name="feed_wasawarded">was awarded</string>
@@ -54,6 +53,11 @@
 	<string name="rate_upload">Upload</string>
 	<string name="rate_findbeer">Find beer</string>
 	<string name="rate_"></string>
+
+	<string name="sync_usesync">Tap to synchronize your ratings</string>
+	<string name="sync_insync">Synchronizing your ratings</string>
+	<string name="sync_error">Ratings synchronization failed</string>
+	<string name="sync_tryagain">Touch to try again</string>
 
 	<string name="help_developer" translatable="false">created by Eric Kok of 2312 development</string>
 	<string name="help_signin">Sign in to RateBeer account</string>

@@ -199,7 +199,7 @@
 		android:layout_height="wrap_content"
 		android:layout_margin="16dp"
 		android:contentDescription="@string/rate_enterrating"
-		android:src="@drawable/ic_rate_review_white_24dp"
+		android:src="@drawable/ic_action_rate"
 		app:layout_anchor="@id/collapsing_toolbar"
 		app:layout_anchorGravity="bottom|right|end" />
 

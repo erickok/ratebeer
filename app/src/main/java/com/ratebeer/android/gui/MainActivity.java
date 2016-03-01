@@ -10,12 +10,14 @@ import android.support.v7.widget.ActionMenuView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.jakewharton.rxbinding.support.v7.widget.RxSearchView;
 import com.jakewharton.rxbinding.support.v7.widget.SearchViewQueryTextEvent;
+import com.jakewharton.rxbinding.view.RxView;
 import com.ratebeer.android.R;
 import com.ratebeer.android.Session;
 import com.ratebeer.android.api.Api;
@@ -27,6 +29,7 @@ import com.ratebeer.android.gui.lists.FeedItemsAdapter;
 import com.ratebeer.android.gui.lists.RatingsAdapter;
 import com.ratebeer.android.gui.lists.SearchSuggestion;
 import com.ratebeer.android.gui.lists.SearchSuggestionsAdapter;
+import com.ratebeer.android.gui.services.SyncService;
 import com.ratebeer.android.gui.widget.Animations;
 import com.ratebeer.android.gui.widget.ItemClickSupport;
 import com.ratebeer.android.rx.RxViewPager;
@@ -36,6 +39,8 @@ import java.util.Date;
 import java.util.List;
 
 import rx.Observable;
+import rx.Subscription;
+import rx.schedulers.Schedulers;
 
 import static com.ratebeer.android.db.CupboardDbHelper.database;
 
@@ -48,11 +53,12 @@ public class MainActivity extends RateBeerActivity {
 
 	private ViewPager listsPager;
 	private View loadingProgress;
-	private TextView progressText;
+	private TextView statusText;
 	private SearchSuggestionsAdapter searchSuggestionsAdaper;
 	private List<Integer> tabTypes;
 	private List<View> tabs;
 	private List<String> tabsTitles;
+	private Subscription syncSubscription;
 
 	public static Intent start(Context context) {
 		return new Intent(context, MainActivity.class);
@@ -78,7 +84,7 @@ public class MainActivity extends RateBeerActivity {
 		TabLayout tabLayout = (TabLayout) findViewById(R.id.sliding_tabs);
 		listsPager = (ViewPager) findViewById(R.id.lists_pager);
 		loadingProgress = findViewById(R.id.loading_progress);
-		progressText = (TextView) findViewById(R.id.progress_text);
+		statusText = (TextView) findViewById(R.id.status_text);
 		RecyclerView searchList = (RecyclerView) findViewById(R.id.search_list);
 
 		// Set up tabs
@@ -107,14 +113,16 @@ public class MainActivity extends RateBeerActivity {
 			}
 			return true;
 		});
+		RxView.clicks(statusText).compose(bindToLifecycle()).subscribe(v -> startService(SyncService.start(this)));
 
 		// Set up search box: show results with search view focus, start search on query submit and show suggestions on query text changes
 		searchList.setLayoutManager(new LinearLayoutManager(this));
 		searchList.setAdapter(searchSuggestionsAdaper = new SearchSuggestionsAdapter());
-		searchEdit.setOnQueryTextFocusChangeListener((view, b) -> searchList.setVisibility(View.VISIBLE));
 		ItemClickSupport.addTo(searchList).setOnItemClickListener((parent, pos, v) -> searchFromSuggestion(searchSuggestionsAdaper.get(pos)));
 		Observable<SearchViewQueryTextEvent> queryTextChangeEvents =
 				RxSearchView.queryTextChangeEvents(searchEdit).compose(onUi()).replay(1).refCount();
+		queryTextChangeEvents.map(event -> !TextUtils.isEmpty(event.queryText()))
+				.subscribe(hasQuery -> searchList.setVisibility(hasQuery ? View.VISIBLE : View.GONE));
 		queryTextChangeEvents.filter(SearchViewQueryTextEvent::isSubmitted).subscribe(event -> performSearch(event.queryText().toString()));
 		queryTextChangeEvents.map(event -> event.queryText().toString()).switchMap(query -> {
 			if (query.length() == 0) {
@@ -139,22 +147,37 @@ public class MainActivity extends RateBeerActivity {
 		RecyclerView view = ((RecyclerView) tabs.get(position));
 		if (type == TAB_RATINGS) {
 
+			// Show ratings sync progress,  or show the already stored ratings
 			boolean needsFirstSync = Session.get().isLoggedIn() && Session.get().getUserRateCount() > 0 && !Db.hasSyncedRatings(this);
-			if (needsFirstSync) {
-				// TODO Show message that sync is needed?
-			}
-
-			ItemClickSupport.addTo(view).setOnItemClickListener((parent, pos, v) -> openRating(((RatingsAdapter) view.getAdapter()).get(pos)));
-			Db.getUserRatings(this).toList().compose(onIoToUi()).compose(bindToLifecycle())
-					.subscribe(ratings -> view.setAdapter(new RatingsAdapter(this, getMenuInflater(), ratings)), e -> {
-						Animations.fadeFlip(listsPager, loadingProgress);
+			syncSubscription = SyncService.getSyncStatus().distinctUntilChanged().compose(toUi()).flatMap(inSync -> {
+				if (inSync) {
+					return Observable.just((List<Rating>) null);
+				} else {
+					return Db.getUserRatings(this).subscribeOn(Schedulers.io()).toList().doOnError(e -> {
 						Snackbar.show(this, R.string.error_connectionfailure);
 						e.printStackTrace();
-					}, () -> Animations.fadeFlip(listsPager, loadingProgress));
+					}).onErrorResumeNext(Observable.just(new ArrayList<>()));
+				}
+			}).compose(toUi()).compose(bindToLifecycle()).subscribe(ratings -> {
+				if (ratings == null) {
+					// Syncing
+					if (loadingProgress.getVisibility() != View.VISIBLE)
+						Animations.fadeFlip(loadingProgress, listsPager, statusText);
+				} else if (needsFirstSync) {
+					statusText.setVisibility(View.VISIBLE);
+					Animations.fadeFlip(listsPager, loadingProgress);
+				} else {
+					Animations.fadeFlip(listsPager, loadingProgress, statusText);
+					view.setAdapter(new RatingsAdapter(this, getMenuInflater(), ratings));
+				}
+			});
+			ItemClickSupport.addTo(view).setOnItemClickListener((parent, pos, v) -> openRating(((RatingsAdapter) view.getAdapter()).get(pos)));
 
 		} else {
 
-			progressText.setVisibility(View.GONE);
+			if (syncSubscription != null)
+				syncSubscription.unsubscribe();
+			statusText.setVisibility(View.GONE);
 			Animations.fadeFlip(loadingProgress, listsPager);
 			ItemClickSupport.addTo(view).setOnItemClickListener((parent, pos, v) -> openItem(((FeedItemsAdapter) view.getAdapter()).get(pos)));
 			getTabFeed(type).toList().compose(onIoToUi()).compose(bindToLifecycle())

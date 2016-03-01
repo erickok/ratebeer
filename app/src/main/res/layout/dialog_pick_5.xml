@@ -3,7 +3,7 @@
 	android:layout_width="wrap_content"
 	android:layout_height="wrap_content"
 	android:orientation="horizontal"
-	android:background="@drawable/search_bg">
+	android:background="@drawable/back_search">
 
 	<Button
 		style="@style/NumberPicker"

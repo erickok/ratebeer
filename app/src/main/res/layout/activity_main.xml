@@ -35,7 +35,7 @@
 				android:id="@+id/search_edit"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:background="@drawable/search_bg"
+				android:background="@drawable/back_search"
 				android:theme="@style/ThemeOverlay.AppCompat.Light"
 				app:iconifiedByDefault="false"
 				app:queryBackground="@null"
@@ -82,31 +82,28 @@
 		app:layout_behavior="@string/appbar_scrolling_view_behavior"
 		tools:visibility="visible" />
 
-	<LinearLayout
+	<ProgressBar
 		android:id="@+id/loading_progress"
-		android:layout_width="match_parent"
+		style="@style/Widget.AppCompat.ProgressBar"
+		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:orientation="vertical"
 		android:visibility="gone"
 		app:layout_anchor="@id/lists_pager"
-		app:layout_anchorGravity="center_vertical"
-		tools:visibility="visible">
+		app:layout_anchorGravity="center"
+		tools:background="@color/grey_dark"
+		tools:visibility="visible" />
 
-		<ProgressBar
-			style="@style/Widget.AppCompat.ProgressBar"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_gravity="center_horizontal"
-			tools:background="@color/grey_dark" />
-
-		<TextView
-			android:id="@+id/progress_text"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_gravity="center_horizontal"
-			android:layout_marginTop="16dp"
-			tools:text="@string/main_syncprogress" />
-
-	</LinearLayout>
+	<TextView
+		android:id="@+id/status_text"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_marginTop="16dp"
+		android:drawablePadding="4dp"
+		android:drawableTop="@mipmap/ic_launcher"
+		android:paddingTop="19dp"
+		android:text="@string/sync_usesync"
+		app:layout_anchor="@id/lists_pager"
+		app:layout_anchorGravity="center"
+		tools:visibility="visible" />
 
 </android.support.design.widget.CoordinatorLayout>

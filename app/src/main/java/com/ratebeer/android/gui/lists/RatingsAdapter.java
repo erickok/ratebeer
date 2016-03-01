@@ -70,8 +70,8 @@ public final class RatingsAdapter extends RecyclerView.Adapter<RecyclerView.View
 			ItemHolder itemHolder = (ItemHolder) holder;
 			if (rating.beerId != null && rating.beerId > 0) {
 				itemHolder.rowLayout.setBackgroundDrawable(selectableBackgroundDrawable.getConstantState().newDrawable().mutate());
-				Picasso.with(itemHolder.photoImage.getContext()).load(ImageUrls.getBeerPhotoUrl(rating.beerId)).placeholder(android.R.color.white).fit()
-						.centerInside().into(itemHolder.photoImage);
+				Picasso.with(itemHolder.photoImage.getContext()).load(ImageUrls.getBeerPhotoUrl(rating.beerId)).placeholder(android.R.color.white)
+						.fit().centerInside().into(itemHolder.photoImage);
 			} else {
 				itemHolder.rowLayout.setBackgroundResource(0);
 				itemHolder.photoImage.setImageResource(0);
@@ -123,7 +123,7 @@ public final class RatingsAdapter extends RecyclerView.Adapter<RecyclerView.View
 			userNameText = (TextView) v.findViewById(R.id.user_name_text);
 			userCountText = (TextView) v.findViewById(R.id.user_count_text);
 			refreshMenu = (ActionMenuView) v.findViewById(R.id.refresh_menu);
-			menuInflater.inflate(R.menu.menu_more, refreshMenu.getMenu());
+			menuInflater.inflate(R.menu.menu_refresh, refreshMenu.getMenu());
 		}
 
 	}

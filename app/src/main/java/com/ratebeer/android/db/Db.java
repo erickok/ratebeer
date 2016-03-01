@@ -91,7 +91,7 @@ public final class Db {
 	}
 
 	public static boolean clearRatings(Context context) {
-		return database(context).delete(Rating.class);
+		return database(context).delete(Rating.class, "timeEntered is not null") > 0;
 	}
 
 }
