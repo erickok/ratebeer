@@ -126,19 +126,16 @@ public final class Api {
 	}
 
 	/**
-	 * Performs a login call to the server to load a session cookie; this is typically used as someLoginDependendCall.startWith(getLoginCookie())
+	 * A wrapper observable that returns an empty sequence on success such that we can use someLoginDependendCall.startWith(getLoginCookie())
 	 */
 	private <T> Observable<T> getLoginCookie() {
-		// Execute a login request to make sure we have a login cookie
-		return getLoginRoute(Session.get().getUserName(), Session.get().getPassword()).subscribeOn(Schedulers.io()).flatMap(result -> {
-			if (haveLoginCookie()) {
-				return Observable.empty();
-			} else {
-				return Observable.error(new IOException("No login cookie returned by the RB server!"));
-			}
-		});
+		return getLoginRoute(Session.get().getUserName(), Session.get().getPassword()).subscribeOn(Schedulers.io())
+				.flatMap(result -> Observable.empty());
 	}
 
+	/**
+	 * Performs a login on the server, ensures that the rate counts are updated in our local session and emits true on success
+	 */
 	public Observable<Boolean> login(String username, String password) {
 		// @formatter:off
 		return Observable.zip(

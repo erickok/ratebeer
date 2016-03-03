@@ -78,7 +78,13 @@ public final class Db {
 	}
 
 	public static Observable<Rating> syncUserRatings(Context context, Action1<Float> onPageProgress) {
-		return api().getUserRatings(onPageProgress).map(Rating::fromUserRating).flatMap(rating -> rxdb(context).putRx(rating));
+		return api().getUserRatings(onPageProgress).map(Rating::fromUserRating).flatMap(rating -> {
+			// If the rating already exists in our database, override it
+			Rating existing = database(context).query(Rating.class).withSelection("ratingId = ?", rating.ratingId.toString()).get();
+			if (existing != null)
+				rating._id = existing._id;
+			return rxdb(context).putRx(rating);
+		});
 	}
 
 	private static <T> Observable<T> getFresh(Observable<T> db, Observable<T> server, Func1<T, Boolean> isFresh) {

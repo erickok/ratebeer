@@ -85,8 +85,8 @@ public final class BeerActivity extends RateBeerActivity {
 	}
 
 	private void showBeer(Beer beer) {
-		Picasso.with(this).load(ImageUrls.getBeerPhotoHighResUrl(beer._id)).fit().centerCrop().noPlaceholder()
-				.into((ImageView) findViewById(R.id.backdrop_image));
+		ImageView photoImage = (ImageView) findViewById(R.id.backdrop_image);
+		Picasso.with(this).load(ImageUrls.getBeerPhotoHighResUrl(beer._id)).fit().centerCrop().noPlaceholder().into(photoImage);
 		String brewerStyleText = getString(R.string.beer_stylebrewer, beer.styleName, beer.brewerName);
 		SpannableStringBuilder brewerStyleMarkup = new SpannableStringBuilder(brewerStyleText);
 		int styleStart = brewerStyleText.indexOf(beer.styleName);
@@ -106,6 +106,7 @@ public final class BeerActivity extends RateBeerActivity {
 		Animations.fadeFlip(detailsLayout, loadingProgress);
 		rateButton.setVisibility(Session.get().isLoggedIn() ? View.VISIBLE : View.GONE);
 		RxView.clicks(rateButton).subscribe(clicked -> startActivity(RateActivity.start(this, beer)));
+		RxView.clicks(photoImage).subscribe(clicked -> startActivity(PhotoActivity.start(this, beer._id)));
 	}
 
 	private void showRatings(List<BeerRating> ratings) {

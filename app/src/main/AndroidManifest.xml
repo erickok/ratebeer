@@ -30,6 +30,7 @@
 		<activity
 			android:name=".gui.RateActivity"
 			android:windowSoftInputMode="adjustPan" />
+		<activity android:name=".gui.PhotoActivity" />
 		<activity android:name=".gui.AboutActivity" />
 		<activity android:name=".gui.HelpWhereRatingsActivity" />
 

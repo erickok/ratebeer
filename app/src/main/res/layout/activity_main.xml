@@ -102,6 +102,7 @@
 		android:drawableTop="@mipmap/ic_launcher"
 		android:paddingTop="19dp"
 		android:text="@string/sync_usesync"
+		android:visibility="gone"
 		app:layout_anchor="@id/lists_pager"
 		app:layout_anchorGravity="center"
 		tools:visibility="visible" />

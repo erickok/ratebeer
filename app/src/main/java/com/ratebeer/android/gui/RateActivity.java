@@ -177,9 +177,11 @@ public final class RateActivity extends RateBeerActivity {
 		rating.overall = overallText.getText().length() == 0 ? null : Integer.parseInt(overallText.getText().toString());
 		rating.total = rating.calculateTotal();
 		rating.comments = commentsEdit.getText().toString();
+		rating.timeEntered = null;
 		rating.timeCached = new Date();
 		updateTotalWith(rating.total);
 		database(this).put(rating);
+		getIntent().putExtra("ratingId", rating._id);
 		RBLog.d("STORE:" + rating);
 	}
 
