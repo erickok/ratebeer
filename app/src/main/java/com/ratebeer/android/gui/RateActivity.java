@@ -3,6 +3,7 @@ package com.ratebeer.android.gui;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -18,6 +19,7 @@ import com.ratebeer.android.db.Beer;
 import com.ratebeer.android.db.Db;
 import com.ratebeer.android.db.RBLog;
 import com.ratebeer.android.db.Rating;
+import com.ratebeer.android.gui.widget.Animations;
 
 import java.util.Date;
 import java.util.Locale;
@@ -27,6 +29,8 @@ import rx.Observable;
 import static com.ratebeer.android.db.CupboardDbHelper.database;
 
 public final class RateActivity extends RateBeerActivity {
+
+	private static final int REQUEST_PICK_BEER = 0;
 
 	private TextView beerNameText;
 	private View beerNameEntry;
@@ -43,6 +47,9 @@ public final class RateActivity extends RateBeerActivity {
 	private TextView overallText;
 	private TextView totalText;
 	private EditText commentsEdit;
+	private View deleteButton;
+	private Button actionButton;
+	private View uploadProgress;
 
 	private Rating rating;
 
@@ -78,15 +85,16 @@ public final class RateActivity extends RateBeerActivity {
 		overallText = (TextView) findViewById(R.id.overall_text);
 		totalText = (TextView) findViewById(R.id.total_text);
 		commentsEdit = (EditText) findViewById(R.id.comments_edit);
+		deleteButton = findViewById(R.id.delete_button);
+		actionButton = (Button) findViewById(R.id.upload_button);
+		uploadProgress = findViewById(R.id.upload_progress);
 
 		Observable<Rating> ratingObservable;
 		if (getIntent().hasExtra("ratingId")) {
 			// Load existing rating
-			ratingObservable = Db.getUserRating(this, getIntent().getLongExtra("ratingId", 0)).map(existing -> {
+			ratingObservable = Db.getOfflineRating(this, getIntent().getLongExtra("ratingId", 0)).map(existing -> {
 				// Upgrade legacy data fields
-				if (existing.ratingId == null)
-					existing.ratingId = existing._id;
-				if (existing.beerId <= 0)
+				if (existing.beerId != null && existing.beerId <= 0)
 					existing.beerId = null;
 				return existing;
 			});
@@ -102,9 +110,7 @@ public final class RateActivity extends RateBeerActivity {
 									existing.beerName = beer.name;
 								} else {
 									// Upgrade legacy data fields
-									if (existing.ratingId == null)
-										existing.ratingId = existing._id;
-									if (existing.beerId <= 0)
+									if (existing.beerId != null && existing.beerId <= 0)
 										existing.beerId = null;
 								}
 								return existing;
@@ -117,12 +123,13 @@ public final class RateActivity extends RateBeerActivity {
 			beerNameEntry.setVisibility(beerRating.beerId == null ? View.VISIBLE : View.GONE);
 			beerNameText.setText(beerRating.beerName);
 			beerNameEdit.setText(beerRating.beerName);
-			aromaText.setText(Integer.toString(beerRating.aroma));
-			appearanceText.setText(Integer.toString(beerRating.appearance));
-			tasteText.setText(Integer.toString(beerRating.flavor));
-			palateText.setText(Integer.toString(beerRating.mouthfeel));
-			overallText.setText(Integer.toString(beerRating.overall));
+			aromaText.setText(getNumberString(beerRating.aroma));
+			appearanceText.setText(getNumberString(beerRating.appearance));
+			tasteText.setText(getNumberString(beerRating.flavor));
+			palateText.setText(getNumberString(beerRating.mouthfeel));
+			overallText.setText(getNumberString(beerRating.overall));
 			commentsEdit.setText(beerRating.comments);
+			actionButton.setText(beerRating.beerId == null ? R.string.rate_findbeer : R.string.rate_upload);
 			this.rating = beerRating;
 		}, e -> Snackbar.show(this, R.string.error_connectionfailure));
 
@@ -142,6 +149,26 @@ public final class RateActivity extends RateBeerActivity {
 		bindPopup(palateButton, palateText, R.layout.dialog_pick_5);
 		bindPopup(overallButton, overallText, R.layout.dialog_pick_20);
 
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		if (requestCode == REQUEST_PICK_BEER && resultCode == RESULT_OK && data != null) {
+			// Picked a beer: update the ongoing rating and show the beer name as title
+			rating.beerId = data.getLongExtra(SearchActivity.EXTRA_BEERID, 0);
+			rating.beerName = data.getStringExtra(SearchActivity.EXTRA_BEERNAME);
+			beerNameText.setText(rating.beerName);
+			beerNameEdit.setText(rating.beerName);
+			Animations.fadeFlip(beerNameText, beerNameEdit);
+			updateRating();
+		}
+	}
+
+	private String getNumberString(Integer number) {
+		if (number == null)
+			return null;
+		return Integer.toString(number);
 	}
 
 	private void bindPopup(final View button, final TextView text, int layout) {
@@ -186,7 +213,40 @@ public final class RateActivity extends RateBeerActivity {
 	}
 
 	private void updateTotalWith(Float total) {
-		totalText.setText(total == null ? null : String.format(Locale.getDefault(), "%1$.1f", total));
+		totalText.setText(total == null ? "-" : String.format(Locale.getDefault(), "%1$.1f", total));
+	}
+
+	public void uploadFindBeer(View view) {
+		if (rating == null)
+			return;
+
+		if (rating.beerId == null) {
+			// Allow picking of the beer that the user is rating
+			startActivityForResult(SearchActivity.start(this, beerNameEdit.getText().toString(), true), REQUEST_PICK_BEER);
+			return;
+		}
+
+		// Upload the rating directly to RB
+		Animations.fadeFlipOut(uploadProgress, actionButton, deleteButton);
+		Db.postRating(this, rating, Session.get().getUserId()).compose(onIoToUi()).compose(bindToLifecycle()).subscribe(saved -> finish(), e -> {
+			Animations.fadeFlipOut(actionButton, uploadProgress, deleteButton);
+			Snackbar.show(this, R.string.error_connectionfailure);
+		});
+
+	}
+
+	public void deleteRating(View view) {
+		new AlertDialog.Builder(this).setTitle(R.string.rate_delete_confirm).setPositiveButton(R.string.rate_delete, (di, i) -> deleteOfflineRating())
+				.setNegativeButton(android.R.string.cancel, null).show();
+	}
+
+	private void deleteOfflineRating() {
+		Animations.fadeFlipOut(uploadProgress, actionButton, deleteButton);
+		Db.deleteOfflineRating(this, rating, Session.get().getUserId()).compose(onIoToUi()).compose(bindToLifecycle())
+				.subscribe(refreshed -> RBLog.d("OVERRIDE:" + refreshed), e -> {
+					Animations.fadeFlipIn(deleteButton, actionButton, uploadProgress);
+					Snackbar.show(this, R.string.error_connectionfailure);
+				}, this::finish);
 	}
 
 }

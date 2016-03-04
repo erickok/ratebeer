@@ -90,6 +90,7 @@
 -keep public class android.support.design.R$* { *; }
 
 # Our app
+-keep class com.ratebeer.android.api.SerializableHttpCookie { *; }
 -keep class com.ratebeer.android.db.Beer { *; }
 -keep class com.ratebeer.android.db.Brewery { *; }
 -keep class com.ratebeer.android.db.HistoricSearch { *; }
@@ -97,3 +98,6 @@
 -keep class com.ratebeer.android.db.Rating { *; }
 -keep class com.ratebeer.android.db.StoredSession { *; }
 -keep class com.ratebeer.android.db.Style { *; }
+
+-renamesourcefileattribute SourceFile
+-keepattributes SourceFile,LineNumberTable

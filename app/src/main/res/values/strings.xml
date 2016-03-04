@@ -52,7 +52,8 @@
 	<string name="rate_comments">Comments</string>
 	<string name="rate_upload">Upload</string>
 	<string name="rate_findbeer">Find beer</string>
-	<string name="rate_"></string>
+	<string name="rate_delete">Delete rating</string>
+	<string name="rate_delete_confirm">This rating has not yet been uploaded. Are you sure you want to delete it?</string>
 
 	<string name="sync_usesync">Tap to synchronize your ratings</string>
 	<string name="sync_insync">Synchronizing your ratings</string>

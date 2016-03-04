@@ -4,7 +4,8 @@
 	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:orientation="vertical">
+	android:orientation="vertical"
+	tools:context=".gui.RateActivity">
 
 	<android.support.design.widget.AppBarLayout
 		android:id="@+id/appbar_layout"
@@ -203,10 +204,11 @@
 			<android.support.design.widget.TextInputLayout
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
+				android:layout_marginBottom="32dp"
 				app:counterEnabled="true"
 				app:counterMaxLength="80"
 				app:counterOverflowTextAppearance="@style/RatingLength.Sufficient"
-				app:counterTextAppearance="@style/RatingLength" android:layout_marginBottom="32dp">
+				app:counterTextAppearance="@style/RatingLength">
 
 				<EditText
 					android:id="@+id/comments_edit"
@@ -240,11 +242,11 @@
 			style="@style/AppButton.Orange"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:onClick="signIn"
-			android:text="@string/rate_upload" />
+			android:onClick="uploadFindBeer"
+			tools:text="@string/rate_upload" />
 
 		<ProgressBar
-			android:id="@+id/login_progress"
+			android:id="@+id/upload_progress"
 			style="@style/Widget.AppCompat.ProgressBar"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
@@ -254,5 +256,18 @@
 			tools:visibility="visible" />
 
 	</FrameLayout>
+
+	<ImageButton
+		android:id="@+id/delete_button"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_margin="20dp"
+		android:padding="6dp"
+		android:background="?attr/selectableItemBackgroundBorderless"
+		android:contentDescription="@string/rate_delete_confirm"
+		android:onClick="deleteRating"
+		android:src="@drawable/ic_delete_black_24dp"
+		app:layout_anchor="@id/rating_layout"
+		app:layout_anchorGravity="bottom|left|start" />
 
 </android.support.design.widget.CoordinatorLayout>

@@ -76,17 +76,18 @@ public final class RatingsAdapter extends RecyclerView.Adapter<RecyclerView.View
 				itemHolder.rowLayout.setBackgroundResource(0);
 				itemHolder.photoImage.setImageResource(0);
 			}
-			itemHolder.ratingMarkText.setText(String.format(Locale.getDefault(), "%1$.1f", rating.total));
 			itemHolder.ratingMarkText.setBackgroundResource(ImageUrls.getColor(position, true));
 			itemHolder.beerNameText.setText(rating.beerName);
 			if (rating.isUploaded()) {
 				// Already uploaded to RB: show rating date
+				itemHolder.ratingMarkText.setText(String.format(Locale.getDefault(), "%1$.1f", rating.total));
 				itemHolder.offlineBadge.setVisibility(View.GONE);
 				itemHolder.timeEnteredText.setVisibility(View.VISIBLE);
 				itemHolder.timeEnteredText.setText(DateUtils.formatDateTime(context, rating.timeEntered.getTime(),
 						DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_NO_YEAR | DateUtils.FORMAT_NUMERIC_DATE));
 			} else {
 				// Offline rating
+				itemHolder.ratingMarkText.setText("-");
 				itemHolder.offlineBadge.setVisibility(View.VISIBLE);
 				itemHolder.timeEnteredText.setVisibility(View.GONE);
 			}

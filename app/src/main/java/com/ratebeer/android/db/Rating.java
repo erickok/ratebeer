@@ -83,6 +83,7 @@ public final class Rating {
 	public static Rating fromOfflineRating(OfflineRating offlineRating) {
 		// Convert legacy offline rating into local rating database object
 		Rating rating = new Rating();
+		rating.ratingId = offlineRating.originalRatingId == null? null: offlineRating.originalRatingId.longValue();
 		rating.beerId = offlineRating.beerId == null ? null : offlineRating.beerId.longValue();
 		rating.beerName = offlineRating.beerName;
 
@@ -95,6 +96,7 @@ public final class Rating {
 				calculateTotal(offlineRating.aroma, offlineRating.taste, offlineRating.palate, offlineRating.appearance, offlineRating.overall);
 		rating.comments = offlineRating.comments;
 
+		rating.timeCached = offlineRating.timeSaved;
 		return rating;
 	}
 

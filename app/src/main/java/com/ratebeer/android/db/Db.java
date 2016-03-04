@@ -58,7 +58,7 @@ public final class Db {
 			return getFresh(rxdb(context).get(Beer.class, beerId), fresh, beer -> isFresh(beer.timeCached));
 	}
 
-	public static Observable<Rating> getUserRating(Context context, long ratingId) {
+	public static Observable<Rating> getOfflineRating(Context context, long ratingId) {
 		return rxdb(context).get(Rating.class, ratingId);
 	}
 
@@ -84,6 +84,23 @@ public final class Db {
 			if (existing != null)
 				rating._id = existing._id;
 			return rxdb(context).putRx(rating);
+		});
+	}
+
+	public static Observable<Rating> postRating(Context context, Rating rating, long userId) {
+		return api().postRating(rating, userId).flatMap(
+				postedRating -> Observable.combineLatest(getBeer(context, rating.beerId), Observable.just(postedRating), Rating::fromBeerRating))
+				.flatMap(combinedRating -> rxdb(context).putRx(combinedRating));
+	}
+
+	public static Observable<Rating> deleteOfflineRating(Context context, Rating rating, long userId) {
+		return rxdb(context).deleteRx(rating).flatMap(deletedRating -> {
+			if (deletedRating.ratingId == null)
+				// Was local only, so we are done
+				return Observable.empty();
+			else
+				// Was stored online, so refresh from the RB server our local rating instance
+				return getUserRating(context, deletedRating.beerId, userId);
 		});
 	}
 

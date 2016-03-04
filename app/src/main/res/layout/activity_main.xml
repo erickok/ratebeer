@@ -46,9 +46,10 @@
 				android:id="@+id/options_menu"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
+				android:minWidth="0dp"
 				android:layout_gravity="end|center_vertical"
-				android:layout_marginEnd="16dp"
 				android:layout_marginRight="16dp"
+				android:layout_marginEnd="16dp"
 				android:minHeight="?attr/actionBarSize" />
 
 		</android.support.v7.widget.Toolbar>
@@ -105,6 +106,19 @@
 		android:visibility="gone"
 		app:layout_anchor="@id/lists_pager"
 		app:layout_anchorGravity="center"
+		tools:visibility="visible" />
+
+	<android.support.design.widget.FloatingActionButton
+		android:id="@+id/rate_button"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_margin="16dp"
+		android:contentDescription="@string/rate_enterrating"
+		android:onClick="startOfflineRating"
+		android:src="@drawable/ic_action_rate"
+		android:visibility="gone"
+		app:layout_anchor="@id/lists_pager"
+		app:layout_anchorGravity="bottom|right|end"
 		tools:visibility="visible" />
 
 </android.support.design.widget.CoordinatorLayout>

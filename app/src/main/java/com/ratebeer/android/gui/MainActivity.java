@@ -3,6 +3,7 @@ package com.ratebeer.android.gui;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -54,10 +55,12 @@ public class MainActivity extends RateBeerActivity {
 	private ViewPager listsPager;
 	private View loadingProgress;
 	private TextView statusText;
+	private FloatingActionButton rateButton;
 	private SearchSuggestionsAdapter searchSuggestionsAdaper;
 	private List<Integer> tabTypes;
 	private List<View> tabs;
 	private List<String> tabsTitles;
+	private int tabSelected = 0;
 	private Subscription syncSubscription;
 
 	public static Intent start(Context context) {
@@ -86,6 +89,7 @@ public class MainActivity extends RateBeerActivity {
 		loadingProgress = findViewById(R.id.loading_progress);
 		statusText = (TextView) findViewById(R.id.status_text);
 		RecyclerView searchList = (RecyclerView) findViewById(R.id.search_list);
+		rateButton = (FloatingActionButton) findViewById(R.id.rate_button);
 
 		// Set up tabs
 		tabTypes = new ArrayList<>(3);
@@ -98,10 +102,9 @@ public class MainActivity extends RateBeerActivity {
 		} else {
 			addTab(TAB_FEED_GLOBAL, R.string.main_global);
 		}
-		RxViewPager.pageSelected(listsPager).subscribe(page -> refreshTab(page));
+		RxViewPager.pageSelected(listsPager).subscribe(this::refreshTab);
 		listsPager.setAdapter(new ActivityPagerAdapter());
 		tabLayout.setupWithViewPager(listsPager);
-		refreshTab(0);
 		if (tabs.size() == 1)
 			tabLayout.setVisibility(View.GONE);
 
@@ -134,6 +137,12 @@ public class MainActivity extends RateBeerActivity {
 
 	}
 
+	@Override
+	protected void onResume() {
+		super.onResume();
+		refreshTab(tabSelected);
+	}
+
 	private void addTab(int tabType, int title) {
 		RecyclerView recyclerView = (RecyclerView) getLayoutInflater().inflate(R.layout.view_feedlist, listsPager, false);
 		recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -143,11 +152,12 @@ public class MainActivity extends RateBeerActivity {
 	}
 
 	private void refreshTab(int position) {
+		tabSelected = position;
 		int type = tabTypes.get(position);
 		RecyclerView view = ((RecyclerView) tabs.get(position));
 		if (type == TAB_RATINGS) {
 
-			// Show ratings sync progress,  or show the already stored ratings
+			// Show ratings sync progress, or show the already stored ratings
 			boolean needsFirstSync = Session.get().isLoggedIn() && Session.get().getUserRateCount() > 0 && !Db.hasSyncedRatings(this);
 			syncSubscription = SyncService.getSyncStatus().distinctUntilChanged().compose(toUi()).flatMap(inSync -> {
 				if (inSync) {
@@ -162,16 +172,16 @@ public class MainActivity extends RateBeerActivity {
 				if (ratings == null) {
 					// Syncing
 					if (loadingProgress.getVisibility() != View.VISIBLE)
-						Animations.fadeFlip(loadingProgress, listsPager, statusText);
+						Animations.fadeFlipOut(loadingProgress, listsPager, statusText);
 				} else if (needsFirstSync) {
-					statusText.setVisibility(View.VISIBLE);
-					Animations.fadeFlip(listsPager, loadingProgress);
+					Animations.fadeFlipOut(statusText, listsPager, loadingProgress);
 				} else {
-					Animations.fadeFlip(listsPager, loadingProgress, statusText);
+					Animations.fadeFlipOut(listsPager, loadingProgress, statusText);
 					view.setAdapter(new RatingsAdapter(this, getMenuInflater(), ratings));
 				}
 			});
 			ItemClickSupport.addTo(view).setOnItemClickListener((parent, pos, v) -> openRating(((RatingsAdapter) view.getAdapter()).get(pos)));
+			rateButton.show();
 
 		} else {
 
@@ -183,6 +193,7 @@ public class MainActivity extends RateBeerActivity {
 			getTabFeed(type).toList().compose(onIoToUi()).compose(bindToLifecycle())
 					.subscribe(feed -> view.setAdapter(new FeedItemsAdapter(this, feed)), e -> Snackbar.show(this, R.string.error_connectionfailure),
 							() -> Animations.fadeFlip(listsPager, loadingProgress));
+			rateButton.hide();
 
 		}
 	}
@@ -232,6 +243,10 @@ public class MainActivity extends RateBeerActivity {
 
 		// Perform live search on server
 		startActivity(SearchActivity.start(this, query));
+	}
+
+	public void startOfflineRating(View view) {
+		startActivity(RateActivity.start(this));
 	}
 
 	private class ActivityPagerAdapter extends PagerAdapter {

@@ -22,6 +22,7 @@ import com.ratebeer.android.api.model.UserRateCountDeserializer;
 import com.ratebeer.android.api.model.UserRating;
 import com.ratebeer.android.api.model.UserRatingDeserializer;
 import com.ratebeer.android.db.RBLog;
+import com.ratebeer.android.db.Rating;
 import com.ratebeer.android.rx.AsRangeOperator;
 
 import org.javatuples.Pair;
@@ -239,6 +240,13 @@ public final class Api {
 		if (!haveLoginCookie())
 			ratings = ratings.startWith(getLoginCookie());
 		return ratings;
+	}
+
+	public Observable<BeerRating> postRating(Rating rating, long userId) {
+		return routes.postRating(rating.beerId.intValue(), rating.ratingId, rating.aroma, rating.appearance, rating.flavor, rating.mouthfeel,
+				rating.overall, rating.comments)
+				.flatMap(posted -> routes.getBeerRatings(KEY, rating.beerId.intValue(), (int) userId, 1, 1).flatMapIterable(ratings -> ratings))
+				.filter(storedRating -> storedRating.timeEntered != null).first();
 	}
 
 }

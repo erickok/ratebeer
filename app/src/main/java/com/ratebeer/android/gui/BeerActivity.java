@@ -134,4 +134,5 @@ public final class BeerActivity extends RateBeerActivity {
 		return beerRating;
 	}
 
+	public void uploadFindBeer(View view) {}
 }
