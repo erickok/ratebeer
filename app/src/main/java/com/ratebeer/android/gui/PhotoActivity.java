@@ -9,7 +9,6 @@ import android.widget.ImageView;
 import com.jakewharton.rxbinding.support.v7.widget.RxToolbar;
 import com.ratebeer.android.R;
 import com.ratebeer.android.api.ImageUrls;
-import com.ratebeer.android.gui.widget.Animations;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 

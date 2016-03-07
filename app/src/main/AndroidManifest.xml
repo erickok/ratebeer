@@ -3,6 +3,7 @@
 	xmlns:android="http://schemas.android.com/apk/res/android">
 
 	<uses-permission android:name="android.permission.INTERNET" />
+	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
 	<application
 		android:name=".RateBeerApp"
@@ -31,7 +32,7 @@
 			android:name=".gui.RateActivity"
 			android:windowSoftInputMode="adjustPan" />
 		<activity android:name=".gui.PhotoActivity" />
-		<activity android:name=".gui.AboutActivity" />
+		<activity android:name=".gui.HelpActivity" />
 		<activity android:name=".gui.HelpWhereRatingsActivity" />
 
 		<service

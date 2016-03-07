@@ -31,26 +31,38 @@
 			app:contentInsetStart="0dp"
 			app:theme="@style/AppTheme.Toolbar">
 
-			<android.support.v7.widget.SearchView
-				android:id="@+id/search_edit"
-				android:layout_width="wrap_content"
+			<LinearLayout
+				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:background="@drawable/back_search"
-				android:theme="@style/ThemeOverlay.AppCompat.Light"
-				app:iconifiedByDefault="false"
-				app:queryBackground="@null"
-				app:queryHint="@string/search_hint"
-				app:searchIcon="@null" />
+				android:orientation="horizontal">
 
-			<android.support.v7.widget.ActionMenuView
-				android:id="@+id/options_menu"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:minWidth="0dp"
-				android:layout_gravity="end|center_vertical"
-				android:layout_marginRight="16dp"
-				android:layout_marginEnd="16dp"
-				android:minHeight="?attr/actionBarSize" />
+				<android.support.v7.widget.SearchView
+					android:id="@+id/search_edit"
+					android:layout_width="0dp"
+					android:layout_height="wrap_content"
+					android:layout_weight="1"
+					android:background="@drawable/back_search"
+					android:theme="@style/ThemeOverlay.AppCompat.Light"
+					app:iconifiedByDefault="false"
+					app:queryBackground="@null"
+					app:queryHint="@string/search_hint"
+					app:searchIcon="@null" />
+
+				<ImageButton
+					android:id="@+id/help_button"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_marginLeft="4dp"
+					android:layout_marginStart="4dp"
+					android:layout_marginRight="16dp"
+					android:layout_marginEnd="16dp"
+					android:layout_gravity="end|center_vertical"
+					android:padding="6dp"
+					android:background="?attr/selectableItemBackgroundBorderless"
+					android:contentDescription="@string/help_more"
+					android:src="@drawable/ic_action_help" />
+
+			</LinearLayout>
 
 		</android.support.v7.widget.Toolbar>
 

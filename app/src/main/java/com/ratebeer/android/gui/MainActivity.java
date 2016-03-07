@@ -7,7 +7,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v7.widget.ActionMenuView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -82,7 +81,7 @@ public class MainActivity extends RateBeerActivity {
 			return;
 		}
 
-		ActionMenuView optionsMenu = (ActionMenuView) findViewById(R.id.options_menu);
+		View helpButton = findViewById(R.id.help_button);
 		SearchView searchEdit = (SearchView) findViewById(R.id.search_edit);
 		TabLayout tabLayout = (TabLayout) findViewById(R.id.sliding_tabs);
 		listsPager = (ViewPager) findViewById(R.id.lists_pager);
@@ -108,14 +107,8 @@ public class MainActivity extends RateBeerActivity {
 		if (tabs.size() == 1)
 			tabLayout.setVisibility(View.GONE);
 
-		// Set up toolbar actions
-		getMenuInflater().inflate(R.menu.menu_more, optionsMenu.getMenu());
-		optionsMenu.setOnMenuItemClickListener(item -> {
-			if (item.getItemId() == R.id.menu_more) {
-				startActivity(AboutActivity.start(this));
-			}
-			return true;
-		});
+		// Set up access buttons
+		RxView.clicks(helpButton).compose(bindToLifecycle()).subscribe(v -> startActivity(HelpActivity.start(this)));
 		RxView.clicks(statusText).compose(bindToLifecycle()).subscribe(v -> startService(SyncService.start(this)));
 
 		// Set up search box: show results with search view focus, start search on query submit and show suggestions on query text changes
@@ -125,7 +118,10 @@ public class MainActivity extends RateBeerActivity {
 		Observable<SearchViewQueryTextEvent> queryTextChangeEvents =
 				RxSearchView.queryTextChangeEvents(searchEdit).compose(onUi()).replay(1).refCount();
 		queryTextChangeEvents.map(event -> !TextUtils.isEmpty(event.queryText()))
-				.subscribe(hasQuery -> searchList.setVisibility(hasQuery ? View.VISIBLE : View.GONE));
+				.subscribe(hasQuery -> {
+					searchList.setVisibility(hasQuery ? View.VISIBLE : View.GONE);
+					tabLayout.setVisibility(hasQuery ? View.GONE: (tabs.size() == 1? View.GONE: View.VISIBLE));
+				});
 		queryTextChangeEvents.filter(SearchViewQueryTextEvent::isSubmitted).subscribe(event -> performSearch(event.queryText().toString()));
 		queryTextChangeEvents.map(event -> event.queryText().toString()).switchMap(query -> {
 			if (query.length() == 0) {

@@ -17,9 +17,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.ratebeer.android.R;
-import com.ratebeer.android.api.ImageUrls;
 import com.ratebeer.android.api.model.FeedItem;
-import com.squareup.picasso.Picasso;
+import com.ratebeer.android.gui.widget.Images;
 
 import java.util.List;
 
@@ -30,7 +29,7 @@ public final class FeedItemsAdapter extends RecyclerView.Adapter<FeedItemsAdapte
 
 	public FeedItemsAdapter(Context context, List<FeedItem> feedItems) {
 		this.feedItems = feedItems;
-		int[] attrs = new int[] { android.R.attr.selectableItemBackground};
+		int[] attrs = new int[]{android.R.attr.selectableItemBackground};
 		TypedArray ta = context.obtainStyledAttributes(attrs);
 		selectableBackgroundDrawable = ta.getDrawable(0);
 		ta.recycle();
@@ -44,14 +43,13 @@ public final class FeedItemsAdapter extends RecyclerView.Adapter<FeedItemsAdapte
 	@Override
 	public void onBindViewHolder(ViewHolder holder, int position) {
 		FeedItem feedItem = feedItems.get(position);
-		Picasso.with(holder.avatarImage.getContext()).load(ImageUrls.getUserPhotoUrl(feedItem.userName))
-				.placeholder(ImageUrls.getColor(position, true)).fit().centerCrop().into(holder.avatarImage);
+		Images.with(holder.avatarImage.getContext()).loadUser(feedItem.userName).fit().centerCrop().into(holder.avatarImage);
 		if (feedItem.getBeerId() != null) {
 			// A clickable row, bound to a specific beer (and show its photo)
 			holder.rowLayout.setBackgroundDrawable(selectableBackgroundDrawable.getConstantState().newDrawable().mutate());
 			holder.beerImage.setVisibility(View.VISIBLE);
-			Picasso.with(holder.beerImage.getContext()).load(ImageUrls.getBeerPhotoUrl(feedItem.getBeerId())).placeholder(android.R.color.white).fit()
-					.centerInside().into(holder.beerImage);
+			Images.with(holder.beerImage.getContext()).loadBeer(feedItem.getBeerId()).placeholder(android.R.color.white).fit().centerInside()
+					.into(holder.beerImage);
 		} else {
 			// Not bound to a beer, so not clickable
 			holder.rowLayout.setBackgroundResource(0);

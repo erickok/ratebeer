@@ -63,10 +63,24 @@ public final class Db {
 	}
 
 	public static Observable<Rating> getUserRating(Context context, long beerId, long userId) {
-		return getFresh(rxdb(context).query(Rating.class, "beerId = ?", Long.toString(beerId)),
-				Observable.combineLatest(getBeer(context, beerId), api().getBeerUserRating(beerId, userId), RxTuples.toPair())
-						.filter(pair -> pair.getValue1() != null).map(pair -> Rating.fromBeerRating(pair.getValue0(), pair.getValue1()))
-						.flatMap(rating -> rxdb(context).putRx(rating)), rating -> !rating.isUploaded() || isFresh(rating.timeCached));
+		// @formatter:off
+		return getFresh(
+				// Local cached value (recent or an offline rating) or...
+				rxdb(context).query(Rating.class, "beerId = ?", Long.toString(beerId)),
+				// Retrieve fresh value
+				Observable.combineLatest(
+							getBeer(context, beerId),
+							api().getBeerUserRating(beerId, userId),
+							rxdb(context).query(Rating.class, "beerId = ?", Long.toString(beerId)).firstOrDefault(null),
+							RxTuples.toTriplet())
+						// When a value exists online
+						.filter(pair -> pair.getValue1() != null)
+						// Create new or override existing local rating
+						.map(pair -> Rating.fromBeerRating(pair.getValue0(), pair.getValue1(), pair.getValue2())).doOnNext(r -> RBLog.d("STORED:"+r))
+						// And store it in the database
+						.flatMap(rating -> rxdb(context).putRx(rating)),
+				rating -> !rating.isUploaded() || isFresh(rating.timeCached));
+		// @formatter:on
 	}
 
 	public static boolean hasSyncedRatings(Context context) {
@@ -74,7 +88,7 @@ public final class Db {
 	}
 
 	public static Observable<Rating> getUserRatings(Context context) {
-		return rxdb(context).query(database(context).query(Rating.class).orderBy("timeEntered IS NOT NULL, timeEntered desc"));
+		return rxdb(context).query(database(context).query(Rating.class).orderBy("timeEntered IS NOT NULL, timeEntered desc, timeCached desc"));
 	}
 
 	public static Observable<Rating> syncUserRatings(Context context, Action1<Float> onPageProgress) {
@@ -88,8 +102,8 @@ public final class Db {
 	}
 
 	public static Observable<Rating> postRating(Context context, Rating rating, long userId) {
-		return api().postRating(rating, userId).flatMap(
-				postedRating -> Observable.combineLatest(getBeer(context, rating.beerId), Observable.just(postedRating), Rating::fromBeerRating))
+		return api().postRating(rating, userId).flatMap(postedRating -> Observable
+				.combineLatest(getBeer(context, rating.beerId), Observable.just(postedRating), Observable.just(rating), Rating::fromBeerRating))
 				.flatMap(combinedRating -> rxdb(context).putRx(combinedRating));
 	}
 

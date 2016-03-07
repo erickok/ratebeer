@@ -59,8 +59,9 @@ public final class Rating {
 		return rating;
 	}
 
-	public static Rating fromBeerRating(Beer beer, BeerRating beerRating) {
+	public static Rating fromBeerRating(Beer beer, BeerRating beerRating, Rating overrideRating) {
 		Rating rating = new Rating();
+		rating._id = overrideRating == null? null: overrideRating._id;
 		rating.ratingId = (long) beerRating.ratingId;
 		rating.beerId = beer._id;
 		rating.beerName = beer.name;

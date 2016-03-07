@@ -264,7 +264,7 @@
 		android:layout_margin="20dp"
 		android:padding="6dp"
 		android:background="?attr/selectableItemBackgroundBorderless"
-		android:contentDescription="@string/rate_delete_confirm"
+		android:contentDescription="@string/rate_discard_rating"
 		android:onClick="deleteRating"
 		android:src="@drawable/ic_delete_black_24dp"
 		app:layout_anchor="@id/rating_layout"

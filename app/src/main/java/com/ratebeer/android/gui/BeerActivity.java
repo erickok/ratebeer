@@ -29,7 +29,7 @@ import com.ratebeer.android.db.Db;
 import com.ratebeer.android.db.Rating;
 import com.ratebeer.android.gui.lists.BeerRatingsAdapter;
 import com.ratebeer.android.gui.widget.Animations;
-import com.squareup.picasso.Picasso;
+import com.ratebeer.android.gui.widget.Images;
 
 import java.util.List;
 
@@ -66,6 +66,11 @@ public final class BeerActivity extends RateBeerActivity {
 		rateButton = (FloatingActionButton) findViewById(R.id.rate_button);
 		rateButton.setVisibility(View.GONE);
 
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
 		refresh(false);
 	}
 
@@ -86,7 +91,7 @@ public final class BeerActivity extends RateBeerActivity {
 
 	private void showBeer(Beer beer) {
 		ImageView photoImage = (ImageView) findViewById(R.id.backdrop_image);
-		Picasso.with(this).load(ImageUrls.getBeerPhotoHighResUrl(beer._id)).fit().centerCrop().noPlaceholder().into(photoImage);
+		Images.with(this).loadBeer(beer._id, true).fit().centerCrop().noPlaceholder().into(photoImage);
 		String brewerStyleText = getString(R.string.beer_stylebrewer, beer.styleName, beer.brewerName);
 		SpannableStringBuilder brewerStyleMarkup = new SpannableStringBuilder(brewerStyleText);
 		int styleStart = brewerStyleText.indexOf(beer.styleName);
@@ -119,7 +124,7 @@ public final class BeerActivity extends RateBeerActivity {
 		// Mimic a recent rating object to show in the latest beer ratings list
 		BeerRating beerRating = new BeerRating();
 		// Take the stored rating of the logged in user
-		beerRating.ratingId = rating._id.intValue();
+		beerRating.ratingId = rating.ratingId == null ? 0: rating.ratingId.intValue();
 		beerRating.aroma = rating.aroma;
 		beerRating.flavor = rating.flavor;
 		beerRating.appearance = rating.appearance;
@@ -127,6 +132,8 @@ public final class BeerActivity extends RateBeerActivity {
 		beerRating.overall = rating.overall;
 		beerRating.total = rating.total;
 		beerRating.comments = rating.comments;
+		beerRating.timeEntered = rating.timeEntered;
+		beerRating.timeUpdated = rating.timeUpdated;
 		// Combine with the up-to-date user details from the session
 		beerRating.userId = Session.get().getUserId();
 		beerRating.userName = Session.get().getUserName();

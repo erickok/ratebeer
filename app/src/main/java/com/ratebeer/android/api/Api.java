@@ -37,6 +37,7 @@ import okhttp3.JavaNetCookieJar;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.GsonConverterFactory;
+import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.RxJavaCallAdapterFactory;
 import rx.Observable;
@@ -242,10 +243,18 @@ public final class Api {
 		return ratings;
 	}
 
+	/**
+	 * Posts or updates a rating and emits the stored rating, as validated on the server side, if the post was successful
+	 */
 	public Observable<BeerRating> postRating(Rating rating, long userId) {
-		return routes.postRating(rating.beerId.intValue(), rating.ratingId, rating.aroma, rating.appearance, rating.flavor, rating.mouthfeel,
-				rating.overall, rating.comments)
-				.flatMap(posted -> routes.getBeerRatings(KEY, rating.beerId.intValue(), (int) userId, 1, 1).flatMapIterable(ratings -> ratings))
+		Observable<Response<Void>> post;
+		if (rating.ratingId == null)
+			post = routes.postRating(rating.beerId.intValue(), rating.aroma, rating.appearance, rating.flavor, rating.mouthfeel, rating.overall,
+					rating.comments);
+		else
+			post = routes.updateRating(rating.beerId.intValue(), rating.ratingId.intValue(), rating.aroma, rating.appearance, rating.flavor,
+					rating.mouthfeel, rating.overall, rating.comments);
+		return post.flatMap(posted -> routes.getBeerRatings(KEY, rating.beerId.intValue(), (int) userId, 1, 1).flatMapIterable(ratings -> ratings))
 				.filter(storedRating -> storedRating.timeEntered != null).first();
 	}
 

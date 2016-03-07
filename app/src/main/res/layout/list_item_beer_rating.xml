@@ -71,7 +71,17 @@
 			android:textAllCaps="true"
 			android:textColor="@color/grey_dark"
 			android:textSize="12sp"
-			tools:text="The Netherlands" />
+			tools:text="The Netherlands"
+			tools:visibility="gone" />
+
+		<TextView
+			android:id="@+id/offline_badge"
+			style="@style/Badge.Offline"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="@string/rate_offline_badge"
+			android:visibility="gone"
+			tools:visibility="visible" />
 
 	</LinearLayout>
 

@@ -6,6 +6,7 @@ import android.preference.PreferenceManager;
 
 import com.ratebeer.android.api.model.UserRateCount;
 import com.ratebeer.android.db.StoredSession;
+import com.squareup.picasso.NetworkPolicy;
 
 import static com.ratebeer.android.db.CupboardDbHelper.database;
 
@@ -99,6 +100,14 @@ public class Session {
 
 	public void registerIgnoreAccount() {
 		prefs.edit().putBoolean("has_ignored_account", true).apply();
+	}
+
+	public boolean inDataSaverMode() {
+		return prefs.getBoolean("data_saver_mode", false);
+	}
+
+	public void setDataSaverMode(boolean useDataSaverMode) {
+		prefs.edit().putBoolean("data_saver_mode", useDataSaverMode).apply();
 	}
 
 }

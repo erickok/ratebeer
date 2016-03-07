@@ -11,7 +11,7 @@ import android.widget.TextView;
 import com.ratebeer.android.R;
 import com.ratebeer.android.api.ImageUrls;
 import com.ratebeer.android.api.model.BeerRating;
-import com.squareup.picasso.Picasso;
+import com.ratebeer.android.gui.widget.Images;
 
 import java.util.List;
 import java.util.Locale;
@@ -32,14 +32,22 @@ public final class BeerRatingsAdapter extends RecyclerView.Adapter<BeerRatingsAd
 	@Override
 	public void onBindViewHolder(ViewHolder holder, int position) {
 		BeerRating rating = ratings.get(position);
-		Picasso.with(holder.avatarImage.getContext()).load(ImageUrls.getUserPhotoUrl(rating.userName)).placeholder(android.R.color.white).fit()
-				.centerCrop().into(holder.avatarImage);
-		holder.ratingMarkText.setText(String.format(Locale.getDefault(), "%1$.1f", rating.total));
+		Images.with(holder.avatarImage.getContext()).loadUser(rating.userName).placeholder(android.R.color.white).fit().centerCrop()
+				.into(holder.avatarImage);
 		holder.ratingMarkText.setBackgroundResource(ImageUrls.getColor(position, true));
 		holder.ratingCommentsText.setText(asHtml(rating.comments));
 		holder.userNameText.setText(rating.userName);
 		holder.userCountText.setText(String.format(Locale.getDefault(), "%1$d", rating.userRateCount));
-		holder.userCountryText.setText(rating.userCountryName);
+		if (rating.timeEntered == null) {
+			holder.offlineBadge.setVisibility(View.VISIBLE);
+			holder.userCountryText.setVisibility(View.GONE);
+			holder.ratingMarkText.setText("-");
+		} else {
+			holder.offlineBadge.setVisibility(View.GONE);
+			holder.userCountryText.setVisibility(View.VISIBLE);
+			holder.userCountryText.setText(rating.userCountryName);
+			holder.ratingMarkText.setText(String.format(Locale.getDefault(), "%1$.1f", rating.total));
+		}
 	}
 
 	private CharSequence asHtml(String raw) {
@@ -68,6 +76,7 @@ public final class BeerRatingsAdapter extends RecyclerView.Adapter<BeerRatingsAd
 		final TextView userNameText;
 		final TextView userCountText;
 		final TextView userCountryText;
+		final View offlineBadge;
 
 		public ViewHolder(View v) {
 			super(v);
@@ -77,6 +86,7 @@ public final class BeerRatingsAdapter extends RecyclerView.Adapter<BeerRatingsAd
 			userNameText = (TextView) v.findViewById(R.id.user_name_text);
 			userCountText = (TextView) v.findViewById(R.id.user_count_text);
 			userCountryText = (TextView) v.findViewById(R.id.user_country_text);
+			offlineBadge = v.findViewById(R.id.offline_badge);
 		}
 
 	}

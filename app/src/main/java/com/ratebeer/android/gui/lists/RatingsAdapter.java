@@ -18,7 +18,7 @@ import com.ratebeer.android.Session;
 import com.ratebeer.android.api.ImageUrls;
 import com.ratebeer.android.db.Rating;
 import com.ratebeer.android.gui.services.SyncService;
-import com.squareup.picasso.Picasso;
+import com.ratebeer.android.gui.widget.Images;
 
 import java.util.List;
 import java.util.Locale;
@@ -55,8 +55,8 @@ public final class RatingsAdapter extends RecyclerView.Adapter<RecyclerView.View
 	public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
 		if (holder instanceof HeaderHolder) {
 			HeaderHolder headerHolder = (HeaderHolder) holder;
-			Picasso.with(headerHolder.avatarImage.getContext()).load(ImageUrls.getUserPhotoUrl(Session.get().getUserName()))
-					.placeholder(R.color.grey_dark).fit().centerCrop().into(headerHolder.avatarImage);
+			Images.with(headerHolder.avatarImage.getContext()).loadUser(Session.get().getUserName()).placeholder(R.color.grey_dark).fit().centerCrop()
+					.into(headerHolder.avatarImage);
 			headerHolder.userNameText.setText(Session.get().getUserName());
 			headerHolder.userCountText.setText(String.format(Locale.getDefault(), "%1$d", Session.get().getUserRateCount()));
 			headerHolder.refreshMenu.setOnMenuItemClickListener(item -> {
@@ -70,8 +70,8 @@ public final class RatingsAdapter extends RecyclerView.Adapter<RecyclerView.View
 			ItemHolder itemHolder = (ItemHolder) holder;
 			if (rating.beerId != null && rating.beerId > 0) {
 				itemHolder.rowLayout.setBackgroundDrawable(selectableBackgroundDrawable.getConstantState().newDrawable().mutate());
-				Picasso.with(itemHolder.photoImage.getContext()).load(ImageUrls.getBeerPhotoUrl(rating.beerId)).placeholder(android.R.color.white)
-						.fit().centerInside().into(itemHolder.photoImage);
+				Images.with(itemHolder.photoImage.getContext()).loadBeer(rating.beerId).placeholder(android.R.color.white).fit().centerInside()
+						.into(itemHolder.photoImage);
 			} else {
 				itemHolder.rowLayout.setBackgroundResource(0);
 				itemHolder.photoImage.setImageResource(0);

@@ -8,8 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.ratebeer.android.R;
-import com.ratebeer.android.api.ImageUrls;
-import com.squareup.picasso.Picasso;
+import com.ratebeer.android.gui.widget.Images;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,8 +32,7 @@ public final class SearchSuggestionsAdapter extends RecyclerView.Adapter<SearchS
 		holder.nameText.setText(searchSuggestion.suggestion);
 		if (searchSuggestion.beerId != null) {
 			holder.photoImage.setVisibility(View.VISIBLE);
-			Picasso.with(holder.photoImage.getContext()).load(ImageUrls.getBeerPhotoUrl(searchSuggestion.beerId)).placeholder(android.R.color.white)
-					.fit().centerInside().into(holder.photoImage);
+			Images.with(holder.photoImage.getContext()).loadBeer(searchSuggestion.beerId).placeholder(android.R.color.white).fit().centerInside().into(holder.photoImage);
 		} else {
 			holder.photoImage.setVisibility(View.GONE);
 		}

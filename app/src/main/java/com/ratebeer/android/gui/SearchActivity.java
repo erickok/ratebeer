@@ -81,7 +81,7 @@ public class SearchActivity extends RateBeerActivity {
 	}
 
 	private void handleResult(BeerSearchResult beerSearchResult) {
-		if (modePicker) {
+		if (!modePicker) {
 			startActivity(BeerActivity.start(this, beerSearchResult.beerId));
 		} else {
 			// Picker mode: return beer id and name as activity result extras and close this activity

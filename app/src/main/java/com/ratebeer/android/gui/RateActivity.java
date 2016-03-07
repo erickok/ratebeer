@@ -112,6 +112,8 @@ public final class RateActivity extends RateBeerActivity {
 									// Upgrade legacy data fields
 									if (existing.beerId != null && existing.beerId <= 0)
 										existing.beerId = null;
+									if (existing.ratingId != null && existing.ratingId <= 0)
+										existing.ratingId = null;
 								}
 								return existing;
 							});
@@ -160,7 +162,8 @@ public final class RateActivity extends RateBeerActivity {
 			rating.beerName = data.getStringExtra(SearchActivity.EXTRA_BEERNAME);
 			beerNameText.setText(rating.beerName);
 			beerNameEdit.setText(rating.beerName);
-			Animations.fadeFlip(beerNameText, beerNameEdit);
+			actionButton.setText(R.string.rate_upload);
+			Animations.fadeFlip(beerNameText, beerNameEntry);
 			updateRating();
 		}
 	}
@@ -228,16 +231,18 @@ public final class RateActivity extends RateBeerActivity {
 
 		// Upload the rating directly to RB
 		Animations.fadeFlipOut(uploadProgress, actionButton, deleteButton);
-		Db.postRating(this, rating, Session.get().getUserId()).compose(onIoToUi()).compose(bindToLifecycle()).subscribe(saved -> finish(), e -> {
-			Animations.fadeFlipOut(actionButton, uploadProgress, deleteButton);
-			Snackbar.show(this, R.string.error_connectionfailure);
-		});
+		Db.postRating(this, rating, Session.get().getUserId()).doOnEach(RBLog::rx).compose(onIoToUi()).compose(bindToLifecycle())
+				.subscribe(saved -> finish(), e -> {
+					Animations.fadeFlipIn(actionButton, deleteButton, uploadProgress);
+					Snackbar.show(this, R.string.error_connectionfailure);
+				});
 
 	}
 
 	public void deleteRating(View view) {
-		new AlertDialog.Builder(this).setTitle(R.string.rate_delete_confirm).setPositiveButton(R.string.rate_delete, (di, i) -> deleteOfflineRating())
-				.setNegativeButton(android.R.string.cancel, null).show();
+		new AlertDialog.Builder(this).setMessage(R.string.rate_discard_confirm)
+				.setPositiveButton(rating.ratingId == null ? R.string.rate_discard_rating : R.string.rate_discard_changes,
+						(di, i) -> deleteOfflineRating()).setNegativeButton(android.R.string.cancel, null).show();
 	}
 
 	private void deleteOfflineRating() {
