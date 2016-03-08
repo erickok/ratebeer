@@ -10,6 +10,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
@@ -130,6 +131,7 @@ public class MainActivity extends RateBeerActivity {
 				return Db.getSuggestions(this, query).toList();
 			}
 		}).compose(onIoToUi()).compose(bindToLifecycle()).subscribe(suggestions -> searchSuggestionsAdaper.update(suggestions));
+		searchEdit.setInputType(InputType.TYPE_TEXT_VARIATION_FILTER);
 
 	}
 

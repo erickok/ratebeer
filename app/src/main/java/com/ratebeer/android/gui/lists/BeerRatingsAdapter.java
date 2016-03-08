@@ -1,7 +1,14 @@
 package com.ratebeer.android.gui.lists;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
+import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.format.DateUtils;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.RelativeSizeSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,8 +41,24 @@ public final class BeerRatingsAdapter extends RecyclerView.Adapter<BeerRatingsAd
 		BeerRating rating = ratings.get(position);
 		Images.with(holder.avatarImage.getContext()).loadUser(rating.userName).placeholder(android.R.color.white).fit().centerCrop()
 				.into(holder.avatarImage);
+		if (rating.timeEntered == null) {
+			// Directly show comments
+			holder.ratingCommentsText.setText(asHtml(rating.comments));
+		} else {
+			// Show comments and (in grey) the rating date
+			Context context = holder.ratingCommentsText.getContext();
+			String timeEnteredText = DateUtils.formatDateTime(context, rating.timeEntered.getTime(),
+					DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_YEAR | DateUtils.FORMAT_NUMERIC_DATE);
+			SpannableStringBuilder commentsMarkup = new SpannableStringBuilder(asHtml(rating.comments));
+			commentsMarkup.append(" ");
+			commentsMarkup.append(timeEnteredText);
+			commentsMarkup.setSpan(new ForegroundColorSpan(context.getResources().getColor(R.color.grey_light)),
+					commentsMarkup.length() - timeEnteredText.length(), commentsMarkup.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+			commentsMarkup.setSpan(new RelativeSizeSpan(0.8F), commentsMarkup.length() - timeEnteredText.length(), commentsMarkup.length(),
+					Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+			holder.ratingCommentsText.setText(commentsMarkup);
+		}
 		holder.ratingMarkText.setBackgroundResource(ImageUrls.getColor(position, true));
-		holder.ratingCommentsText.setText(asHtml(rating.comments));
 		holder.userNameText.setText(rating.userName);
 		holder.userCountText.setText(String.format(Locale.getDefault(), "%1$d", rating.userRateCount));
 		if (rating.timeEntered == null) {
@@ -50,12 +73,12 @@ public final class BeerRatingsAdapter extends RecyclerView.Adapter<BeerRatingsAd
 		}
 	}
 
-	private CharSequence asHtml(String raw) {
+	private Spanned asHtml(String raw) {
 		try {
 			return Html.fromHtml(raw);
 		} catch (Exception e) {
 			// Happens such as when running out of memory on large strings
-			return raw;
+			return new SpannableString(raw);
 		}
 	}
 

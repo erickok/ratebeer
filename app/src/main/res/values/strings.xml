@@ -57,6 +57,8 @@
 	<string name="rate_discard_rating">Discard rating</string>
 	<string name="rate_discard_changes">Discard changes</string>
 	<string name="rate_discard_confirm">This rating is not yet uploaded. Discard it anyway?</string>
+	<string name="rate_error_norating">You have not yet finished your scoring</string>
+	<string name="rate_error_commentlength">You comment must be at lesat 80 characters</string>
 
 	<string name="sync_usesync">Tap to synchronize your ratings</string>
 	<string name="sync_insync">Synchronizing your ratings</string>
