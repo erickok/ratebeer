@@ -49,6 +49,18 @@ interface Routes {
 	Observable<List<BeerRating>> getBeerRatings(@Query("k") String key, @Query("bid") int beerId, @Query("uid") Integer userId, @Query("p") int page,
 												@Query("s") int sortOrder);
 
+	@FormUrlEncoded
+	@POST("/saverating.asp")
+	Observable<Response<Void>> postRating(@Field("BeerId") int beerId, @Field("aroma") int aroma, @Field("appearance") int appearance,
+										  @Field("flavor") int flavor, @Field("palate") int palate, @Field("overall") int overall,
+										  @Field("Comments") String comments);
+
+	@FormUrlEncoded
+	@POST("/updaterating.asp")
+	Observable<Response<Void>> updateRating(@Field("BeerId") int beerId, @Field("RatingId") int ratingId, @Field("aroma") int aroma,
+											@Field("appearance") int appearance, @Field("flavor") int flavor, @Field("palate") int palate,
+											@Field("overall") int overall, @Field("Comments") String comments);
+
 	// Brewer details
 	// http://ratebeer.com/json/bi.asp?k=tTmwRTWT-W7tpBhtL&b=12
 	// Brewer beers

@@ -6,23 +6,27 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ProgressBar;
 
+import com.jakewharton.rxbinding.widget.RxCompoundButton;
 import com.ratebeer.android.BuildConfig;
 import com.ratebeer.android.R;
 import com.ratebeer.android.Session;
 import com.ratebeer.android.api.Api;
+import com.ratebeer.android.db.Db;
 import com.ratebeer.android.gui.widget.Animations;
 
 import java.util.Locale;
 
-public final class AboutActivity extends RateBeerActivity {
+public final class HelpActivity extends RateBeerActivity {
 
 	private Button signInOutButton;
 	private ProgressBar signoutProgress;
+	private CheckBox datasaverCheck;
 
 	public static Intent start(Context context) {
-		return new Intent(context, AboutActivity.class);
+		return new Intent(context, HelpActivity.class);
 	}
 
 	@Override
@@ -32,8 +36,14 @@ public final class AboutActivity extends RateBeerActivity {
 
 		signInOutButton = (Button) findViewById(R.id.signinout_button);
 		signoutProgress = (ProgressBar) findViewById(R.id.signout_progress);
+		datasaverCheck = (CheckBox) findViewById(R.id.datasaver_check);
 
 		setupDefaultUpButton();
+
+		// Settings persistence
+		datasaverCheck.setChecked(Session.get().inDataSaverMode());
+		RxCompoundButton.checkedChanges(datasaverCheck).subscribe(checked -> Session.get().setDataSaverMode(checked));
+
 	}
 
 	@Override
@@ -48,7 +58,7 @@ public final class AboutActivity extends RateBeerActivity {
 			startActivity(SignInActivity.start(this, true));
 		} else {
 			Animations.fadeFlip(signoutProgress, signInOutButton);
-			Api.get().logout().compose(onIoToUi()).compose(bindToLifecycle()).subscribe(success -> {
+			Api.get().logout().doOnNext(ignore -> Db.clearRatings(this)).compose(onIoToUi()).compose(bindToLifecycle()).subscribe(removedRatings -> {
 				navigateUp(); // Restart main activity to refresh activities state
 				finish();
 			}, e -> {

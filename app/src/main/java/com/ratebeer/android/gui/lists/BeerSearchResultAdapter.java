@@ -10,7 +10,7 @@ import android.widget.TextView;
 import com.ratebeer.android.R;
 import com.ratebeer.android.api.ImageUrls;
 import com.ratebeer.android.api.model.BeerSearchResult;
-import com.squareup.picasso.Picasso;
+import com.ratebeer.android.gui.widget.Images;
 
 import java.util.List;
 
@@ -33,8 +33,8 @@ public final class BeerSearchResultAdapter extends RecyclerView.Adapter<BeerSear
 		holder.ratingText.setBackgroundResource(ImageUrls.getColor(position));
 		holder.ratingText.setText(beerSearchResult.getOverallPercentileString());
 		holder.titleText.setText(beerSearchResult.beerName);
-		Picasso.with(holder.photoImage.getContext()).load(ImageUrls.getBeerPhotoUrl(beerSearchResult.beerId)).placeholder(android.R.color.white).fit()
-				.centerInside().into(holder.photoImage);
+		Images.with(holder.photoImage.getContext()).loadBeer(beerSearchResult.beerId).placeholder(android.R.color.white).fit().centerInside()
+				.into(holder.photoImage);
 		holder.unrateableBadge.setVisibility(beerSearchResult.unrateable ? View.VISIBLE : View.GONE);
 		holder.retiredBadge.setVisibility(beerSearchResult.retired ? View.VISIBLE : View.GONE);
 		holder.aliasBadge.setVisibility(beerSearchResult.alias ? View.VISIBLE : View.GONE);

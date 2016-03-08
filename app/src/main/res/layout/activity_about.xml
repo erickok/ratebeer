@@ -5,7 +5,7 @@
 	android:layout_height="match_parent"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	android:orientation="vertical"
-	tools:context=".gui.AboutActivity">
+	tools:context=".gui.HelpActivity">
 
 	<RelativeLayout
 		android:layout_width="match_parent"
@@ -42,7 +42,8 @@
 			android:layout_marginLeft="7dp"
 			android:layout_marginStart="7dp"
 			android:contentDescription="@null"
-			android:src="@mipmap/ic_launcher" />
+			android:src="@mipmap/ic_launcher"
+			android:onClick="openGithub" />
 
 		<TextView
 			android:layout_width="wrap_content"
@@ -56,7 +57,8 @@
 			android:fontFamily="sans-serif-condensed"
 			android:text="@string/app_name"
 			android:textColor="@android:color/white"
-			android:textSize="35sp" />
+			android:textSize="35sp"
+			android:onClick="openGithub" />
 
 	</RelativeLayout>
 
@@ -137,8 +139,20 @@
 		android:layout_height="0.75dp"
 		android:background="@color/grey_dark"/>
 
+	<CheckBox
+		android:id="@+id/datasaver_check"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginLeft="8dp"
+		android:layout_marginStart="8dp"
+		android:layout_marginRight="8dp"
+		android:layout_marginEnd="8dp"
+		android:paddingTop="16dp"
+		android:paddingBottom="16dp"
+		android:text="@string/settings_savedata" />
+
 	<View
 		android:layout_width="match_parent"
-		android:layout_height="25dp"/>
+		android:layout_height="6dp"/>
 
 </LinearLayout>

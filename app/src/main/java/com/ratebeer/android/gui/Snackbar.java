@@ -5,6 +5,9 @@ import android.graphics.Color;
 import android.view.View;
 import android.widget.TextView;
 
+import com.ratebeer.android.ConnectivityHelper;
+import com.ratebeer.android.R;
+
 public final class Snackbar {
 
 	private final View view;
@@ -16,6 +19,9 @@ public final class Snackbar {
 	}
 
 	public static void show(View view, int resId) {
+		// HACK Override error message when no connection is available at all
+		if (resId == R.string.error_connectionfailure && ConnectivityHelper.current(view.getContext()) == ConnectivityHelper.ConnectivityType.NoConnection)
+			resId = R.string.error_connectionunavailable;
 		new Snackbar(view, view.getContext().getString(resId)).show();
 	}
 
@@ -24,6 +30,9 @@ public final class Snackbar {
 	}
 
 	public static void show(Activity activity, int resId) {
+		// HACK Override error message when no connection is available at all
+		if (resId == R.string.error_connectionfailure && ConnectivityHelper.current(activity) == ConnectivityHelper.ConnectivityType.NoConnection)
+			resId = R.string.error_connectionunavailable;
 		new Snackbar(activity.findViewById(android.R.id.content), activity.getString(resId)).show();
 	}
 

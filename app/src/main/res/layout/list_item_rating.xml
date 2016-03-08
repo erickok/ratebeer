@@ -64,8 +64,10 @@
 			android:id="@+id/date_text"
 			android:layout_width="wrap_content"
 			android:layout_height="24dp"
+			android:layout_gravity="right"
+			android:paddingTop="2dp"
 			android:textColor="@android:color/black"
-			android:textSize="16sp"
+			android:textSize="14sp"
 			tools:text="08/14" />
 
 		<TextView
