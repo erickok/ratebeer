@@ -75,7 +75,8 @@
 
 	<string name="settings_savedata">Data saver mode (photos on wifi only)</string>
 
-	<string name="error_connectionfailure">Connection failure - your connection is poor or RateBeer is offline</string>
+	<string name="error_connectionunavailable">No wifi or mobile network available</string>
+	<string name="error_connectionfailure">Connection failure - your connection is poor or RateBeer is not responding</string>
 	<string name="error_upgradefailed">Sorry, your account could not be upgraded</string>
 	<string name="error_authenticationfailed">Your username or password is incorrect</string>
 	<string name="error_nouserorpass">Both username and password are required fields</string>

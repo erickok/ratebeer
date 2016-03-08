@@ -198,7 +198,10 @@ public class MainActivity extends RateBeerActivity {
 					view.setAdapter(new FeedItemsAdapter(this, feed));
 				else
 					((FeedItemsAdapter) view.getAdapter()).update(feed);
-			}, e -> Snackbar.show(this, R.string.error_connectionfailure), () -> Animations.fadeFlip(listsPager, loadingProgress));
+			}, e -> {
+				Animations.fadeFlip(listsPager, loadingProgress);
+				Snackbar.show(this, R.string.error_connectionfailure);
+			}, () -> Animations.fadeFlip(listsPager, loadingProgress));
 			rateButton.hide();
 
 		}

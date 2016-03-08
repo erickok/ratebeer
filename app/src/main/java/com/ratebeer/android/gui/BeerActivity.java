@@ -56,7 +56,7 @@ public final class BeerActivity extends RateBeerActivity {
 
 		// Set up toolbar
 		Toolbar mainToolbar = (Toolbar) findViewById(R.id.main_toolbar);
-		mainToolbar.setNavigationIcon(R.drawable.abc_ic_ab_back_mtrl_am_alpha);
+		mainToolbar.setNavigationIcon(R.drawable.abc_ic_ab_back_material);
 		mainToolbar.inflateMenu(R.menu.menu_refresh);
 		RxToolbar.navigationClicks(mainToolbar).subscribe(ignore -> navigateUp());
 		RxToolbar.itemClicks(mainToolbar).filter(item -> item.getItemId() == R.id.menu_refresh).subscribe(item -> {
