@@ -11,12 +11,12 @@ public final class BeerRating {
 	public String userCountryName;
 	public int userRateCount;
 
-	public int aroma;
-	public int flavor;
-	public int mouthfeel;
-	public int appearance;
-	public int overall;
-	public float total;
+	public Integer aroma;
+	public Integer flavor;
+	public Integer mouthfeel;
+	public Integer appearance;
+	public Integer overall;
+	public Float total;
 	public String comments;
 	public Date timeEntered;
 	public Date timeUpdated;

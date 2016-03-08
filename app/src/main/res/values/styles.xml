@@ -106,4 +106,56 @@
 		<item name="android:fontFamily" tools:targetApi="jelly_bean">sans-serif-condensed</item>
 	</style>
 
+	<style name="Rating">
+		<item name="android:layout_width">0dp</item>
+		<item name="android:layout_height">wrap_content</item>
+		<item name="android:layout_weight">1</item>
+		<item name="android:layout_marginRight">4dp</item>
+		<item name="android:layout_marginEnd" tools:targetApi="jelly_bean_mr1">4dp</item>
+		<item name="android:paddingTop">2dp</item>
+		<item name="android:paddingBottom">2dp</item>
+		<item name="android:focusable">true</item>
+		<item name="android:clickable">true</item>
+	</style>
+
+	<style name="RatingNumber">
+		<item name="android:layout_width">match_parent</item>
+		<item name="android:layout_height">wrap_content</item>
+		<item name="android:layout_marginTop">2dp</item>
+		<item name="android:layout_marginBottom">24dp</item>
+		<item name="android:gravity">center_horizontal</item>
+		<item name="android:fontFamily" tools:targetApi="jelly_bean">sans-serif-condensed</item>
+		<item name="android:textSize">30sp</item>
+		<item name="android:textColor">@android:color/white</item>
+	</style>
+
+	<style name="RatingLabel">
+		<item name="android:layout_width">match_parent</item>
+		<item name="android:layout_height">wrap_content</item>
+		<item name="android:layout_gravity">bottom</item>
+		<item name="android:layout_marginBottom">8dp</item>
+		<item name="android:gravity">center_horizontal</item>
+		<item name="android:fontFamily" tools:targetApi="jelly_bean">sans-serif-condensed</item>
+		<item name="android:textAllCaps">true</item>
+		<item name="android:textSize">13sp</item>
+		<item name="android:textColor">@android:color/white</item>
+	</style>
+
+	<style name="RatingLength">
+		<item name="android:textColor">@color/red_main</item>
+	</style>
+
+	<style name="RatingLength.Sufficient">
+		<item name="android:textColor">@android:color/black</item>
+	</style>
+
+	<style name="NumberPicker">
+		<item name="android:layout_height">@dimen/block_size</item>
+		<item name="android:layout_width">@dimen/block_size</item>
+		<item name="android:background">?android:attr/selectableItemBackgroundBorderless</item>
+		<item name="android:fontFamily">sans-serif-condensed</item>
+		<item name="android:textSize">36sp</item>
+		<item name="android:textColor">@android:color/black</item>
+	</style>
+
 </resources>

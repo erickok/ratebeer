@@ -56,6 +56,18 @@ public final class Beer {
 		return beer;
 	}
 
+	public String getRealRatingString() {
+		if (realRating == null)
+			return "-";
+		return String.format(Locale.getDefault(), "%1.1f", realRating);
+	}
+
+	public String getWeightedRatingString() {
+		if (weightedRating == null)
+			return "-";
+		return String.format(Locale.getDefault(), "%1.1f", weightedRating);
+	}
+
 	public String getOverallPercentileString() {
 		if (overallPercentile == null)
 			return "-";

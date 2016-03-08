@@ -22,10 +22,12 @@ import com.ratebeer.android.api.model.UserRateCountDeserializer;
 import com.ratebeer.android.api.model.UserRating;
 import com.ratebeer.android.api.model.UserRatingDeserializer;
 import com.ratebeer.android.db.RBLog;
+import com.ratebeer.android.db.Rating;
 import com.ratebeer.android.rx.AsRangeOperator;
 
 import org.javatuples.Pair;
 
+import java.io.IOException;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
 import java.net.HttpCookie;
@@ -35,6 +37,7 @@ import okhttp3.JavaNetCookieJar;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.GsonConverterFactory;
+import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.RxJavaCallAdapterFactory;
 import rx.Observable;
@@ -71,7 +74,7 @@ public final class Api {
 		// @formatter:off
 		HttpLoggingInterceptor logging = new HttpLoggingInterceptor(RBLog::v);
 		if (BuildConfig.DEBUG)
-			logging.setLevel(HttpLoggingInterceptor.Level.HEADERS);
+			logging.setLevel(HttpLoggingInterceptor.Level.BODY);
 		cookieManager = new CookieManager(new PersistentCookieStore(), CookiePolicy.ACCEPT_ORIGINAL_SERVER);
 		OkHttpClient httpclient = new OkHttpClient.Builder()
 				.connectTimeout(5, TimeUnit.SECONDS)
@@ -114,22 +117,36 @@ public final class Api {
 		return hasUserCookie && hasSessionCookie;
 	}
 
+	private Observable<Boolean> getLoginRoute(String username, String password) {
+		return routes.login(username, password, "on").flatMap(result -> {
+			if (haveLoginCookie()) {
+				return Observable.just(true);
+			} else {
+				return Observable.error(new IOException("Invalid login response; no session cookies received"));
+			}
+		});
+	}
+
 	/**
-	 * Performs a login call to the server to load a session cookie; this is typically used as someLoginDependendCall.startWith(getLoginCookie())
+	 * A wrapper observable that returns an empty sequence on success such that we can use someLoginDependendCall.startWith(getLoginCookie())
 	 */
 	private <T> Observable<T> getLoginCookie() {
-		// Execute a login request to make sure we have a login cookie
-		return routes.login(Session.get().getUserName(), Session.get().getPassword(), "on").subscribeOn(Schedulers.io())
+		return getLoginRoute(Session.get().getUserName(), Session.get().getPassword()).subscribeOn(Schedulers.io())
 				.flatMap(result -> Observable.empty());
 	}
 
+	/**
+	 * Performs a login on the server, ensures that the rate counts are updated in our local session and emits true on success
+	 */
 	public Observable<Boolean> login(String username, String password) {
 		// @formatter:off
 		return Observable.zip(
+					// Combine the latest user counts
 					routes.getUserInfo(KEY, username).subscribeOn(Schedulers.newThread()).flatMapIterable(infos -> infos).first(),
-					routes.login(Session.get().getUserName(), Session.get().getPassword(), "on").subscribeOn(Schedulers.newThread()),
-					(userInfo, foo) -> userInfo)
-				// Add to the user id the user's rate counts
+					// And sign in the user (get login cookies)
+					getLoginRoute(username, password).subscribeOn(Schedulers.newThread()),
+					(userInfo, loginSuccess) -> userInfo)
+				// Then add the user id the user's rate counts
 				.flatMap(user -> Observable.zip(
 						Observable.just(user),
 						routes.getUserRateCount(KEY, user.userId).flatMapIterable(userRateCounts -> userRateCounts),
@@ -147,6 +164,14 @@ public final class Api {
 	public Observable<Boolean> logout() {
 		return routes.logout().map(result -> true).map(success -> cookieManager.getCookieStore().removeAll())
 				.doOnNext(success -> Session.get().endSession());
+	}
+
+	/**
+	 * Retrieves updated rate counts from the server and persists them in our user session before emitting the updated values
+	 */
+	public Observable<UserRateCount> updateUserRateCounts() {
+		return routes.getUserRateCount(KEY, Session.get().getUserId()).flatMapIterable(userRateCounts -> userRateCounts)
+				.doOnNext(counts -> Session.get().updateCounts(counts));
 	}
 
 	/**
@@ -224,6 +249,21 @@ public final class Api {
 		if (!haveLoginCookie())
 			ratings = ratings.startWith(getLoginCookie());
 		return ratings;
+	}
+
+	/**
+	 * Posts or updates a rating and emits the stored rating, as validated on the server side, if the post was successful
+	 */
+	public Observable<BeerRating> postRating(Rating rating, long userId) {
+		Observable<Response<Void>> post;
+		if (rating.ratingId == null)
+			post = routes.postRating(rating.beerId.intValue(), rating.aroma, rating.appearance, rating.flavor, rating.mouthfeel, rating.overall,
+					rating.comments);
+		else
+			post = routes.updateRating(rating.beerId.intValue(), rating.ratingId.intValue(), rating.aroma, rating.appearance, rating.flavor,
+					rating.mouthfeel, rating.overall, rating.comments);
+		return post.flatMap(posted -> routes.getBeerRatings(KEY, rating.beerId.intValue(), (int) userId, 1, 1).flatMapIterable(ratings -> ratings))
+				.filter(storedRating -> storedRating.timeEntered != null).first();
 	}
 
 }

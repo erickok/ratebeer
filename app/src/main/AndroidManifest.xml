@@ -3,6 +3,7 @@
 	xmlns:android="http://schemas.android.com/apk/res/android">
 
 	<uses-permission android:name="android.permission.INTERNET" />
+	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
 	<application
 		android:name=".RateBeerApp"
@@ -11,7 +12,9 @@
 		android:label="@string/app_name"
 		android:theme="@style/AppTheme">
 
-		<activity android:name=".gui.MainActivity">
+		<activity
+			android:name=".gui.MainActivity"
+			android:windowSoftInputMode="adjustPan">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
 				<category android:name="android.intent.category.LAUNCHER" />
@@ -25,8 +28,16 @@
 		<activity
 			android:name=".gui.BeerActivity"
 			android:theme="@style/AppTheme.NoStatusBar" />
-		<activity android:name=".gui.AboutActivity" />
+		<activity
+			android:name=".gui.RateActivity"
+			android:windowSoftInputMode="adjustPan" />
+		<activity android:name=".gui.PhotoActivity" />
+		<activity android:name=".gui.HelpActivity" />
 		<activity android:name=".gui.HelpWhereRatingsActivity" />
+
+		<service
+			android:name=".gui.services.SyncService"
+			android:exported="false" />
 
 	</application>
 

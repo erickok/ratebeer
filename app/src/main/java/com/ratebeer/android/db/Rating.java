@@ -8,6 +8,7 @@ import java.util.Date;
 public final class Rating {
 
 	public Long _id;
+	public Long ratingId;
 	public Long beerId;
 	public String beerName;
 	public String brewerName;
@@ -28,9 +29,18 @@ public final class Rating {
 		return timeEntered != null;
 	}
 
+	public Float calculateTotal() {
+		return calculateTotal(aroma, flavor, mouthfeel, appearance, overall);
+	}
+
+	@Override
+	public String toString() {
+		return "[" + _id + "] " + beerName + ": A" + aroma + " A" + appearance + " T" + flavor + " P" + mouthfeel + " O" + overall + " T" + total;
+	}
+
 	public static Rating fromUserRating(UserRating userRating) {
 		Rating rating = new Rating();
-		rating._id = (long) userRating.ratingId;
+		rating.ratingId = (long) userRating.ratingId;
 		rating.beerId = (long) userRating.beerId;
 		rating.beerName = userRating.beerName;
 		rating.brewerName = userRating.brewerName;
@@ -49,9 +59,10 @@ public final class Rating {
 		return rating;
 	}
 
-	public static Rating fromBeerRating(Beer beer, BeerRating beerRating) {
+	public static Rating fromBeerRating(Beer beer, BeerRating beerRating, Rating overrideRating) {
 		Rating rating = new Rating();
-		rating._id = (long) beerRating.ratingId;
+		rating._id = overrideRating == null? null: overrideRating._id;
+		rating.ratingId = (long) beerRating.ratingId;
 		rating.beerId = beer._id;
 		rating.beerName = beer.name;
 		rating.brewerName = beer.brewerName;
@@ -73,6 +84,7 @@ public final class Rating {
 	public static Rating fromOfflineRating(OfflineRating offlineRating) {
 		// Convert legacy offline rating into local rating database object
 		Rating rating = new Rating();
+		rating.ratingId = offlineRating.originalRatingId == null? null: offlineRating.originalRatingId.longValue();
 		rating.beerId = offlineRating.beerId == null ? null : offlineRating.beerId.longValue();
 		rating.beerName = offlineRating.beerName;
 
@@ -85,6 +97,7 @@ public final class Rating {
 				calculateTotal(offlineRating.aroma, offlineRating.taste, offlineRating.palate, offlineRating.appearance, offlineRating.overall);
 		rating.comments = offlineRating.comments;
 
+		rating.timeCached = offlineRating.timeSaved;
 		return rating;
 	}
 

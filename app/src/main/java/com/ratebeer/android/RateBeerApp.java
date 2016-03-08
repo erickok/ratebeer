@@ -2,8 +2,6 @@ package com.ratebeer.android;
 
 import android.app.Application;
 
-import com.squareup.picasso.Picasso;
-
 public class RateBeerApp extends Application {
 
 	@Override
