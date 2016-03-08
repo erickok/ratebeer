@@ -29,6 +29,7 @@
 	<string name="feed_checkedinat">checked in at</string>
 
 	<string name="beer_stylebrewer">A %1$s by %2$s</string>
+	<string name="beer_brewer">By %1$s</string>
 	<string name="beer_overall">Overall</string>
 	<string name="beer_instyle">Style</string>
 	<string name="beer_ratecount">Ratings</string>
@@ -39,6 +40,7 @@
 	<string name="beer_retired">retired</string>
 	<string name="beer_rated">rated</string>
 	<string name="beer_unrateable">unrateable</string>
+	<string name="beer_mark_breakdown">Arithmetic average: %1$s\nWeighted average: %1$s</string>
 
 	<string name="rate_enterrating">Enter rating</string>
 	<string name="rate_offline_badge">offline only</string>

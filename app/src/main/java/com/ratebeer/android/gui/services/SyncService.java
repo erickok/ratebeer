@@ -44,7 +44,7 @@ public final class SyncService extends IntentService {
 
 		// Perform sync by loading and then storing all of the user's ratings
 		final AtomicInteger i = new AtomicInteger();
-		Db.syncUserRatings(this, progress -> reportProgress(true, null, progress)).toBlocking()
+		Db.syncRatings(this, progress -> reportProgress(true, null, progress)).toBlocking()
 				.subscribe(r -> RBLog.d("R:" + i.getAndIncrement()), e -> reportProgress(false, e, null), () -> reportProgress(false, null, 100F));
 
 	}

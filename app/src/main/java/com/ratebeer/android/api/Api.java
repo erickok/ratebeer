@@ -167,6 +167,14 @@ public final class Api {
 	}
 
 	/**
+	 * Retrieves updated rate counts from the server and persists them in our user session before emitting the updated values
+	 */
+	public Observable<UserRateCount> updateUserRateCounts() {
+		return routes.getUserRateCount(KEY, Session.get().getUserId()).flatMapIterable(userRateCounts -> userRateCounts)
+				.doOnNext(counts -> Session.get().updateCounts(counts));
+	}
+
+	/**
 	 * Returns an observable sequence (list) of items that appear on the global news feed; does not require user login
 	 */
 	public Observable<FeedItem> getGlobalFeed() {

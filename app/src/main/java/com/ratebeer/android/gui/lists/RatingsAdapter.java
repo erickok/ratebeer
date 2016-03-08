@@ -30,8 +30,8 @@ public final class RatingsAdapter extends RecyclerView.Adapter<RecyclerView.View
 
 	private final Context context;
 	private final MenuInflater menuInflater;
-	private final List<Rating> ratings;
 	private final Drawable selectableBackgroundDrawable;
+	private List<Rating> ratings;
 
 	public RatingsAdapter(Context context, MenuInflater menuInflater, List<Rating> ratings) {
 		this.context = context;
@@ -109,6 +109,11 @@ public final class RatingsAdapter extends RecyclerView.Adapter<RecyclerView.View
 		if (position == 0)
 			return null; // Header, not a rating
 		return ratings.get(position - 1);
+	}
+
+	public void update(List<Rating> ratings) {
+		this.ratings = ratings;
+		notifyDataSetChanged();
 	}
 
 	static class HeaderHolder extends RecyclerView.ViewHolder {

@@ -51,6 +51,7 @@ public class MainActivity extends RateBeerActivity {
 	private static final int TAB_FEED_LOCAL = 2;
 	private static final int TAB_FEED_GLOBAL = 3;
 
+	private SearchView searchEdit;
 	private ViewPager listsPager;
 	private View loadingProgress;
 	private TextView statusText;
@@ -82,7 +83,7 @@ public class MainActivity extends RateBeerActivity {
 		}
 
 		View helpButton = findViewById(R.id.help_button);
-		SearchView searchEdit = (SearchView) findViewById(R.id.search_edit);
+		searchEdit = (SearchView) findViewById(R.id.search_edit);
 		TabLayout tabLayout = (TabLayout) findViewById(R.id.sliding_tabs);
 		listsPager = (ViewPager) findViewById(R.id.lists_pager);
 		loadingProgress = findViewById(R.id.loading_progress);
@@ -117,11 +118,10 @@ public class MainActivity extends RateBeerActivity {
 		ItemClickSupport.addTo(searchList).setOnItemClickListener((parent, pos, v) -> searchFromSuggestion(searchSuggestionsAdaper.get(pos)));
 		Observable<SearchViewQueryTextEvent> queryTextChangeEvents =
 				RxSearchView.queryTextChangeEvents(searchEdit).compose(onUi()).replay(1).refCount();
-		queryTextChangeEvents.map(event -> !TextUtils.isEmpty(event.queryText()))
-				.subscribe(hasQuery -> {
-					searchList.setVisibility(hasQuery ? View.VISIBLE : View.GONE);
-					tabLayout.setVisibility(hasQuery ? View.GONE: (tabs.size() == 1? View.GONE: View.VISIBLE));
-				});
+		queryTextChangeEvents.map(event -> !TextUtils.isEmpty(event.queryText())).subscribe(hasQuery -> {
+			searchList.setVisibility(hasQuery ? View.VISIBLE : View.GONE);
+			tabLayout.setVisibility(hasQuery ? View.GONE : (tabs.size() == 1 ? View.GONE : View.VISIBLE));
+		});
 		queryTextChangeEvents.filter(SearchViewQueryTextEvent::isSubmitted).subscribe(event -> performSearch(event.queryText().toString()));
 		queryTextChangeEvents.map(event -> event.queryText().toString()).switchMap(query -> {
 			if (query.length() == 0) {
@@ -157,23 +157,30 @@ public class MainActivity extends RateBeerActivity {
 			boolean needsFirstSync = Session.get().isLoggedIn() && Session.get().getUserRateCount() > 0 && !Db.hasSyncedRatings(this);
 			syncSubscription = SyncService.getSyncStatus().distinctUntilChanged().compose(toUi()).flatMap(inSync -> {
 				if (inSync) {
+					// Emit null to indicate we are in sync
 					return Observable.just((List<Rating>) null);
 				} else {
-					return Db.getUserRatings(this).subscribeOn(Schedulers.io()).toList().doOnError(e -> {
+					// Emit a list of all stored ratings
+					return Db.getRatings(this).subscribeOn(Schedulers.io()).toList().doOnError(e -> {
 						Snackbar.show(this, R.string.error_connectionfailure);
 						e.printStackTrace();
 					}).onErrorResumeNext(Observable.just(new ArrayList<>()));
 				}
 			}).compose(toUi()).compose(bindToLifecycle()).subscribe(ratings -> {
 				if (ratings == null) {
-					// Syncing
+					// Syncing: show progress spinner
 					if (loadingProgress.getVisibility() != View.VISIBLE)
 						Animations.fadeFlipOut(loadingProgress, listsPager, statusText);
 				} else if (needsFirstSync) {
+					// Never synced yet (but user has ratings): show sync invitation text
 					Animations.fadeFlipOut(statusText, listsPager, loadingProgress);
 				} else {
-					Animations.fadeFlipOut(listsPager, loadingProgress, statusText);
-					view.setAdapter(new RatingsAdapter(this, getMenuInflater(), ratings));
+					if (listsPager.getVisibility() != View.VISIBLE)
+						Animations.fadeFlipOut(listsPager, loadingProgress, statusText);
+					if (view.getAdapter() == null)
+						view.setAdapter(new RatingsAdapter(this, getMenuInflater(), ratings));
+					else
+						((RatingsAdapter) view.getAdapter()).update(ratings);
 				}
 			});
 			ItemClickSupport.addTo(view).setOnItemClickListener((parent, pos, v) -> openRating(((RatingsAdapter) view.getAdapter()).get(pos)));
@@ -186,9 +193,12 @@ public class MainActivity extends RateBeerActivity {
 			statusText.setVisibility(View.GONE);
 			Animations.fadeFlip(loadingProgress, listsPager);
 			ItemClickSupport.addTo(view).setOnItemClickListener((parent, pos, v) -> openItem(((FeedItemsAdapter) view.getAdapter()).get(pos)));
-			getTabFeed(type).toList().compose(onIoToUi()).compose(bindToLifecycle())
-					.subscribe(feed -> view.setAdapter(new FeedItemsAdapter(this, feed)), e -> Snackbar.show(this, R.string.error_connectionfailure),
-							() -> Animations.fadeFlip(listsPager, loadingProgress));
+			getTabFeed(type).toList().compose(onIoToUi()).compose(bindToLifecycle()).subscribe(feed -> {
+				if (view.getAdapter() == null)
+					view.setAdapter(new FeedItemsAdapter(this, feed));
+				else
+					((FeedItemsAdapter) view.getAdapter()).update(feed);
+			}, e -> Snackbar.show(this, R.string.error_connectionfailure), () -> Animations.fadeFlip(listsPager, loadingProgress));
 			rateButton.hide();
 
 		}
@@ -215,6 +225,16 @@ public class MainActivity extends RateBeerActivity {
 		} else if (rating != null && !rating.isUploaded()) {
 			startActivity(RateActivity.start(this, rating));
 		}
+	}
+
+	@Override
+	public void onBackPressed() {
+		if (!TextUtils.isEmpty(searchEdit.getQuery())) {
+			// Do not navigate back (closing the activity) but clear the search results
+			searchEdit.setQuery(null, false);
+			return;
+		}
+		super.onBackPressed();
 	}
 
 	private void searchFromSuggestion(SearchSuggestion searchSuggestion) {

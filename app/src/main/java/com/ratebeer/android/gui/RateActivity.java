@@ -15,7 +15,6 @@ import com.jakewharton.rxbinding.view.RxView;
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.ratebeer.android.R;
 import com.ratebeer.android.Session;
-import com.ratebeer.android.db.Beer;
 import com.ratebeer.android.db.Db;
 import com.ratebeer.android.db.RBLog;
 import com.ratebeer.android.db.Rating;
@@ -61,8 +60,8 @@ public final class RateActivity extends RateBeerActivity {
 		return new Intent(context, RateActivity.class).putExtra("ratingId", rating._id.longValue());
 	}
 
-	public static Intent start(Context context, Beer beer) {
-		return new Intent(context, RateActivity.class).putExtra("beerId", beer._id.longValue());
+	public static Intent start(Context context, long beerId) {
+		return new Intent(context, RateActivity.class).putExtra("beerId", beerId);
 	}
 
 	@Override
@@ -102,7 +101,7 @@ public final class RateActivity extends RateBeerActivity {
 			// Start rating for a beer, perhaps based on an existing rating
 			long beerId = getIntent().getLongExtra("beerId", 0);
 			ratingObservable = Observable
-					.combineLatest(Db.getBeer(this, beerId), Db.getUserRating(this, beerId, Session.get().getUserId()).firstOrDefault(null),
+					.combineLatest(Db.getBeer(this, beerId), Db.getRating(this, beerId, Session.get().getUserId()).firstOrDefault(null),
 							(beer, existing) -> {
 								if (existing == null) {
 									existing = new Rating();
@@ -231,11 +230,10 @@ public final class RateActivity extends RateBeerActivity {
 
 		// Upload the rating directly to RB
 		Animations.fadeFlipOut(uploadProgress, actionButton, deleteButton);
-		Db.postRating(this, rating, Session.get().getUserId()).doOnEach(RBLog::rx).compose(onIoToUi()).compose(bindToLifecycle())
-				.subscribe(saved -> finish(), e -> {
-					Animations.fadeFlipIn(actionButton, deleteButton, uploadProgress);
-					Snackbar.show(this, R.string.error_connectionfailure);
-				});
+		Db.postRating(this, rating, Session.get().getUserId()).compose(onIoToUi()).compose(bindToLifecycle()).subscribe(saved -> finish(), e -> {
+			Animations.fadeFlipIn(actionButton, deleteButton, uploadProgress);
+			Snackbar.show(this, R.string.error_connectionfailure);
+		});
 
 	}
 
@@ -248,7 +246,7 @@ public final class RateActivity extends RateBeerActivity {
 	private void deleteOfflineRating() {
 		Animations.fadeFlipOut(uploadProgress, actionButton, deleteButton);
 		Db.deleteOfflineRating(this, rating, Session.get().getUserId()).compose(onIoToUi()).compose(bindToLifecycle())
-				.subscribe(refreshed -> RBLog.d("OVERRIDE:" + refreshed), e -> {
+				.subscribe(refreshed -> {}, e -> {
 					Animations.fadeFlipIn(deleteButton, actionButton, uploadProgress);
 					Snackbar.show(this, R.string.error_connectionfailure);
 				}, this::finish);

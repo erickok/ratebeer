@@ -24,8 +24,8 @@ import java.util.List;
 
 public final class FeedItemsAdapter extends RecyclerView.Adapter<FeedItemsAdapter.ViewHolder> {
 
-	private final List<FeedItem> feedItems;
 	private final Drawable selectableBackgroundDrawable;
+	private List<FeedItem> feedItems;
 
 	public FeedItemsAdapter(Context context, List<FeedItem> feedItems) {
 		this.feedItems = feedItems;
@@ -107,6 +107,11 @@ public final class FeedItemsAdapter extends RecyclerView.Adapter<FeedItemsAdapte
 
 	public FeedItem get(int position) {
 		return feedItems.get(position);
+	}
+
+	public void update(List<FeedItem> feedItems) {
+		this.feedItems = feedItems;
+		notifyDataSetChanged();
 	}
 
 	static class ViewHolder extends RecyclerView.ViewHolder {
