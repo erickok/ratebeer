@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
 import java.net.HttpCookie;
+import java.net.URLEncoder;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.JavaNetCookieJar;
@@ -85,6 +86,7 @@ public final class Api {
 				.addNetworkInterceptor(new LoginHeaderInterceptor())
 				.build();
 		Gson gson = new GsonBuilder()
+				.disableHtmlEscaping()
 				.registerTypeAdapter(FeedItem.class, new FeedItemDeserializer())
 				.registerTypeAdapter(UserInfo.class, new UserInfoDeserializer())
 				.registerTypeAdapter(UserRateCount.class, new UserRateCountDeserializer())
@@ -239,6 +241,7 @@ public final class Api {
 		// Based on the up-to-date rate count, get all pages of ratings necessary and emit them in reverse order
 		Observable<Integer> pageCount =
 				routes.getUserRateCount(KEY, Session.get().getUserId()).subscribeOn(Schedulers.io()).flatMapIterable(counts -> counts)
+						.doOnNext(counts -> Session.get().updateCounts(counts))
 						.map(counts -> (int) Math.ceil((float) counts.rateCount / RATINGS_PER_PAGE));
 		Observable<UserRating> ratings =
 				Observable.combineLatest(pageCount, pageCount.lift(new AsRangeOperator()).onBackpressureBuffer(), RxTuples.toPair()).flatMap(
@@ -256,12 +259,14 @@ public final class Api {
 	 */
 	public Observable<BeerRating> postRating(Rating rating, long userId) {
 		Observable<Response<Void>> post;
+		// NOTE Manually encode the comments, as RB only accepts ISO-8859-1 encoding here...
+		String comments = Normalizer.urlEncode(rating.comments);
 		if (rating.ratingId == null)
 			post = routes.postRating(rating.beerId.intValue(), rating.aroma, rating.appearance, rating.flavor, rating.mouthfeel, rating.overall,
-					rating.comments);
+					comments);
 		else
 			post = routes.updateRating(rating.beerId.intValue(), rating.ratingId.intValue(), rating.aroma, rating.appearance, rating.flavor,
-					rating.mouthfeel, rating.overall, rating.comments);
+					rating.mouthfeel, rating.overall, comments);
 		return post.flatMap(posted -> routes.getBeerRatings(KEY, rating.beerId.intValue(), (int) userId, 1, 1).flatMapIterable(ratings -> ratings))
 				.filter(storedRating -> storedRating.timeEntered != null).first();
 	}
