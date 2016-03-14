@@ -132,6 +132,7 @@ public final class RateActivity extends RateBeerActivity {
 			overallText.setText(getNumberString(beerRating.overall));
 			commentsEdit.setText(beerRating.comments);
 			actionButton.setText(beerRating.beerId == null ? R.string.rate_findbeer : R.string.rate_upload);
+			updateTotalWith(beerRating.calculateTotal());
 			this.rating = beerRating;
 		}, e -> Snackbar.show(this, R.string.error_connectionfailure));
 

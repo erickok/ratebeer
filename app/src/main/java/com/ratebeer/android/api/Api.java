@@ -31,7 +31,6 @@ import java.io.IOException;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
 import java.net.HttpCookie;
-import java.net.URLEncoder;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.JavaNetCookieJar;

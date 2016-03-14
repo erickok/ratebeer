@@ -16,12 +16,15 @@ import android.widget.TextView;
 import com.ratebeer.android.R;
 import com.ratebeer.android.Session;
 import com.ratebeer.android.api.ImageUrls;
+import com.ratebeer.android.db.RBLog;
 import com.ratebeer.android.db.Rating;
 import com.ratebeer.android.gui.services.SyncService;
 import com.ratebeer.android.gui.widget.Images;
 
 import java.util.List;
 import java.util.Locale;
+
+import rx.android.schedulers.AndroidSchedulers;
 
 public final class RatingsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
@@ -58,13 +61,15 @@ public final class RatingsAdapter extends RecyclerView.Adapter<RecyclerView.View
 			Images.with(headerHolder.avatarImage.getContext()).loadUser(Session.get().getUserName()).placeholder(R.color.grey_dark).fit().centerCrop()
 					.into(headerHolder.avatarImage);
 			headerHolder.userNameText.setText(Session.get().getUserName());
-			headerHolder.userCountText.setText(String.format(Locale.getDefault(), "%1$d", Session.get().getUserRateCount()));
 			headerHolder.refreshMenu.setOnMenuItemClickListener(item -> {
 				if (item.getItemId() == R.id.menu_refresh) {
 					context.startService(SyncService.start(context));
 				}
 				return true;
 			});
+			// Monitor changes in the user counts too
+			Session.get().getUpdates(context, true).doOnEach(RBLog::rx).observeOn(AndroidSchedulers.mainThread()).subscribe(
+					counts -> headerHolder.userCountText.setText(String.format(Locale.getDefault(), "%1$d", Session.get().getUserRateCount())));
 		} else {
 			Rating rating = ratings.get(position - 1);
 			ItemHolder itemHolder = (ItemHolder) holder;
