@@ -6,15 +6,25 @@ import android.preference.PreferenceManager;
 
 import com.ratebeer.android.api.model.UserRateCount;
 import com.ratebeer.android.db.StoredSession;
-import com.squareup.picasso.NetworkPolicy;
+
+import nl.nl2312.rxcupboard.DatabaseChange;
+import rx.Observable;
 
 import static com.ratebeer.android.db.CupboardDbHelper.database;
+import static com.ratebeer.android.db.CupboardDbHelper.rxdb;
 
 public class Session {
 
 	private Context databaseContext;
 	private SharedPreferences prefs;
 	private StoredSession stored;
+
+	public Observable<StoredSession> getUpdates(Context context, boolean emitInitial) {
+		Observable<StoredSession> updates = rxdb(context).changes(StoredSession.class).map(DatabaseChange::entity);
+		if (emitInitial)
+			updates = updates.startWith(Observable.just(stored));
+		return updates;
+	}
 
 	private static class Holder {
 		static final Session INSTANCE = new Session();
@@ -50,7 +60,7 @@ public class Session {
 			stored.password = password;
 			stored.rateCount = counts.rateCount;
 			stored.placeCount = counts.placeCount;
-			database(databaseContext).put(stored);
+			rxdb(databaseContext).put(stored);
 		}
 	}
 
@@ -58,13 +68,13 @@ public class Session {
 		synchronized (this) {
 			stored.rateCount = counts.rateCount;
 			stored.placeCount = counts.placeCount;
-			database(databaseContext).put(stored);
+			rxdb(databaseContext).put(stored);
 		}
 	}
 
 	public void endSession() {
 		synchronized (this) {
-			database(databaseContext).delete(stored);
+			rxdb(databaseContext).delete(stored);
 			stored = new StoredSession();
 		}
 	}

@@ -1,5 +1,7 @@
 package com.ratebeer.android.api;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -13,6 +15,7 @@ public final class Normalizer {
 
 	private final Map<String, Integer> HTML_ENTITIES = new HashMap<>();
 	private final DateFormat ASP_DATE_FORMAT = new SimpleDateFormat("M/d/yyyy K:m:s a", Locale.US);
+	private static final String LEGACY_RB_ENCODING = "iso-8859-1";
 
 	private static class Holder {
 		// Holder with static instance which implements a thread safe lazy loading singleton
@@ -374,6 +377,21 @@ public final class Normalizer {
 		HTML_ENTITIES.put("&zeta;", 950);
 		HTML_ENTITIES.put("&zwj;", 8205);
 		HTML_ENTITIES.put("&zwnj;", 8204);
+	}
+
+	public static String urlEncode(String unencoded) {
+		try {
+			// RB claims to use the old iso-8859-1 encoding but even that doesn' completely work as some manual transformations have to be done when posting
+			return URLEncoder.encode(unencoded, LEGACY_RB_ENCODING).replace("%27", "'");
+		} catch (UnsupportedEncodingException e) {
+			// Try fallback UTF-8 encoding
+			try {
+				return URLEncoder.encode(unencoded, "UTF-8").replace("%27", "'");
+			} catch (UnsupportedEncodingException ee) {
+				// Should never happen, UTF-8 is always available
+				return unencoded;
+			}
+		}
 	}
 
 }

@@ -89,6 +89,10 @@
 -keep interface android.support.design.** { *; }
 -keep public class android.support.design.R$* { *; }
 
+-keepclassmembers class * implements android.os.Parcelable {
+    static ** CREATOR;
+}
+
 # Our app
 -keep class com.ratebeer.android.api.SerializableHttpCookie { *; }
 -keep class com.ratebeer.android.db.Beer { *; }

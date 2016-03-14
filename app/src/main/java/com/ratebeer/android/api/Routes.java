@@ -53,13 +53,13 @@ interface Routes {
 	@POST("/saverating.asp")
 	Observable<Response<Void>> postRating(@Field("BeerId") int beerId, @Field("aroma") int aroma, @Field("appearance") int appearance,
 										  @Field("flavor") int flavor, @Field("palate") int palate, @Field("overall") int overall,
-										  @Field("Comments") String comments);
+										  @Field(value = "Comments", encoded = true) String comments);
 
 	@FormUrlEncoded
 	@POST("/updaterating.asp")
 	Observable<Response<Void>> updateRating(@Field("BeerId") int beerId, @Field("RatingId") int ratingId, @Field("aroma") int aroma,
 											@Field("appearance") int appearance, @Field("flavor") int flavor, @Field("palate") int palate,
-											@Field("overall") int overall, @Field("Comments") String comments);
+											@Field("overall") int overall, @Field(value = "Comments", encoded = true) String comments);
 
 	// Brewer details
 	// http://ratebeer.com/json/bi.asp?k=tTmwRTWT-W7tpBhtL&b=12

@@ -30,6 +30,7 @@ import static com.ratebeer.android.db.CupboardDbHelper.database;
 public final class RateActivity extends RateBeerActivity {
 
 	private static final int REQUEST_PICK_BEER = 0;
+	private static final int COMMENTS_LENGTH_MIN = 80;
 
 	private TextView beerNameText;
 	private View beerNameEntry;
@@ -119,7 +120,7 @@ public final class RateActivity extends RateBeerActivity {
 		} else {
 			ratingObservable = Observable.just(new Rating());
 		}
-		ratingObservable.subscribe(beerRating -> {
+		ratingObservable.compose(onIoToUi()).subscribe(beerRating -> {
 			beerNameText.setVisibility(beerRating.beerId == null ? View.GONE : View.VISIBLE);
 			beerNameEntry.setVisibility(beerRating.beerId == null ? View.VISIBLE : View.GONE);
 			beerNameText.setText(beerRating.beerName);
@@ -131,6 +132,7 @@ public final class RateActivity extends RateBeerActivity {
 			overallText.setText(getNumberString(beerRating.overall));
 			commentsEdit.setText(beerRating.comments);
 			actionButton.setText(beerRating.beerId == null ? R.string.rate_findbeer : R.string.rate_upload);
+			updateTotalWith(beerRating.calculateTotal());
 			this.rating = beerRating;
 		}, e -> Snackbar.show(this, R.string.error_connectionfailure));
 
@@ -225,6 +227,16 @@ public final class RateActivity extends RateBeerActivity {
 		if (rating.beerId == null) {
 			// Allow picking of the beer that the user is rating
 			startActivityForResult(SearchActivity.start(this, beerNameEdit.getText().toString(), true), REQUEST_PICK_BEER);
+			return;
+		}
+
+		// Validate input
+		if (rating.total == null) {
+			new AlertDialog.Builder(this).setMessage(R.string.rate_error_norating).setPositiveButton(android.R.string.ok, null).show();
+			return;
+		}
+		if (rating.comments == null || rating.comments.length() < COMMENTS_LENGTH_MIN) {
+			new AlertDialog.Builder(this).setMessage(R.string.rate_error_commentlength).setPositiveButton(android.R.string.ok, null).show();
 			return;
 		}
 
