@@ -68,7 +68,7 @@
 				android:layout_marginRight="8dp"
 				android:layout_toLeftOf="@id/accept_button"
 				android:layout_toStartOf="@id/accept_button"
-				android:onClick="decline"
+				android:onClick="declineSkip"
 				android:text="@string/app_decline" />
 
 		</RelativeLayout>

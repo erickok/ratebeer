@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.View;
+import android.widget.Button;
 
 import com.ratebeer.android.R;
 import com.ratebeer.android.api.Api;
@@ -20,6 +21,8 @@ import rx.Observable;
 import static com.ratebeer.android.db.CupboardDbHelper.rxdb;
 
 public class UpgradeActivity extends RateBeerActivity {
+
+	private boolean doSkip = false;
 
 	public static Intent start(Context context) {
 		return new Intent(context, UpgradeActivity.class);
@@ -68,11 +71,22 @@ public class UpgradeActivity extends RateBeerActivity {
 		}, e -> {
 			Snackbar.show(this, R.string.error_upgradefailed);
 			Animations.fadeFlip(decisionLayout, upgradeProgress);
+			// Allow skipping of the upgrade/login step
+			doSkip = true;
+			((Button) findViewById(R.id.decline_button)).setText(R.string.signin_skip);
 		});
 	}
 
-	public void decline(View view) {
-		startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.ratebeer.com/feedback")));
+	public void declineSkip(View view) {
+		if (doSkip) {
+			// Remove the old "is_first_start" key to indicate that we have upgraded
+			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+			prefs.edit().remove("is_first_start").apply();
+			startActivity(MainActivity.start(this));
+			finish();
+		} else {
+			startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.ratebeer.com/feedback")));
+		}
 	}
 
 }
