@@ -97,6 +97,11 @@ public final class FeedItemsAdapter extends RecyclerView.Adapter<FeedItemsAdapte
 			builder.removeSpan(link);
 		}
 
+		if (feedItem.numComments > 0) {
+			builder.append(" ");
+			builder.append(context.getString(R.string.feed_andmore, feedItem.numComments));
+		}
+
 		return builder;
 	}
 

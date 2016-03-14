@@ -27,6 +27,7 @@
 	<string name="feed_isdrinking">is drinking</string>
 	<string name="feed_wasawarded">was awarded</string>
 	<string name="feed_checkedinat">checked in at</string>
+	<string name="feed_andmore">and %1$d more</string>
 
 	<string name="beer_stylebrewer">A %1$s by %2$s</string>
 	<string name="beer_brewer">By %1$s</string>
