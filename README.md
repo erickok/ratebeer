@@ -1,5 +1,7 @@
 # RateBeer for Android
 
+Find [RateBeer in the Play Store](https://play.google.com/store/apps/details?id=com.ratebeer.android)
+
 ![Screenshot](/assets/screenshot.png?raw=true)
 
 ## History and goals
