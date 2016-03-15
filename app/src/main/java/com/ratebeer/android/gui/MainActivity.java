@@ -124,7 +124,7 @@ public class MainActivity extends RateBeerActivity {
 			tabLayout.setVisibility(hasQuery ? View.GONE : (tabs.size() == 1 ? View.GONE : View.VISIBLE));
 		});
 		queryTextChangeEvents.filter(SearchViewQueryTextEvent::isSubmitted).subscribe(event -> performSearch(event.queryText().toString()));
-		queryTextChangeEvents.map(event -> event.queryText().toString()).switchMap(query -> {
+		queryTextChangeEvents.map(event -> event.queryText().toString()).map(String::trim).switchMap(query -> {
 			if (query.length() == 0) {
 				return Db.getAllHistoricSearches(this).toList();
 			} else {

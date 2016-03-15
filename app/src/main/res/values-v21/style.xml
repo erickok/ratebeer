@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+	<style name="NumberPicker">
+		<item name="android:layout_height">@dimen/block_size</item>
+		<item name="android:layout_width">@dimen/block_size</item>
+		<item name="android:background">?android:attr/selectableItemBackgroundBorderless</item>
+		<item name="android:fontFamily">sans-serif-condensed</item>
+		<item name="android:textSize">36sp</item>
+		<item name="android:textColor">@android:color/black</item>
+	</style>
+
+</resources>

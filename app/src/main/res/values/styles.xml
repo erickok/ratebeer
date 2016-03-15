@@ -149,11 +149,12 @@
 		<item name="android:textColor">@android:color/black</item>
 	</style>
 
+	<!-- This has a v21 version that uses selectableItemBackgroundBorderless instead -->
 	<style name="NumberPicker">
 		<item name="android:layout_height">@dimen/block_size</item>
 		<item name="android:layout_width">@dimen/block_size</item>
-		<item name="android:background">?android:attr/selectableItemBackgroundBorderless</item>
-		<item name="android:fontFamily">sans-serif-condensed</item>
+		<item name="android:background">?android:attr/selectableItemBackground</item>
+		<item name="android:fontFamily" tools:targetApi="jelly_bean">sans-serif-condensed</item>
 		<item name="android:textSize">36sp</item>
 		<item name="android:textColor">@android:color/black</item>
 	</style>
