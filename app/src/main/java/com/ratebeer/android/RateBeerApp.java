@@ -4,8 +4,6 @@ import android.app.Application;
 
 import com.ratebeer.android.api.Api;
 
-import java.util.concurrent.TimeUnit;
-
 import rx.schedulers.Schedulers;
 
 public class RateBeerApp extends Application {
@@ -16,9 +14,9 @@ public class RateBeerApp extends Application {
 
 		Session.get().init(this);
 
-		// Start with a refresh of the user counts
+		// Start with a refresh of the user counts (if logged in; ignore any errors)
 		if (Session.get().isLoggedIn()) {
-			Api.get().updateUserRateCounts().subscribeOn(Schedulers.io()).subscribe();
+			Api.get().updateUserRateCounts().subscribeOn(Schedulers.io()).subscribe(result -> {}, Throwable::printStackTrace);
 		}
 
 		//Picasso.setSingletonInstance(new Picasso.Builder(this).indicatorsEnabled(BuildConfig.DEBUG).loggingEnabled(BuildConfig.DEBUG).build());
