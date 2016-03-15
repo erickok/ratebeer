@@ -16,11 +16,11 @@ public final class UserRateCountDeserializer implements JsonDeserializer<UserRat
 	public UserRateCount deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
 		JsonObject object = json.getAsJsonObject();
 		UserRateCount userRateCount = new UserRateCount();
-		if (!(object.get("RateCount") instanceof JsonNull))
+		if (object.has("RateCount") && !(object.get("RateCount") instanceof JsonNull))
 			userRateCount.rateCount = object.get("RateCount").getAsInt();
-		if (!(object.get("PlaceRatings") instanceof JsonNull))
+		if (object.has("PlaceRatings") && !(object.get("PlaceRatings") instanceof JsonNull))
 			userRateCount.placeCount = object.get("PlaceRatings").getAsInt();
-		if (!(object.get("TickCount") instanceof JsonNull))
+		if (object.has("TickCount") && !(object.get("TickCount") instanceof JsonNull))
 			userRateCount.tickCount = object.get("TickCount").getAsInt();
 		return userRateCount;
 	}
