@@ -7,6 +7,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -26,6 +27,7 @@ import com.ratebeer.android.api.model.FeedItem;
 import com.ratebeer.android.db.Db;
 import com.ratebeer.android.db.HistoricSearch;
 import com.ratebeer.android.db.Rating;
+import com.ratebeer.android.gui.lists.BarcodeSearchResultsAdapter;
 import com.ratebeer.android.gui.lists.FeedItemsAdapter;
 import com.ratebeer.android.gui.lists.RatingsAdapter;
 import com.ratebeer.android.gui.lists.SearchSuggestion;
@@ -83,6 +85,7 @@ public class MainActivity extends RateBeerActivity {
 			return;
 		}
 
+		View scanButton = findViewById(R.id.scan_button);
 		View helpButton = findViewById(R.id.help_button);
 		searchEdit = (SearchView) findViewById(R.id.search_edit);
 		TabLayout tabLayout = (TabLayout) findViewById(R.id.sliding_tabs);
@@ -110,6 +113,7 @@ public class MainActivity extends RateBeerActivity {
 			tabLayout.setVisibility(View.GONE);
 
 		// Set up access buttons
+		RxView.clicks(scanButton).compose(bindToLifecycle()).subscribe(v -> new BarcodeIntentIntegrator(this).initiateScan());
 		RxView.clicks(helpButton).compose(bindToLifecycle()).subscribe(v -> startActivity(HelpActivity.start(this)));
 		RxView.clicks(statusText).compose(bindToLifecycle()).subscribe(v -> startService(SyncService.start(this)));
 
@@ -139,6 +143,28 @@ public class MainActivity extends RateBeerActivity {
 	protected void onResume() {
 		super.onResume();
 		refreshTab(tabSelected);
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		BarcodeIntentResult scanResult = BarcodeIntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+		if (scanResult != null && scanResult.getContents() != null) {
+			statusText.setVisibility(View.GONE);
+			Animations.fadeFlip(loadingProgress, listsPager);
+			Api.get().searchByBarcode(scanResult.getContents()).toList().compose(onIoToUi()).compose(bindToLifecycle()).subscribe(results -> {
+				Animations.fadeFlip(listsPager, loadingProgress);
+				if (results.size() == 0) {
+					Snackbar.show(this, R.string.search_noresults);
+				} else if (results.size() == 1) {
+					// Exact match; directly open the beer
+					startActivity(BeerActivity.start(this, results.get(0).beerId));
+				} else {
+					// Multiple matches; show selection dialog
+					new AlertDialog.Builder(this).setAdapter(new BarcodeSearchResultsAdapter(this, results),
+							(dialogInterface, i) -> startActivity(BeerActivity.start(this, results.get(i).beerId))).show();
+				}
+			}, e -> Snackbar.show(this, R.string.error_connectionfailure));
+		}
 	}
 
 	private void addTab(int tabType, int title) {
