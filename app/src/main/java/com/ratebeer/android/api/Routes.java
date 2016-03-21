@@ -1,5 +1,6 @@
 package com.ratebeer.android.api;
 
+import com.ratebeer.android.api.model.BarcodeSearchResult;
 import com.ratebeer.android.api.model.BeerDetails;
 import com.ratebeer.android.api.model.BeerRating;
 import com.ratebeer.android.api.model.BeerSearchResult;
@@ -41,6 +42,9 @@ interface Routes {
 
 	@GET("s.asp")
 	Observable<List<BeerSearchResult>> searchBeers(@Query("k") String key, @Query("u") Integer userId, @Query("b") String query);
+
+	@GET("upc.asp")
+	Observable<List<BarcodeSearchResult>> searchByBarcode(@Query("k") String key, @Query("upc") String barcode);
 
 	@GET("bff.asp?vg=1&sid=1&cid=1&rc=1")
 	Observable<List<BeerDetails>> getBeerDetails(@Query("k") String key, @Query("bd") int beerId);

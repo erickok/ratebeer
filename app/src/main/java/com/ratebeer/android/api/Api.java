@@ -7,6 +7,8 @@ import com.google.gson.GsonBuilder;
 import com.pacoworks.rxtuples.RxTuples;
 import com.ratebeer.android.BuildConfig;
 import com.ratebeer.android.Session;
+import com.ratebeer.android.api.model.BarcodeSearchResult;
+import com.ratebeer.android.api.model.BarcodeSearchResultDeserializer;
 import com.ratebeer.android.api.model.BeerDetails;
 import com.ratebeer.android.api.model.BeerDetailsDeserializer;
 import com.ratebeer.android.api.model.BeerRating;
@@ -91,6 +93,7 @@ public final class Api {
 				.registerTypeAdapter(UserRateCount.class, new UserRateCountDeserializer())
 				.registerTypeAdapter(UserRating.class, new UserRatingDeserializer())
 				.registerTypeAdapter(BeerSearchResult.class, new BeerSearchResultDeserializer())
+				.registerTypeAdapter(BarcodeSearchResult.class, new BarcodeSearchResultDeserializer())
 				.registerTypeAdapter(BeerDetails.class, new BeerDetailsDeserializer())
 				.registerTypeAdapter(BeerRating.class, new BeerRatingDeserializer())
 				.create();
@@ -207,6 +210,13 @@ public final class Api {
 	 */
 	public Observable<BeerSearchResult> searchBeers(String query) {
 		return routes.searchBeers(KEY, Session.get().getUserId(), Normalizer.get().normalizeSearchQuery(query)).flatMapIterable(results -> results);
+	}
+
+	/**
+	 * Returns an observable sequence (list) of beers (search results) for a scanned UPC barcode
+	 */
+	public Observable<BarcodeSearchResult> searchByBarcode(String barcode) {
+		return routes.searchByBarcode(KEY, barcode.trim()).flatMapIterable(results -> results);
 	}
 
 	/**

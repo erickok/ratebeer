@@ -19,7 +19,7 @@ public final class BeerSearchResultDeserializer implements JsonDeserializer<Beer
 		beerSearchResult.beerId = object.get("BeerID").getAsInt();
 		beerSearchResult.beerName = Normalizer.get().cleanHtml(object.get("BeerName").getAsString());
 		beerSearchResult.brewerId = object.get("BrewerID").getAsInt();
-		beerSearchResult.brewerName = Normalizer.get().cleanHtml(object.get("BeerName").getAsString());
+		beerSearchResult.brewerName = Normalizer.get().cleanHtml(object.get("BrewerName").getAsString());
 
 		if (!(object.get("OverallPctl") instanceof JsonNull))
 			beerSearchResult.overallPercentile = object.get("OverallPctl").getAsFloat();

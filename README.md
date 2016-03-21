@@ -10,6 +10,10 @@ Evolution and simplification to bring the old RateBeer for Android app up to mod
 
 Designed and developed by [Eric Kok](eric@2312.nl) of [2312 development](http://2312.nl). Contributions by various others (see commit log).
 
+## Project setup
+
+The project should compile without any additional work, as all dependencies are managed through Gradle. Retrolabda is used to support Java 8 style labdas. Android devices with 4.0.3 (API level 15) and up are supported, without any tablet-specific interface for the moment. The project uses RxJava heavily to manage data streams (loading, caching), async processing and event notifications. The source data is defined by the RateBeer JSON API only, for which [limited documentation exists](http://www.ratebeer.com/json/ratebeerapi.asp). Most data shown in the app is temporarily cached in the database, with a fixed time limit to refresh data. Offline ratings of the signed in user are stored in the database after a manually-started sync (managed by a background Service).
+
 ## License
 
 Designed and developed by [Eric Kok](eric@2312.nl) of [2312 development](http://2312.nl), with contributions by various others (see commit log). Published under the GNU GPL v3 (copyleft) license.

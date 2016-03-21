@@ -18,6 +18,8 @@
 	<string name="signin_password">Password</string>
 
 	<string name="search_hint">Search a beer…</string>
+	<string name="search_scan">Scan barcode</string>
+	<string name="search_noresults">Nothing found</string>
 
 	<string name="main_myratings">My ratings</string>
 	<string name="main_friends">Friends</string>
