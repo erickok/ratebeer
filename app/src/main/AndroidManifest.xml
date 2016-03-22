@@ -28,9 +28,7 @@
 		<activity
 			android:name=".gui.BeerActivity"
 			android:theme="@style/AppTheme.NoStatusBar" />
-		<activity
-			android:name=".gui.RateActivity"
-			android:windowSoftInputMode="adjustResize" />
+		<activity android:name=".gui.RateActivity" />
 		<activity android:name=".gui.PhotoActivity" />
 		<activity android:name=".gui.HelpActivity" />
 		<activity android:name=".gui.HelpWhereRatingsActivity" />
