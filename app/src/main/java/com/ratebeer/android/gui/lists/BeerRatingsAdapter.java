@@ -74,6 +74,8 @@ public final class BeerRatingsAdapter extends RecyclerView.Adapter<BeerRatingsAd
 	}
 
 	private Spanned asHtml(String raw) {
+		if (raw == null)
+			return null;
 		try {
 			return Html.fromHtml(raw);
 		} catch (Exception e) {
