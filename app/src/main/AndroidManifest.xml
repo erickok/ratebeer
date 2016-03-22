@@ -30,7 +30,7 @@
 			android:theme="@style/AppTheme.NoStatusBar" />
 		<activity
 			android:name=".gui.RateActivity"
-			android:windowSoftInputMode="adjustPan" />
+			android:windowSoftInputMode="adjustResize" />
 		<activity android:name=".gui.PhotoActivity" />
 		<activity android:name=".gui.HelpActivity" />
 		<activity android:name=".gui.HelpWhereRatingsActivity" />
