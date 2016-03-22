@@ -6,6 +6,7 @@
 		<item name="colorAccent">@color/red_main</item>
 		<item name="colorControlHighlight">@color/yellow_main</item>
 		<item name="colorButtonNormal">@color/red_main</item>
+		<item name="windowActionModeOverlay">true</item>
 		<item name="android:windowBackground">@android:color/white</item>
 		<item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
 	</style>
@@ -15,6 +16,8 @@
 		<item name="colorPrimaryDark">@color/yellow_main</item>
 		<item name="colorAccent">@color/red_main</item>
 		<item name="colorControlHighlight">@color/yellow_main</item>
+		<item name="colorButtonNormal">@color/red_main</item>
+		<item name="windowActionModeOverlay">true</item>
 	</style>
 
 	<style name="AppTheme.NoStatusBar">
