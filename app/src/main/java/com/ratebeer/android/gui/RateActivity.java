@@ -250,6 +250,13 @@ public final class RateActivity extends RateBeerActivity {
 	}
 
 	public void deleteRating(View view) {
+		if (rating == null) {
+			// Incorrectly initialized: try to recover and close screen
+			if (getIntent().hasExtra("ratingId"))
+				database(this).delete(Rating.class, getIntent().getLongExtra("ratingId", 0));
+			finish();
+			return;
+		}
 		new AlertDialog.Builder(this).setMessage(R.string.rate_discard_confirm)
 				.setPositiveButton(rating.ratingId == null ? R.string.rate_discard_rating : R.string.rate_discard_changes,
 						(di, i) -> deleteOfflineRating()).setNegativeButton(android.R.string.cancel, null).show();
