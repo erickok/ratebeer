@@ -9,8 +9,8 @@ android {
         applicationId 'com.ratebeer.android'
         minSdkVersion 15
         targetSdkVersion 23
-        versionCode 207
-        versionName '2.0.3'
+        versionCode 208
+        versionName '2.0.4'
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
