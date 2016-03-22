@@ -16,7 +16,6 @@ import android.widget.TextView;
 import com.ratebeer.android.R;
 import com.ratebeer.android.Session;
 import com.ratebeer.android.api.ImageUrls;
-import com.ratebeer.android.db.RBLog;
 import com.ratebeer.android.db.Rating;
 import com.ratebeer.android.gui.services.SyncService;
 import com.ratebeer.android.gui.widget.Images;
@@ -68,7 +67,7 @@ public final class RatingsAdapter extends RecyclerView.Adapter<RecyclerView.View
 				return true;
 			});
 			// Monitor changes in the user counts too
-			Session.get().getUpdates(context, true).doOnEach(RBLog::rx).observeOn(AndroidSchedulers.mainThread()).subscribe(
+			Session.get().getUpdates(context, true).observeOn(AndroidSchedulers.mainThread()).subscribe(
 					counts -> headerHolder.userCountText.setText(String.format(Locale.getDefault(), "%1$d", Session.get().getUserRateCount())));
 		} else {
 			Rating rating = ratings.get(position - 1);

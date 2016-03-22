@@ -75,7 +75,7 @@ public final class HelpActivity extends RateBeerActivity {
 	public void openReport(View view) {
 		Intent emailIntent = new Intent(Intent.ACTION_SEND);
 		emailIntent.setType("message/rfc822");
-		emailIntent.putExtra(Intent.EXTRA_EMAIL, "rb@2312.nl");
+		emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{"rb@2312.nl"});
 		emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Help with RateBeer Android app");
 		emailIntent.putExtra(Intent.EXTRA_TEXT,
 				String.format(Locale.US, "Please describe your problem:\n\n\n\nRateBeer username: %1$s\nRateBeer version: %2$s (%3$d)\n\n",

@@ -2,6 +2,7 @@ package com.ratebeer.android.gui;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
@@ -20,6 +21,8 @@ import com.ratebeer.android.db.RBLog;
 import com.ratebeer.android.db.Rating;
 import com.ratebeer.android.gui.widget.Animations;
 
+import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent;
+
 import java.util.Date;
 import java.util.Locale;
 
@@ -35,6 +38,9 @@ public final class RateActivity extends RateBeerActivity {
 	private TextView beerNameText;
 	private View beerNameEntry;
 	private EditText beerNameEdit;
+	private View beerNameLayout;
+	private View ratingLayout;
+	private View uploadLayout;
 	private View aromaButton;
 	private View appearanceButton;
 	private View tasteButton;
@@ -70,9 +76,14 @@ public final class RateActivity extends RateBeerActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_rate);
 
+		setupDefaultUpButton();
+
 		beerNameText = (TextView) findViewById(R.id.beer_name_text);
 		beerNameEntry = findViewById(R.id.beer_name_entry);
 		beerNameEdit = (EditText) findViewById(R.id.beer_name_edit);
+		beerNameLayout = findViewById(R.id.beer_name_layout);
+		ratingLayout = findViewById(R.id.rating_layout);
+		uploadLayout = findViewById(R.id.upload_layout);
 		aromaButton = findViewById(R.id.aroma_button);
 		appearanceButton = findViewById(R.id.appearance_button);
 		tasteButton = findViewById(R.id.taste_button);
@@ -152,6 +163,28 @@ public final class RateActivity extends RateBeerActivity {
 		bindPopup(palateButton, palateText, R.layout.dialog_pick_5);
 		bindPopup(overallButton, overallText, R.layout.dialog_pick_20);
 
+		// To easy text entry, hide unneeded widgets (comments during beer name entry, beer name and actions during comment entry)
+		final int startRatingBottomPadding = ratingLayout.getPaddingBottom();
+		Observable<Boolean> keyboardChanges = Observable.create(subscriber -> KeyboardVisibilityEvent.setEventListener(this, isOpen -> {
+			if (!subscriber.isUnsubscribed()) {
+				subscriber.onNext(isOpen);
+			}
+		}));
+		keyboardChanges = keyboardChanges.replay(1).refCount();
+		Observable.combineLatest(RxView.focusChanges(beerNameEdit), keyboardChanges,
+				(editingComments, keyboardVisible) -> keyboardVisible && editingComments).compose(toUi()).compose(bindToLifecycle())
+				.subscribe(showOnlyBeerName -> {
+					ratingLayout.setVisibility(showOnlyBeerName ? View.GONE : View.VISIBLE);
+				});
+		Observable.combineLatest(RxView.focusChanges(commentsEdit), keyboardChanges,
+				(editingComments, keyboardVisible) -> keyboardVisible && editingComments).compose(toUi()).compose(bindToLifecycle())
+				.subscribe(showOnlyComments -> {
+					beerNameLayout.setVisibility(showOnlyComments ? View.GONE : View.VISIBLE);
+					ratingLayout.setPadding(0, 0, 0, showOnlyComments ? 0 : startRatingBottomPadding);
+					deleteButton.setVisibility(showOnlyComments ? View.GONE : View.VISIBLE);
+					uploadLayout.setVisibility(showOnlyComments ? View.GONE : View.VISIBLE);
+				});
+
 	}
 
 	@Override
@@ -183,6 +216,8 @@ public final class RateActivity extends RateBeerActivity {
 				text.setText(((TextView) view).getText());
 				popup.dismiss();
 			});
+			popup.setBackgroundDrawable(new BitmapDrawable());
+			popup.setOutsideTouchable(true);
 			popup.showAsDropDown(button);
 		});
 	}
@@ -250,6 +285,13 @@ public final class RateActivity extends RateBeerActivity {
 	}
 
 	public void deleteRating(View view) {
+		if (rating == null) {
+			// Incorrectly initialized: try to recover and close screen
+			if (getIntent().hasExtra("ratingId"))
+				database(this).delete(Rating.class, getIntent().getLongExtra("ratingId", 0));
+			finish();
+			return;
+		}
 		new AlertDialog.Builder(this).setMessage(R.string.rate_discard_confirm)
 				.setPositiveButton(rating.ratingId == null ? R.string.rate_discard_rating : R.string.rate_discard_changes,
 						(di, i) -> deleteOfflineRating()).setNegativeButton(android.R.string.cancel, null).show();

@@ -126,6 +126,7 @@ public class MainActivity extends RateBeerActivity {
 		queryTextChangeEvents.map(event -> !TextUtils.isEmpty(event.queryText())).subscribe(hasQuery -> {
 			searchList.setVisibility(hasQuery ? View.VISIBLE : View.GONE);
 			tabLayout.setVisibility(hasQuery ? View.GONE : (tabs.size() == 1 ? View.GONE : View.VISIBLE));
+			scanButton.setVisibility(hasQuery ? View.GONE : View.VISIBLE);
 		});
 		queryTextChangeEvents.filter(SearchViewQueryTextEvent::isSubmitted).subscribe(event -> performSearch(event.queryText().toString()));
 		queryTextChangeEvents.map(event -> event.queryText().toString()).map(String::trim).switchMap(query -> {
