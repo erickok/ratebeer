@@ -7,7 +7,6 @@ public final class BeerSearchResult {
 	public long beerId;
 	public String beerName;
 	public long brewerId;
-	public String brewerName;
 	public Float overallPercentile;
 	public int rateCount;
 	public boolean unrateable;
