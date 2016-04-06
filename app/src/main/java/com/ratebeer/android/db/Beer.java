@@ -102,4 +102,8 @@ public final class Beer {
 		return String.format(Locale.getDefault(), "%1.0f", alcohol * CALORIES_PER_FLOZ);
 	}
 
+	public boolean isAlias() {
+		return alias != null && alias;
+	}
+
 }

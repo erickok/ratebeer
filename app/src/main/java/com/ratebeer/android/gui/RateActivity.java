@@ -145,7 +145,7 @@ public final class RateActivity extends RateBeerActivity {
 			actionButton.setText(beerRating.beerId == null ? R.string.rate_findbeer : R.string.rate_upload);
 			updateTotalWith(beerRating.calculateTotal());
 			this.rating = beerRating;
-		}, e -> Snackbar.show(this, R.string.error_connectionfailure));
+		}, e -> Snackbar.show(this, R.string.error_connectionfailure, e));
 
 		// Store changes in the rating into the database
 		RxTextView.textChanges(beerNameEdit).subscribe(updated -> updateRating());
@@ -279,7 +279,7 @@ public final class RateActivity extends RateBeerActivity {
 		Animations.fadeFlipOut(uploadProgress, actionButton, deleteButton);
 		Db.postRating(this, rating, Session.get().getUserId()).compose(onIoToUi()).compose(bindToLifecycle()).subscribe(saved -> finish(), e -> {
 			Animations.fadeFlipIn(actionButton, deleteButton, uploadProgress);
-			Snackbar.show(this, R.string.error_connectionfailure);
+			Snackbar.show(this, R.string.error_connectionfailure, e);
 		});
 
 	}
@@ -302,7 +302,7 @@ public final class RateActivity extends RateBeerActivity {
 		Db.deleteOfflineRating(this, rating, Session.get().getUserId()).compose(onIoToUi()).compose(bindToLifecycle())
 				.subscribe(refreshed -> {}, e -> {
 					Animations.fadeFlipIn(deleteButton, actionButton, uploadProgress);
-					Snackbar.show(this, R.string.error_connectionfailure);
+					Snackbar.show(this, R.string.error_connectionfailure, e);
 				}, this::finish);
 	}
 

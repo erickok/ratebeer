@@ -1,6 +1,14 @@
 apply plugin: 'com.android.application'
 apply plugin: 'me.tatarka.retrolambda'
 
+// Load keystore in root directory
+def keystoreProperties = new Properties()
+try {
+    keystoreProperties.load(new FileInputStream(rootProject.file("../ratebeer.keystore.properties")))
+} catch (Exception e) {
+    keystoreProperties.load(new FileInputStream(rootProject.file("ratebeer.keystore.properties")))
+}
+
 android {
     compileSdkVersion 23
     buildToolsVersion '23.0.2'
@@ -16,14 +24,28 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+    signingConfigs {
+        release {
+            storeFile file(keystoreProperties['storeFile'])
+            storePassword keystoreProperties['storePassword']
+            keyAlias keystoreProperties['keyAlias']
+            keyPassword keystoreProperties['keyPassword']
+        }
+    }
     buildTypes {
         debug {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+        debugSigned {
+            debuggable true
+            signingConfig signingConfigs.release
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
         beta {
             applicationIdSuffix '.beta'
-            //versionNameSuffix '-BETA'
+            versionNameSuffix '-BETA'
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }

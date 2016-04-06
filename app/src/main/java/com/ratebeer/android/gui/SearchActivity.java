@@ -64,7 +64,7 @@ public class SearchActivity extends RateBeerActivity {
 				.compose(toIo())
 				.switchMap(query ->
 						Api.get().searchBeers(query.toString()).toList()
-								.doOnError(e -> Snackbar.show(SearchActivity.this, R.string.error_connectionfailure))
+								.doOnError(e -> Snackbar.show(SearchActivity.this, R.string.error_connectionfailure, e))
 								.onErrorResumeNext(Observable.empty()))
 				.compose(toUi())
 				.compose(bindToLifecycle())

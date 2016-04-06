@@ -38,7 +38,7 @@ public final class SignInActivity extends RateBeerActivity {
 		String password = ((EditText) findViewById(R.id.password_edit)).getText().toString();
 
 		if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password)) {
-			Snackbar.show(this, R.string.error_nouserorpass);
+			Snackbar.show(this, R.string.error_nouserorpass, null);
 			return;
 		}
 
@@ -48,7 +48,7 @@ public final class SignInActivity extends RateBeerActivity {
 			navigateUp(); // Restart main activity to refresh activities state
 			finish();
 		}, e -> {
-			Snackbar.show(this, R.string.error_authenticationfailed);
+			Snackbar.show(this, R.string.error_authenticationfailed, e);
 			Animations.fadeFlip(decisionLayout, loginProgress);
 		});
 	}

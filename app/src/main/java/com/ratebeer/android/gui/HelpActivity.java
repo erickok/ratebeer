@@ -62,7 +62,7 @@ public final class HelpActivity extends RateBeerActivity {
 				navigateUp(); // Restart main activity to refresh activities state
 				finish();
 			}, e -> {
-				Snackbar.show(this, R.string.error_connectionfailure);
+				Snackbar.show(this, R.string.error_connectionfailure, e);
 				Animations.fadeFlip(signInOutButton, signoutProgress);
 			});
 		}
