@@ -1,6 +1,7 @@
 package com.ratebeer.android.api;
 
 import com.ratebeer.android.api.model.BarcodeSearchResult;
+import com.ratebeer.android.api.model.BeerAliasId;
 import com.ratebeer.android.api.model.BeerDetails;
 import com.ratebeer.android.api.model.BeerRating;
 import com.ratebeer.android.api.model.BeerSearchResult;
@@ -16,6 +17,7 @@ import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.Path;
 import retrofit2.http.Query;
 import rx.Observable;
 
@@ -52,6 +54,10 @@ interface Routes {
 	@GET("gr.asp")
 	Observable<List<BeerRating>> getBeerRatings(@Query("k") String key, @Query("bid") int beerId, @Query("uid") Integer userId, @Query("p") int page,
 												@Query("s") int sortOrder);
+
+	// NOTE This is an html page, parsed manually via the HtmlConverterFactory
+	@GET("/beer/alias/{beerId}/")
+	Observable<BeerAliasId> getBeerAlias(@Path("beerId") int beerId);
 
 	@FormUrlEncoded
 	@POST("/saverating.asp")

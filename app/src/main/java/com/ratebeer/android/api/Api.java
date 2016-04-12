@@ -101,6 +101,7 @@ public final class Api {
 				.baseUrl(ENDPOINT)
 				.client(httpclient)
 				.addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+				.addConverterFactory(new HtmlConverterFactory())
 				.addConverterFactory(GsonConverterFactory.create(gson))
 				.build();
 		// @formatter:on
@@ -224,6 +225,13 @@ public final class Api {
 	 */
 	public Observable<BeerDetails> getBeerDetails(long beerId) {
 		return routes.getBeerDetails(KEY, (int) beerId).flatMapIterable(beers -> beers).first();
+	}
+
+	/**
+	 * Returns a single id of the beer that is aliased to from a certain beer id, or throws an exception if it could not be retrieved
+	 */
+	public Observable<Long> getBeerAlias(long beerId) {
+		return routes.getBeerAlias((int) beerId).filter(alias -> alias != null).first().map(alias -> alias.id);
 	}
 
 	/**

@@ -44,6 +44,8 @@ public final class BeerActivity extends RateBeerActivity {
 	private View labelsLayout;
 	private FloatingActionButton rateButton;
 
+	private long beerId;
+
 	public static Intent start(Context context, long beerId) {
 		return new Intent(context, BeerActivity.class).putExtra("beerId", beerId);
 	}
@@ -82,7 +84,7 @@ public final class BeerActivity extends RateBeerActivity {
 	private void refresh(boolean forceFresh) {
 
 		// Load beer from database or live, with a fallback on the bare beer name taken from an offline rating
-		long beerId = getIntent().getLongExtra("beerId", 0);
+		beerId = getIntent().getLongExtra("beerId", 0);
 		Db.getBeer(this, beerId, forceFresh).onErrorResumeNext(Db.getOfflineRatingForBeer(this, beerId).map(this::ratingToBeer)).compose(onIoToUi())
 				.compose(bindToLifecycle()).subscribe(this::showBeer, e -> Snackbar.show(this, R.string.error_connectionfailure));
 
@@ -121,7 +123,11 @@ public final class BeerActivity extends RateBeerActivity {
 		}
 
 		((TextView) findViewById(R.id.beer_name_text)).setText(beer.name);
-		if (beer.overallPercentile == null && beer.stylePercentile == null && beer.rateCount == 0 && beer.alcohol == null) {
+		if (beer.isAlias()) {
+			numbersLayout.setVisibility(View.GONE);
+			labelsLayout.setVisibility(View.GONE);
+			findViewById(R.id.alias_layout).setVisibility(View.VISIBLE);
+		} else if (beer.overallPercentile == null && beer.stylePercentile == null && beer.rateCount == 0 && beer.alcohol == null) {
 			// No additional beer numbers available at all: hide the numbers bar
 			numbersLayout.setVisibility(View.GONE);
 			labelsLayout.setVisibility(View.GONE);
@@ -181,6 +187,15 @@ public final class BeerActivity extends RateBeerActivity {
 		beer.name = rating.beerName;
 		beer.brewerName = rating.brewerName;
 		return beer;
+	}
+
+	public void openAlias(View view) {
+		// Look up the aliased beer id and open this beer instead (closing the current view)
+		Api.get().getBeerAlias(beerId).compose(onIoToUi())
+				.compose(bindToLifecycle()).subscribe(aliasBeerId -> {
+			startActivity(BeerActivity.start(this, aliasBeerId));
+			finish();
+		}, e -> Snackbar.show(this, R.string.error_connectionfailure));
 	}
 
 }
