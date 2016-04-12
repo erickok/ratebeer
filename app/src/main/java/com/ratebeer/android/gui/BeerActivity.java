@@ -84,7 +84,7 @@ public final class BeerActivity extends RateBeerActivity {
 		// Load beer from database or live, with a fallback on the bare beer name taken from an offline rating
 		long beerId = getIntent().getLongExtra("beerId", 0);
 		Db.getBeer(this, beerId, forceFresh).onErrorResumeNext(Db.getOfflineRatingForBeer(this, beerId).map(this::ratingToBeer)).compose(onIoToUi())
-				.compose(bindToLifecycle()).subscribe(this::showBeer, e -> Snackbar.show(this, R.string.error_connectionfailure, e));
+				.compose(bindToLifecycle()).subscribe(this::showBeer, e -> Snackbar.show(this, R.string.error_connectionfailure));
 
 		// Load beer ratings (always live) and the user's rating, if any exists in the database or live
 		Observable<BeerRating> ratings =
@@ -121,12 +121,7 @@ public final class BeerActivity extends RateBeerActivity {
 		}
 
 		((TextView) findViewById(R.id.beer_name_text)).setText(beer.name);
-		if (beer.isAlias()) {
-			// This is an alias: only provide a link to look up and open the aliased beer
-			numbersLayout.setVisibility(View.GONE);
-			labelsLayout.setVisibility(View.GONE);
-			findViewById(R.id.alias_layout).setVisibility(View.VISIBLE);
-		} else if (beer.overallPercentile == null && beer.stylePercentile == null && beer.rateCount == 0 && beer.alcohol == null) {
+		if (beer.overallPercentile == null && beer.stylePercentile == null && beer.rateCount == 0 && beer.alcohol == null) {
 			// No additional beer numbers available at all: hide the numbers bar
 			numbersLayout.setVisibility(View.GONE);
 			labelsLayout.setVisibility(View.GONE);
@@ -147,11 +142,9 @@ public final class BeerActivity extends RateBeerActivity {
 		}
 
 		Animations.fadeFlip(detailsLayout, loadingProgress);
-		rateButton.setVisibility(Session.get().isLoggedIn() && !beer.isAlias() ? View.VISIBLE : View.GONE);
+		rateButton.setVisibility(Session.get().isLoggedIn() ? View.VISIBLE : View.GONE);
 		RxView.clicks(rateButton).subscribe(clicked -> startActivity(RateActivity.start(this, beer._id)));
 		RxView.clicks(photoImage).subscribe(clicked -> startActivity(PhotoActivity.start(this, beer._id)));
-		RxView.clicks(findViewById(R.id.openalias_button)).compose(onUi()).compose(toIo()).flatMap(v -> Api.get().getBeerAlias(beer._id))
-				.compose(toUi()).compose(onUi()).subscribe(aliasId -> startActivity(BeerActivity.start(this, aliasId)));
 
 	}
 

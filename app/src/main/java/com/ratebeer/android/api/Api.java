@@ -55,8 +55,7 @@ public final class Api {
 	private static final String COOKIE_SESSIONID = "SessionID";
 	private static final int RATINGS_PER_PAGE = 100;
 
-	private final JsonRoutes jsonRoutes;
-	private final HtmlRoutes htmlRoutes;
+	private final Routes routes;
 	private final CookieManager cookieManager;
 
 	private static class Holder {
@@ -102,12 +101,10 @@ public final class Api {
 				.baseUrl(ENDPOINT)
 				.client(httpclient)
 				.addCallAdapterFactory(RxJavaCallAdapterFactory.create())
-				.addConverterFactory(new HtmlConverterFactory())
 				.addConverterFactory(GsonConverterFactory.create(gson))
 				.build();
 		// @formatter:on
-		jsonRoutes = retrofit.create(JsonRoutes.class);
-		htmlRoutes = retrofit.create(HtmlRoutes.class);
+		routes = retrofit.create(Routes.class);
 
 	}
 
@@ -125,7 +122,7 @@ public final class Api {
 	}
 
 	private Observable<Boolean> getLoginRoute(String username, String password) {
-		return jsonRoutes.login(username, password, "on").flatMap(result -> {
+		return routes.login(username, password, "on").flatMap(result -> {
 			if (haveLoginCookie()) {
 				return Observable.just(true);
 			} else {
@@ -149,14 +146,14 @@ public final class Api {
 		// @formatter:off
 		return Observable.zip(
 					// Combine the latest user counts
-					jsonRoutes.getUserInfo(KEY, username).subscribeOn(Schedulers.newThread()).flatMapIterable(infos -> infos).first(),
+					routes.getUserInfo(KEY, username).subscribeOn(Schedulers.newThread()).flatMapIterable(infos -> infos).first(),
 					// And sign in the user (get login cookies)
 					getLoginRoute(username, password).subscribeOn(Schedulers.newThread()),
 					(userInfo, loginSuccess) -> userInfo)
 				// Then add the user id the user's rate counts
 				.flatMap(user -> Observable.zip(
 						Observable.just(user),
-						jsonRoutes.getUserRateCount(KEY, user.userId).flatMapIterable(userRateCounts -> userRateCounts),
+						routes.getUserRateCount(KEY, user.userId).flatMapIterable(userRateCounts -> userRateCounts),
 						RxTuples.toPair()))
 				// Store in our own instance the new user data
 				.doOnNext(user -> Session.get().startSession(user.getValue0().userId, username, password, user.getValue1()))
@@ -169,7 +166,7 @@ public final class Api {
 	 * Calls the server to log out, clear cookies and clear our local session
 	 */
 	public Observable<Boolean> logout() {
-		return jsonRoutes.logout().map(result -> true).map(success -> cookieManager.getCookieStore().removeAll())
+		return routes.logout().map(result -> true).map(success -> cookieManager.getCookieStore().removeAll())
 				.doOnNext(success -> Session.get().endSession());
 	}
 
@@ -177,7 +174,7 @@ public final class Api {
 	 * Retrieves updated rate counts from the server and persists them in our user session before emitting the updated values
 	 */
 	public Observable<UserRateCount> updateUserRateCounts() {
-		return jsonRoutes.getUserRateCount(KEY, Session.get().getUserId()).flatMapIterable(userRateCounts -> userRateCounts)
+		return routes.getUserRateCount(KEY, Session.get().getUserId()).flatMapIterable(userRateCounts -> userRateCounts)
 				.doOnNext(counts -> Session.get().updateCounts(counts));
 	}
 
@@ -185,14 +182,14 @@ public final class Api {
 	 * Returns an observable sequence (list) of items that appear on the global news feed; does not require user login
 	 */
 	public Observable<FeedItem> getGlobalFeed() {
-		return jsonRoutes.getFeed(KEY, 1).flatMapIterable(items -> items);
+		return routes.getFeed(KEY, 1).flatMapIterable(items -> items);
 	}
 
 	/**
 	 * Returns an observable sequence (list) of items that appear on the local news feed; requires a user to be logged in for its locale
 	 */
 	public Observable<FeedItem> getLocalFeed() {
-		Observable<FeedItem> feed = jsonRoutes.getFeed(KEY, 2).flatMapIterable(items -> items);
+		Observable<FeedItem> feed = routes.getFeed(KEY, 2).flatMapIterable(items -> items);
 		if (!haveLoginCookie())
 			feed = feed.startWith(getLoginCookie());
 		return feed;
@@ -202,7 +199,7 @@ public final class Api {
 	 * Returns an observable sequence (list) of items that appear on the personalized friends feed; requires a user to be logged in
 	 */
 	public Observable<FeedItem> getFriendsFeed() {
-		Observable<FeedItem> feed = jsonRoutes.getFeed(KEY, 0).flatMapIterable(items -> items);
+		Observable<FeedItem> feed = routes.getFeed(KEY, 0).flatMapIterable(items -> items);
 		if (!haveLoginCookie())
 			feed = feed.startWith(getLoginCookie());
 		return feed;
@@ -212,43 +209,35 @@ public final class Api {
 	 * Returns an observable sequence (list) of beers (search results) for a text query
 	 */
 	public Observable<BeerSearchResult> searchBeers(String query) {
-		return jsonRoutes.searchBeers(KEY, Session.get().getUserId(), Normalizer.get().normalizeSearchQuery(query))
-				.flatMapIterable(results -> results);
+		return routes.searchBeers(KEY, Session.get().getUserId(), Normalizer.get().normalizeSearchQuery(query)).flatMapIterable(results -> results);
 	}
 
 	/**
 	 * Returns an observable sequence (list) of beers (search results) for a scanned UPC barcode
 	 */
 	public Observable<BarcodeSearchResult> searchByBarcode(String barcode) {
-		return jsonRoutes.searchByBarcode(KEY, barcode.trim()).flatMapIterable(results -> results);
+		return routes.searchByBarcode(KEY, barcode.trim()).flatMapIterable(results -> results);
 	}
 
 	/**
 	 * Returns the full details for a beer, or throws an exception if it could not be retrieved
 	 */
 	public Observable<BeerDetails> getBeerDetails(long beerId) {
-		return jsonRoutes.getBeerDetails(KEY, (int) beerId).flatMapIterable(beers -> beers).first();
+		return routes.getBeerDetails(KEY, (int) beerId).flatMapIterable(beers -> beers).first();
 	}
 
 	/**
 	 * Returns a (possibly empty) observable sequence (list) of the most recent ratings for a beer
 	 */
 	public Observable<BeerRating> getBeerRatings(long beerId) {
-		return jsonRoutes.getBeerRatings(KEY, (int) beerId, null, 1, 1).flatMapIterable(ratings -> ratings);
+		return routes.getBeerRatings(KEY, (int) beerId, null, 1, 1).flatMapIterable(ratings -> ratings);
 	}
 
 	/**
 	 * Returns the beer rating of a specific user, or null if the user did not rate it yet
 	 */
 	public Observable<BeerRating> getBeerUserRating(long beerId, long userId) {
-		return jsonRoutes.getBeerRatings(KEY, (int) beerId, (int) userId, 1, 1).flatMapIterable(ratings -> ratings).firstOrDefault(null);
-	}
-
-	/**
-	 * Returns the id of the aliased beer given an id of a beer that is aliased, or throws an exception if it cannot be found
-	 */
-	public Observable<Integer> getBeerAlias(long beerId) {
-		return jsonRoutes.getBeerAlias((int) beerId).map(response -> response.body().toString()).map(integer -> Integer.parseInt(integer));
+		return routes.getBeerRatings(KEY, (int) beerId, (int) userId, 1, 1).flatMapIterable(ratings -> ratings).firstOrDefault(null);
 	}
 
 	/**
@@ -260,13 +249,12 @@ public final class Api {
 			return Observable.empty();
 		// Based on the up-to-date rate count, get all pages of ratings necessary and emit them in reverse order
 		Observable<Integer> pageCount =
-				jsonRoutes.getUserRateCount(KEY, Session.get().getUserId()).subscribeOn(Schedulers.io()).flatMapIterable(counts -> counts)
+				routes.getUserRateCount(KEY, Session.get().getUserId()).subscribeOn(Schedulers.io()).flatMapIterable(counts -> counts)
 						.doOnNext(counts -> Session.get().updateCounts(counts))
 						.map(counts -> (int) Math.ceil((float) counts.rateCount / RATINGS_PER_PAGE));
 		Observable<UserRating> ratings =
 				Observable.combineLatest(pageCount, pageCount.lift(new AsRangeOperator()).onBackpressureBuffer(), RxTuples.toPair()).flatMap(
-						page -> Observable
-								.combineLatest(Observable.just(page), jsonRoutes.getUserRatings(KEY, page.getValue1() + 1), RxTuples.toPair()))
+						page -> Observable.combineLatest(Observable.just(page), routes.getUserRatings(KEY, page.getValue1() + 1), RxTuples.toPair()))
 						.observeOn(AndroidSchedulers.mainThread()).doOnNext(
 						objects -> onPageProgress.call((((float) objects.getValue0().getValue1() + 1) / objects.getValue0().getValue0()) * 100))
 						.observeOn(Schedulers.io()).flatMapIterable(Pair::getValue1);
@@ -283,13 +271,12 @@ public final class Api {
 		// NOTE Manually encode the comments, as RB only accepts ISO-8859-1 encoding here...
 		String comments = Normalizer.urlEncode(rating.comments);
 		if (rating.ratingId == null)
-			post = jsonRoutes
-					.postRating(rating.beerId.intValue(), rating.aroma, rating.appearance, rating.flavor, rating.mouthfeel, rating.overall, comments);
+			post = routes.postRating(rating.beerId.intValue(), rating.aroma, rating.appearance, rating.flavor, rating.mouthfeel, rating.overall,
+					comments);
 		else
-			post = jsonRoutes.updateRating(rating.beerId.intValue(), rating.ratingId.intValue(), rating.aroma, rating.appearance, rating.flavor,
+			post = routes.updateRating(rating.beerId.intValue(), rating.ratingId.intValue(), rating.aroma, rating.appearance, rating.flavor,
 					rating.mouthfeel, rating.overall, comments);
-		return post
-				.flatMap(posted -> jsonRoutes.getBeerRatings(KEY, rating.beerId.intValue(), (int) userId, 1, 1).flatMapIterable(ratings -> ratings))
+		return post.flatMap(posted -> routes.getBeerRatings(KEY, rating.beerId.intValue(), (int) userId, 1, 1).flatMapIterable(ratings -> ratings))
 				.filter(storedRating -> storedRating.timeEntered != null).first();
 	}
 

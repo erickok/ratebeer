@@ -7,7 +7,6 @@ import android.widget.TextView;
 
 import com.ratebeer.android.ConnectivityHelper;
 import com.ratebeer.android.R;
-import com.ratebeer.android.db.RBLog;
 
 public final class Snackbar {
 
@@ -19,13 +18,10 @@ public final class Snackbar {
 		this.text = text;
 	}
 
-	public static void show(View view, int resId, Throwable error) {
+	public static void show(View view, int resId) {
 		// HACK Override error message when no connection is available at all
-		if (resId == R.string.error_connectionfailure &&
-				ConnectivityHelper.current(view.getContext()) == ConnectivityHelper.ConnectivityType.NoConnection)
+		if (resId == R.string.error_connectionfailure && ConnectivityHelper.current(view.getContext()) == ConnectivityHelper.ConnectivityType.NoConnection)
 			resId = R.string.error_connectionunavailable;
-		else if (error != null)
-			RBLog.e("Unexpected error", error);
 		new Snackbar(view, view.getContext().getString(resId)).show();
 	}
 
@@ -33,12 +29,10 @@ public final class Snackbar {
 		new Snackbar(view, text).show();
 	}
 
-	public static void show(Activity activity, int resId, Throwable error) {
+	public static void show(Activity activity, int resId) {
 		// HACK Override error message when no connection is available at all
 		if (resId == R.string.error_connectionfailure && ConnectivityHelper.current(activity) == ConnectivityHelper.ConnectivityType.NoConnection)
 			resId = R.string.error_connectionunavailable;
-		else if (error != null)
-			RBLog.e("Unexpected error", error);
 		new Snackbar(activity.findViewById(android.R.id.content), activity.getString(resId)).show();
 	}
 

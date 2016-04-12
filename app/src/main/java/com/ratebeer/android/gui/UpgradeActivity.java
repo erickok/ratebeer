@@ -69,7 +69,7 @@ public class UpgradeActivity extends RateBeerActivity {
 			startActivity(MainActivity.start(this));
 			finish();
 		}, e -> {
-			Snackbar.show(this, R.string.error_upgradefailed, e);
+			Snackbar.show(this, R.string.error_upgradefailed);
 			Animations.fadeFlip(decisionLayout, upgradeProgress);
 			// Allow skipping of the upgrade/login step
 			doSkip = true;

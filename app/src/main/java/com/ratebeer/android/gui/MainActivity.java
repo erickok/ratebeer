@@ -155,7 +155,7 @@ public class MainActivity extends RateBeerActivity {
 			Api.get().searchByBarcode(scanResult.getContents()).toList().compose(onIoToUi()).compose(bindToLifecycle()).subscribe(results -> {
 				Animations.fadeFlip(listsPager, loadingProgress);
 				if (results.size() == 0) {
-					Snackbar.show(this, R.string.search_noresults, null);
+					Snackbar.show(this, R.string.search_noresults);
 				} else if (results.size() == 1) {
 					// Exact match; directly open the beer
 					startActivity(BeerActivity.start(this, results.get(0).beerId));
@@ -164,7 +164,7 @@ public class MainActivity extends RateBeerActivity {
 					new AlertDialog.Builder(this).setAdapter(new BarcodeSearchResultsAdapter(this, results),
 							(dialogInterface, i) -> startActivity(BeerActivity.start(this, results.get(i).beerId))).show();
 				}
-			}, e -> Snackbar.show(this, R.string.error_connectionfailure, e));
+			}, e -> Snackbar.show(this, R.string.error_connectionfailure));
 		}
 	}
 
@@ -191,7 +191,7 @@ public class MainActivity extends RateBeerActivity {
 				} else {
 					// Emit a list of all stored ratings
 					return Db.getRatings(this).subscribeOn(Schedulers.io()).toList().doOnError(e -> {
-						Snackbar.show(this, R.string.error_connectionfailure, e);
+						Snackbar.show(this, R.string.error_connectionfailure);
 						e.printStackTrace();
 					}).onErrorResumeNext(Observable.just(new ArrayList<>()));
 				}
@@ -229,7 +229,7 @@ public class MainActivity extends RateBeerActivity {
 					((FeedItemsAdapter) view.getAdapter()).update(feed);
 			}, e -> {
 				Animations.fadeFlip(listsPager, loadingProgress);
-				Snackbar.show(this, R.string.error_connectionfailure, e);
+				Snackbar.show(this, R.string.error_connectionfailure);
 			}, () -> Animations.fadeFlip(listsPager, loadingProgress));
 			rateButton.hide();
 

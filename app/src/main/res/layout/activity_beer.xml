@@ -198,31 +198,6 @@
 		app:layout_behavior="@string/appbar_scrolling_view_behavior"
 		tools:listitem="@layout/list_item_beer_rating" />
 
-	<LinearLayout
-		android:id="@+id/alias_layout"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:orientation="vertical"
-		android:visibility="gone"
-		app:layout_anchor="@id/labels_layout"
-		app:layout_anchorGravity="center"
-		tools:visibility="visible">
-
-		<TextView
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_marginBottom="4dp"
-			android:text="@string/beer_isalias" />
-
-		<Button
-			android:id="@+id/openalias_button"
-			style="@style/AppButton.Orange"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:text="@string/beer_openalias" />
-
-	</LinearLayout>
-
 	<android.support.design.widget.FloatingActionButton
 		android:id="@+id/rate_button"
 		android:layout_width="wrap_content"
