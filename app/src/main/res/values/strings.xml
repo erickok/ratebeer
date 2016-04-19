@@ -25,6 +25,7 @@
 	<string name="main_friends">Friends</string>
 	<string name="main_local">Local</string>
 	<string name="main_global">Global</string>
+	<string name="main_nearby">Nearby</string>
 
 	<string name="feed_isdrinking">is drinking</string>
 	<string name="feed_wasawarded">was awarded</string>
@@ -65,6 +66,9 @@
 	<string name="rate_error_norating">You have not yet finished your scoring</string>
 	<string name="rate_error_commentlength">You comment must be at lesat 80 characters</string>
 
+	<string name="place_km">km</string>
+	<string name="place_miles">m</string>
+
 	<string name="sync_usesync">Tap to synchronize your ratings</string>
 	<string name="sync_insync">Synchronizing your ratings</string>
 	<string name="sync_error">Ratings synchronization failed</string>
@@ -81,11 +85,17 @@
 	<string name="help_useragreement">User agreement</string>
 
 	<string name="settings_savedata">Data saver mode (photos on wifi only)</string>
+	<string name="settings_metricunits">Use metric units (meters, liters)</string>
 
 	<string name="error_connectionunavailable">No wifi or mobile network available</string>
 	<string name="error_connectionfailure">Connection failure - your connection is poor or RateBeer is not responding</string>
 	<string name="error_upgradefailed">Sorry, your account could not be upgraded</string>
 	<string name="error_authenticationfailed">Your username or password is incorrect</string>
 	<string name="error_nouserorpass">Both username and password are required fields</string>
+	<string name="error_noratings">No ratings yet!\n\nTime to crack open a beer…</string>
+	<string name="error_nofeeditems">No recent activity here…</string>
+	<string name="error_noplaces">No places can be found around you</string>
+	<string name="error_nolocationpermission">This feature requires access to your location.\n\nYour location is only coarsely determined - roughly a city block - and is never shared in any way or even send to RateBeer.</string>
+	<string name="error_locationpermissionrequired">Location access denied: nearby places not available</string>
 
 </resources>

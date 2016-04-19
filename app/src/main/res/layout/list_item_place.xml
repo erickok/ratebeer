@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/list_item_margin_bottom"
+                android:background="?android:attr/selectableItemBackground">
+
+    <FrameLayout
+        android:id="@+id/distance_layout"
+        android:layout_width="@dimen/block_size"
+        android:layout_height="@dimen/block_size"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        tools:background="@color/blue_main">
+
+        <TextView
+            android:id="@+id/distance_amount_text"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:paddingBottom="10sp"
+            android:textColor="@android:color/white"
+            android:textSize="25sp"
+            tools:text="13.3"/>
+
+        <TextView
+            android:id="@+id/distance_unit_text"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:paddingTop="28sp"
+            android:textColor="@android:color/white"
+            android:textSize="15sp"
+            tools:text="@string/place_km"/>
+
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/place_name_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="2dp"
+        android:layout_marginTop="8dp"
+        android:layout_toEndOf="@+id/distance_layout"
+        android:layout_toRightOf="@+id/distance_layout"
+        android:fontFamily="sans-serif-condensed"
+        android:textColor="@android:color/black"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        tools:text="The World of Drinks Krabbendijke"/>
+
+    <TextView
+        android:id="@+id/place_city_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/place_name_text"
+        android:layout_marginBottom="8dp"
+        android:layout_toEndOf="@+id/distance_layout"
+        android:layout_toRightOf="@+id/distance_layout"
+        android:fontFamily="sans-serif-condensed"
+        android:textColor="@android:color/black"
+        android:textSize="16sp"
+        tools:text="Krabbendijke"/>
+
+</RelativeLayout>

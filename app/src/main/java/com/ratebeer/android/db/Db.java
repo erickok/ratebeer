@@ -2,6 +2,7 @@ package com.ratebeer.android.db;
 
 import android.content.Context;
 import android.database.DatabaseUtils;
+import android.location.Location;
 
 import com.pacoworks.rxtuples.RxTuples;
 import com.ratebeer.android.ConnectivityHelper;
@@ -122,6 +123,22 @@ public final class Db {
 				// Was stored online, so refresh from the RB server our local rating instance
 				return getRating(context, deletedRating.beerId, userId);
 		});
+	}
+
+	public static Observable<Place> getPlacesNearby(Context context, Location location) {
+		int radius = 40000; // Meters
+		// Fresh (from the sever) places are received in a 40 kilometer (±25 mile) radius
+		Observable<Place> fresh = api().getPlacesNearby((int) (radius * 0.0001609344D), location.getLatitude(), location.getLongitude()).map
+				(Place::fromNearby);
+		// Database places are received in a rough rectangular area of 40 kilometers (±0.4 degrees) in each direction
+		final double accuracy = radius / 111111;
+		String minLat = Double.toString(location.getLatitude() - accuracy);
+		String maxLat = Double.toString(location.getLatitude() + accuracy);
+		String minLong = Double.toString(location.getLongitude() - accuracy);
+		String maxLong = Double.toString(location.getLongitude() + accuracy);
+		Observable<Place> db = rxdb(context).query(Place.class, "(latitude BETWEEN ? AND ?) AND (longitude BETWEEN ? AND ?)",
+				minLat, maxLat, minLong, maxLong);
+		return Observable.merge(fresh, db);
 	}
 
 	private static <T> Observable<T> getFresh(Observable<T> db, Observable<T> server, Func1<T, Boolean> isFresh) {

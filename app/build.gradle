@@ -35,9 +35,10 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support:appcompat-v7:23.2.1'
-    compile 'com.android.support:design:23.2.1'
-    compile 'com.android.support:recyclerview-v7:23.2.1'
+    compile 'com.android.support:appcompat-v7:23.3.0'
+    compile 'com.android.support:design:23.3.0'
+    compile 'com.android.support:recyclerview-v7:23.3.0'
+    compile 'com.google.android.gms:play-services-location:8.4.0'
 
     compile 'io.reactivex:rxandroid:1.1.0'
     compile 'com.jakewharton.rxbinding:rxbinding:0.3.0'
@@ -51,6 +52,6 @@ dependencies {
     compile 'nl.2312:rxcupboard:0.7'
 
     compile 'com.squareup.picasso:picasso:2.5.2'
-    //compile 'pl.charmas.android:android-reactive-location:0.7@aar'
+    compile 'pl.charmas.android:android-reactive-location:0.8@aar'
     compile 'net.yslibrary.keyboardvisibilityevent:keyboardvisibilityevent:1.0.1'
 }

@@ -56,11 +56,11 @@
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_gravity="end|center_vertical"
-						android:padding="10dp"
 						android:layout_marginEnd="18dp"
 						android:layout_marginRight="18dp"
 						android:background="@drawable/back_selectable"
 						android:contentDescription="@string/search_scan"
+						android:padding="10dp"
 						android:src="@drawable/ic_action_barcode" />
 
 				</FrameLayout>
@@ -130,6 +130,19 @@
 		android:drawableTop="@mipmap/ic_launcher"
 		android:paddingTop="19dp"
 		android:text="@string/sync_usesync"
+		android:visibility="gone"
+		app:layout_anchor="@id/lists_pager"
+		app:layout_anchorGravity="center"
+		tools:visibility="visible" />
+
+	<TextView
+		android:id="@+id/empty_text"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:paddingTop="19dp"
+		android:layout_margin="24dp"
+		android:gravity="center_horizontal"
+		android:text="@string/error_nolocationpermission"
 		android:visibility="gone"
 		app:layout_anchor="@id/lists_pager"
 		app:layout_anchorGravity="center"

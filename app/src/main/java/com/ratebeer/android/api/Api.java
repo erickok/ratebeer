@@ -17,6 +17,8 @@ import com.ratebeer.android.api.model.BeerSearchResult;
 import com.ratebeer.android.api.model.BeerSearchResultDeserializer;
 import com.ratebeer.android.api.model.FeedItem;
 import com.ratebeer.android.api.model.FeedItemDeserializer;
+import com.ratebeer.android.api.model.PlaceDetails;
+import com.ratebeer.android.api.model.PlaceNearby;
 import com.ratebeer.android.api.model.UserInfo;
 import com.ratebeer.android.api.model.UserInfoDeserializer;
 import com.ratebeer.android.api.model.UserRateCount;
@@ -286,6 +288,20 @@ public final class Api {
 					rating.mouthfeel, rating.overall, comments);
 		return post.flatMap(posted -> routes.getBeerRatings(KEY, rating.beerId.intValue(), (int) userId, 1, 1).flatMapIterable(ratings -> ratings))
 				.filter(storedRating -> storedRating.timeEntered != null).first();
+	}
+
+	/**
+	 * Returns a (possibly empty) observable sequence (list) of nearby places
+	 */
+	public Observable<PlaceNearby> getPlacesNearby(int radius, double latitude, double longitude) {
+		return routes.getPlacesNearby(KEY, radius, latitude, longitude).flatMapIterable(places -> places);
+	}
+
+	/**
+	 * Returns the full details for a place, or throws an exception if it could not be retrieved
+	 */
+	public Observable<PlaceDetails> getPlaceDetails(long placeId) {
+		return routes.getPlaceDetails(KEY, (int) placeId).flatMapIterable(places -> places).first();
 	}
 
 }
