@@ -18,7 +18,9 @@ import com.ratebeer.android.api.model.BeerSearchResultDeserializer;
 import com.ratebeer.android.api.model.FeedItem;
 import com.ratebeer.android.api.model.FeedItemDeserializer;
 import com.ratebeer.android.api.model.PlaceDetails;
+import com.ratebeer.android.api.model.PlaceDetailsDeserializer;
 import com.ratebeer.android.api.model.PlaceNearby;
+import com.ratebeer.android.api.model.PlaceNearbyDeserializer;
 import com.ratebeer.android.api.model.UserInfo;
 import com.ratebeer.android.api.model.UserInfoDeserializer;
 import com.ratebeer.android.api.model.UserRateCount;
@@ -98,6 +100,8 @@ public final class Api {
 				.registerTypeAdapter(BarcodeSearchResult.class, new BarcodeSearchResultDeserializer())
 				.registerTypeAdapter(BeerDetails.class, new BeerDetailsDeserializer())
 				.registerTypeAdapter(BeerRating.class, new BeerRatingDeserializer())
+				.registerTypeAdapter(PlaceNearby.class, new PlaceNearbyDeserializer())
+				.registerTypeAdapter(PlaceDetails.class, new PlaceDetailsDeserializer())
 				.create();
 		Retrofit retrofit = new Retrofit.Builder()
 				.baseUrl(ENDPOINT)

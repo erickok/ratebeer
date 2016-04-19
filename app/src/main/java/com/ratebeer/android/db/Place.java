@@ -64,7 +64,7 @@ public final class Place {
 		return place;
 	}
 
-	public static Place fromNearby(PlaceDetails details) {
+	public static Place fromDetails(PlaceDetails details) {
 		Place place = new Place();
 		place._id = details.placeId;
 		place.name = details.placeName;

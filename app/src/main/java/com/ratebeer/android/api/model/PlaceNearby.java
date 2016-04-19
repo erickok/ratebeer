@@ -13,7 +13,7 @@ public class PlaceNearby {
 	public String phoneNumber;
 	public Float averageRating;
 	public int rateCount;
-	public float latitude;
-	public float longitude;
+	public Float latitude;
+	public Float longitude;
 
 }

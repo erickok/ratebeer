@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import com.ratebeer.android.R;
 import com.ratebeer.android.Session;
+import com.ratebeer.android.api.ImageUrls;
 import com.ratebeer.android.gui.UnitHelper;
 
 import java.util.List;
@@ -34,6 +35,7 @@ public final class LocalPlacesAdapter extends RecyclerView.Adapter<LocalPlacesAd
 	@Override
 	public void onBindViewHolder(ViewHolder holder, int position) {
 		LocalPlace place = places.get(position);
+		holder.distanceLayout.setBackgroundColor(ImageUrls.getColor(position));
 		holder.distanceUnitText.setText(unitString);
 		holder.distanceAmountText.setText(String.format(Locale.getDefault(), "%.1f", UnitHelper.asKmOrMiles(place.distance, useMetricUnits)));
 		holder.placeNameText.setText(place.place.name);
@@ -57,6 +59,7 @@ public final class LocalPlacesAdapter extends RecyclerView.Adapter<LocalPlacesAd
 	static class ViewHolder extends RecyclerView.ViewHolder {
 
 		final View rowLayout;
+		final View distanceLayout;
 		final TextView distanceAmountText;
 		final TextView distanceUnitText;
 		final TextView placeNameText;
@@ -65,6 +68,7 @@ public final class LocalPlacesAdapter extends RecyclerView.Adapter<LocalPlacesAd
 		public ViewHolder(View v) {
 			super(v);
 			rowLayout = v;
+			distanceLayout = v.findViewById(R.id.distance_layout);
 			distanceAmountText = (TextView) v.findViewById(R.id.distance_amount_text);
 			distanceUnitText = (TextView) v.findViewById(R.id.distance_unit_text);
 			placeNameText = (TextView) v.findViewById(R.id.place_name_text);

@@ -128,8 +128,8 @@ public final class Db {
 	public static Observable<Place> getPlacesNearby(Context context, Location location) {
 		int radius = 40000; // Meters
 		// Fresh (from the sever) places are received in a 40 kilometer (±25 mile) radius
-		Observable<Place> fresh = api().getPlacesNearby((int) (radius * 0.0001609344D), location.getLatitude(), location.getLongitude()).map
-				(Place::fromNearby);
+		Observable<Place> fresh = api().getPlacesNearby((int) (radius * 0.000621371192D), location.getLatitude(), location.getLongitude()).map
+				(Place::fromNearby).flatMap(place -> rxdb(context).putRx(place));
 		// Database places are received in a rough rectangular area of 40 kilometers (±0.4 degrees) in each direction
 		final double accuracy = radius / 111111;
 		String minLat = Double.toString(location.getLatitude() - accuracy);

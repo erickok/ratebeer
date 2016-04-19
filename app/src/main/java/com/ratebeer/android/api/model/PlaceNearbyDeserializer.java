@@ -22,7 +22,8 @@ public final class PlaceNearbyDeserializer implements JsonDeserializer<PlaceNear
 
 		placeNearby.address = Normalizer.get().cleanHtml(object.get("Address").getAsString());
 		placeNearby.city = Normalizer.get().cleanHtml(object.get("City").getAsString());
-		placeNearby.postalCode = Normalizer.get().cleanHtml(object.get("PostalCode").getAsString());
+		if (object.has("PostalCode") && !(object.get("PostalCode") instanceof JsonNull))
+			placeNearby.postalCode = Normalizer.get().cleanHtml(object.get("PostalCode").getAsString());
 		if (object.has("CountryID") && !(object.get("CountryID") instanceof JsonNull))
 			placeNearby.countryId = object.get("CountryID").getAsInt();
 		if (object.has("StateId") && !(object.get("StateID") instanceof JsonNull))

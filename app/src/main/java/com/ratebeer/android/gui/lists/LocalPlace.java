@@ -26,7 +26,7 @@ public final class LocalPlace implements Comparable<LocalPlace> {
 
 	@Override
 	public int compareTo(LocalPlace another) {
-		return -Float.compare(distance == null ? Float.MAX_VALUE : distance, another == null || another.distance == null ? Float.MAX_VALUE :
+		return Float.compare(distance == null ? Float.MAX_VALUE : distance, another == null || another.distance == null ? Float.MAX_VALUE :
 				another.distance);
 	}
 

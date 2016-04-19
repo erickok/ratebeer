@@ -30,6 +30,7 @@ import com.pacoworks.rxtuples.RxTuples;
 import com.ratebeer.android.R;
 import com.ratebeer.android.Session;
 import com.ratebeer.android.api.Api;
+import com.ratebeer.android.api.ImageUrls;
 import com.ratebeer.android.api.model.FeedItem;
 import com.ratebeer.android.db.Db;
 import com.ratebeer.android.db.HistoricSearch;
@@ -285,8 +286,8 @@ public class MainActivity extends RateBeerActivity implements ActivityCompat.OnR
 				// No permission yet to use the user location
 				emptyText.setVisibility(View.VISIBLE);
 				emptyText.setText(R.string.error_nolocationpermission);
-				if (!ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_COARSE_LOCATION))
-					preventLocationPermissionRequest = true;
+				/*if (!ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_COARSE_LOCATION))
+					preventLocationPermissionRequest = true;*/
 				if (!preventLocationPermissionRequest)
 					ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, REQUEST_LOCATION_PERMISSION);
 				return;
@@ -297,9 +298,9 @@ public class MainActivity extends RateBeerActivity implements ActivityCompat.OnR
 			Animations.fadeFlip(loadingProgress, listsPager);
 			ItemClickSupport.addTo(view).setOnItemClickListener((parent, pos, v) -> openLocalPlace(((LocalPlacesAdapter) view.getAdapter()).get
 					(pos)));
-			Observable<Location> lastOrQuickLocation = new RxLocation(this).getLastOrQuickLocation();
-			Observable.combineLatest(lastOrQuickLocation, lastOrQuickLocation.flatMap(showLocation -> Db.getPlacesNearby(this, showLocation)),
-					RxTuples.toPair()).map(place -> LocalPlace.from(place.getValue1(), place.getValue0())).toSortedList().compose(onIoToUi())
+			Observable<Location> lastOrQuickLocation = new RxLocation(this).getLastOrQuickLocation().compose(onUi());
+			Observable.combineLatest(lastOrQuickLocation, lastOrQuickLocation.compose(toIo()).flatMap(showLocation -> Db.getPlacesNearby(this, showLocation)),
+					RxTuples.toPair()).map(place -> LocalPlace.from(place.getValue1(), place.getValue0())).toSortedList().compose(toUi())
 					.compose(bindToLifecycle()).subscribe(places -> {
 				if (view.getAdapter() == null)
 					view.setAdapter(new LocalPlacesAdapter(this, places));
