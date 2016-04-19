@@ -12,7 +12,7 @@ import rx.Observable;
 
 public final class RxLocation {
 
-	private static final long WAITTIME_SHORT = 50000;
+	private static final long WAITTIME_SHORT = 5000;
 
 	private final ReactiveLocationProvider provider;
 

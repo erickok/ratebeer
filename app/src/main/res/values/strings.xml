@@ -37,6 +37,8 @@
 	<string name="beer_overall">Overall</string>
 	<string name="beer_instyle">Style</string>
 	<string name="beer_ratecount">Ratings</string>
+	<string name="beer_weighted">Weighted</string>
+	<string name="beer_realavg">Average</string>
 	<string name="beer_abv">ABV</string>
 	<string name="beer_ibu">IBU</string>
 	<string name="beer_calories">Calories</string>
@@ -66,8 +68,23 @@
 	<string name="rate_error_norating">You have not yet finished your scoring</string>
 	<string name="rate_error_commentlength">You comment must be at lesat 80 characters</string>
 
+	<string name="place_typelocation">%1$s in %2$s</string>
 	<string name="place_km">km</string>
 	<string name="place_miles">m</string>
+	<string name="place_taps">%1$s taps</string>
+	<string name="place_bottles">%1$s bottles</string>
+	<string name="place_checkin">Perform check-in</string>
+	<string name="place_opentimes">Open %1$s</string>
+
+	<string name="place_type_brewpub">A brewpub</string>
+	<string name="place_type_bar">A bar</string>
+	<string name="place_type_beerstore">A beer store</string>
+	<string name="place_type_restaurant">A restaurant</string>
+	<string name="place_type_brewery">A brewery/taproom</string>
+	<string name="place_type_homebrewshop">A homebrew shop</string>
+	<string name="place_type_grocerystore">A grocery store</string>
+	<string name="place_type_internetbased">An internet-based store</string>
+	<string name="place_type_unkkown">A business</string>
 
 	<string name="sync_usesync">Tap to synchronize your ratings</string>
 	<string name="sync_insync">Synchronizing your ratings</string>
@@ -97,5 +114,6 @@
 	<string name="error_noplaces">No places can be found around you</string>
 	<string name="error_nolocationpermission">This feature requires access to your location.\n\nYour location is only coarsely determined - roughly a city block - and is never shared in any way or even send to RateBeer.</string>
 	<string name="error_locationpermissionrequired">Location access denied: nearby places not available</string>
+	<string name="error_cannotopenurl">This link cannot be opened on your device</string>
 
 </resources>

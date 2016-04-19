@@ -22,7 +22,8 @@ public final class PlaceDetailsDeserializer implements JsonDeserializer<PlaceDet
 
 		placeDetails.address = Normalizer.get().cleanHtml(object.get("Address").getAsString());
 		placeDetails.city = Normalizer.get().cleanHtml(object.get("City").getAsString());
-		placeDetails.postalCode = Normalizer.get().cleanHtml(object.get("PostalCode").getAsString());
+		if (object.has("PostalCode") && !(object.get("PostalCode") instanceof JsonNull))
+			placeDetails.postalCode = Normalizer.get().cleanHtml(object.get("PostalCode").getAsString());
 		if (object.has("CountryID") && !(object.get("CountryID") instanceof JsonNull))
 			placeDetails.countryId = object.get("CountryID").getAsInt();
 		if (object.has("StateId") && !(object.get("StateID") instanceof JsonNull))
@@ -36,9 +37,12 @@ public final class PlaceDetailsDeserializer implements JsonDeserializer<PlaceDet
 		if (object.has("Twitter") && !(object.get("Twitter") instanceof JsonNull))
 			placeDetails.twitter = Normalizer.get().cleanHtml(object.get("Twitter").getAsString());
 
-		placeDetails.taps = Normalizer.get().cleanHtml(object.get("Taps").getAsString());
-		placeDetails.bottles = Normalizer.get().cleanHtml(object.get("Bottles").getAsString());
-		placeDetails.hours = Normalizer.get().cleanHtml(object.get("Hours").getAsString());
+		if (object.has("Taps") && !(object.get("Taps") instanceof JsonNull))
+			placeDetails.taps = Normalizer.get().cleanHtml(object.get("Taps").getAsString());
+		if (object.has("Bottles") && !(object.get("Bottles") instanceof JsonNull))
+			placeDetails.bottles = Normalizer.get().cleanHtml(object.get("Bottles").getAsString());
+		if (object.has("Hours") && !(object.get("Hours") instanceof JsonNull))
+			placeDetails.hours = Normalizer.get().cleanHtml(object.get("Hours").getAsString());
 		if (object.has("UserID") && !(object.get("UserID") instanceof JsonNull))
 			placeDetails.userId = object.get("UserID").getAsLong();
 		if (object.has("BrewerID") && !(object.get("BrewerID") instanceof JsonNull))

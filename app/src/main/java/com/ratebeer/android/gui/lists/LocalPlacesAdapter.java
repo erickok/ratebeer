@@ -35,7 +35,7 @@ public final class LocalPlacesAdapter extends RecyclerView.Adapter<LocalPlacesAd
 	@Override
 	public void onBindViewHolder(ViewHolder holder, int position) {
 		LocalPlace place = places.get(position);
-		holder.distanceLayout.setBackgroundColor(ImageUrls.getColor(position));
+		holder.distanceLayout.setBackgroundResource(ImageUrls.getColor(position));
 		holder.distanceUnitText.setText(unitString);
 		holder.distanceAmountText.setText(String.format(Locale.getDefault(), "%.1f", UnitHelper.asKmOrMiles(place.distance, useMetricUnits)));
 		holder.placeNameText.setText(place.place.name);

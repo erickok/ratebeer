@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+												 xmlns:app="http://schemas.android.com/apk/res-auto"
+												 xmlns:tools="http://schemas.android.com/tools"
+												 android:layout_width="match_parent"
+												 android:layout_height="match_parent"
+												 android:fitsSystemWindows="true"
+												 android:orientation="vertical"
+												 tools:context=".gui.PlaceActivity">
+
+	<android.support.design.widget.AppBarLayout
+		android:id="@+id/appbar_layout"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:fitsSystemWindows="true"
+		app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
+		<android.support.design.widget.CollapsingToolbarLayout
+			android:id="@+id/collapsing_toolbar"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:fitsSystemWindows="true"
+			app:contentScrim="@color/grey_light"
+			app:layout_scrollFlags="scroll|enterAlways">
+
+			<View
+				android:id="@+id/map_placeholder"
+				android:layout_width="match_parent"
+				android:layout_height="200dp" />
+
+			<com.google.android.gms.maps.MapView
+				android:id="@+id/map_view"
+				android:layout_width="match_parent"
+				android:layout_height="200dp"
+				android:visibility="gone"
+				app:cameraZoom="17	"
+				app:liteMode="true" />
+
+			<android.support.v7.widget.Toolbar
+				android:id="@+id/main_toolbar"
+				android:layout_width="match_parent"
+				android:layout_height="?attr/actionBarSize"
+				app:layout_collapseMode="pin"
+				app:layout_scrollFlags="scroll|enterAlways"
+				app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+
+		</android.support.design.widget.CollapsingToolbarLayout>
+
+		<FrameLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			app:layout_anchor="@id/appbar_layout"
+			app:layout_anchorGravity="bottom">
+
+			<LinearLayout
+				android:id="@+id/details_layout"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:orientation="vertical"
+				android:visibility="invisible"
+				tools:visibility="visible">
+
+				<LinearLayout
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:orientation="vertical"
+					android:paddingBottom="8dp"
+					android:paddingEnd="16dp"
+					android:paddingLeft="16dp"
+					android:paddingRight="16dp"
+					android:paddingStart="16dp"
+					android:paddingTop="8dp">
+
+					<TextView
+						android:id="@+id/place_name_text"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:fontFamily="sans-serif-condensed"
+						android:textColor="@android:color/white"
+						android:textSize="30sp"
+						tools:text="The World of Drinks Krabbendijke" />
+
+					<TextView
+						android:id="@+id/place_location_text"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:layout_marginTop="2dp"
+						android:fontFamily="sans-serif-condensed"
+						android:textColor="@android:color/black"
+						android:textSize="20sp"
+						tools:text="A shop in Krabbendijke, Belgium" />
+
+				</LinearLayout>
+
+				<LinearLayout
+					android:id="@+id/numbers_layout"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:background="@color/yellow_main"
+					android:orientation="horizontal"
+					android:paddingEnd="32dp"
+					android:paddingLeft="32dp"
+					android:paddingRight="32dp"
+					android:paddingStart="32dp"
+					android:paddingTop="4dp">
+
+					<TextView
+						android:id="@+id/mark_overall_text"
+						style="@style/Marker.Number"
+						tools:text="80" />
+
+					<TextView
+						android:id="@+id/mark_count_text"
+						style="@style/Marker.Number"
+						tools:text="93" />
+
+					<TextView
+						android:id="@+id/mark_weighted_text"
+						style="@style/Marker.Number"
+						tools:text="4.95" />
+
+				</LinearLayout>
+
+				<LinearLayout
+					android:id="@+id/labels_layout"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:background="@color/yellow_main"
+					android:orientation="horizontal"
+					android:paddingBottom="8dp"
+					android:paddingEnd="32dp"
+					android:paddingLeft="32dp"
+					android:paddingRight="32dp"
+					android:paddingStart="32dp">
+
+					<TextView
+						style="@style/Marker.Label"
+						android:text="@string/beer_overall" />
+
+					<TextView
+						style="@style/Marker.Label"
+						android:text="@string/beer_ratecount" />
+
+					<TextView
+						style="@style/Marker.Label"
+						android:text="@string/beer_weighted" />
+
+				</LinearLayout>
+
+			</LinearLayout>
+
+			<TextView
+				android:id="@+id/retired_badge"
+				style="@style/Badge.Retired"
+				android:layout_gravity="end"
+				android:layout_marginTop="8dp"
+				android:layout_marginRight="16dp"
+				android:layout_marginEnd="16dp"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/beer_retired"
+				android:visibility="gone"
+				tools:visibility="visible"/>
+
+			<ProgressBar
+				android:id="@+id/loading_progress"
+				style="@style/Widget.AppCompat.ProgressBar"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="center"
+				android:layout_marginBottom="16dp"
+				tools:background="@color/grey_dark" />
+
+		</FrameLayout>
+
+	</android.support.design.widget.AppBarLayout>
+
+	<ListView
+		android:id="@+id/properties_list"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:clipToPadding="false"
+		android:listSelector="@android:color/transparent"
+		android:divider="@null"
+		android:paddingBottom="8dp"
+		android:paddingTop="8dp"
+		app:layout_behavior="@string/appbar_scrolling_view_behavior"
+		tools:listitem="@layout/list_item_property" />
+
+</android.support.design.widget.CoordinatorLayout>

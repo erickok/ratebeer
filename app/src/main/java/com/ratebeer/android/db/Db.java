@@ -141,6 +141,18 @@ public final class Db {
 		return Observable.merge(fresh, db);
 	}
 
+	public static Observable<Place> getPlace(Context context, long placeId) {
+		return getPlace(context, placeId, false);
+	}
+
+	public static Observable<Place> getPlace(Context context, long placeId, boolean refresh) {
+		Observable<Place> fresh = api().getPlaceDetails(placeId).map(Place::fromDetails).flatMap(place -> rxdb(context).putRx(place));
+		if (refresh)
+			return fresh;
+		else
+			return getFresh(rxdb(context).get(Place.class, placeId), fresh, place -> isFresh(context, place.timeCached));
+	}
+
 	private static <T> Observable<T> getFresh(Observable<T> db, Observable<T> server, Func1<T, Boolean> isFresh) {
 		db = db.filter(item -> item != null);
 		return Observable.concat(Observable.concat(db, server).takeFirst(isFresh::call), db).take(1);

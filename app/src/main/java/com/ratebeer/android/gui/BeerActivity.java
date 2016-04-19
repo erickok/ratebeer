@@ -123,6 +123,7 @@ public final class BeerActivity extends RateBeerActivity {
 		}
 
 		((TextView) findViewById(R.id.beer_name_text)).setText(beer.name);
+
 		if (beer.isAlias()) {
 			numbersLayout.setVisibility(View.GONE);
 			labelsLayout.setVisibility(View.GONE);
@@ -142,6 +143,7 @@ public final class BeerActivity extends RateBeerActivity {
 			((TextView) findViewById(R.id.mark_ibu_text)).setText(beer.getIbuString());
 			((TextView) findViewById(R.id.mark_calories_text)).setText(beer.getCaloriesString());
 			// Show weighted and arithmetic averages when overall percentage is tapped
+			// TODO Make this score breakdown more findable and more attractive
 			RxView.clicks(markOverallText).subscribe(clicked -> new AlertDialog.Builder(this)
 					.setMessage(getString(R.string.beer_mark_breakdown, beer.getRealRatingString(), beer.getWeightedRatingString()))
 					.setPositiveButton(android.R.string.ok, null).show());

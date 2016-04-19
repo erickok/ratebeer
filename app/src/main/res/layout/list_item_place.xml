@@ -19,7 +19,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center"
-            android:paddingBottom="10sp"
+            android:paddingBottom="14sp"
             android:textColor="@android:color/white"
             android:textSize="24sp"
             tools:text="13.3"/>
@@ -29,7 +29,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center"
-            android:paddingTop="28sp"
+            android:paddingTop="26sp"
             android:textColor="@android:color/white"
             android:textSize="15sp"
             tools:text="@string/place_km"/>
