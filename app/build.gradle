@@ -1,6 +1,19 @@
 apply plugin: 'com.android.application'
 apply plugin: 'me.tatarka.retrolambda'
 
+// Load keystore in root directory
+def keystorePropertiesFileDebug = rootProject.file("../ratebeer.keystore.properties");
+def keystorePropertiesFileSigned = rootProject.file("../../ratebeer.keystore.properties");
+def keystorePropertiesDebug = new Properties()
+def keystorePropertiesSigned = new Properties()
+try {
+    keystorePropertiesDebug.load(new FileInputStream(keystorePropertiesFileDebug))
+    keystorePropertiesSigned.load(new FileInputStream(keystorePropertiesFileSigned))
+} catch (Exception e) {
+    // No signed keystore available in local installation: use debug keystore
+    keystorePropertiesSigned.load(new FileInputStream(keystorePropertiesFileDebug))
+}
+
 android {
     compileSdkVersion 23
     buildToolsVersion '23.0.2'
@@ -16,20 +29,34 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+    signingConfigs {
+        release {
+            storeFile file(keystorePropertiesDebug['storeFile'])
+            storePassword keystorePropertiesDebug['storePassword']
+            keyAlias keystorePropertiesDebug['keyAlias']
+            keyPassword keystorePropertiesDebug['keyPassword']
+        }
+        release {
+            storeFile file(keystorePropertiesSigned['storeFile'])
+            storePassword keystorePropertiesSigned['storePassword']
+            keyAlias keystorePropertiesSigned['keyAlias']
+            keyPassword keystorePropertiesSigned['keyPassword']
+        }
+    }
     buildTypes {
         debug {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.debug
         }
-        beta {
-            applicationIdSuffix '.beta'
-            //versionNameSuffix '-BETA'
-            minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        debugSigned {
+            debuggable true
+            minifyEnabled false
+            signingConfig signingConfigs.release
         }
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
 }
