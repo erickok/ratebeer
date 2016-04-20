@@ -44,6 +44,7 @@ public final class Db {
 		Observable<Rating> localRatings = rxdb(context)
 				.query(database(context).query(Rating.class).withSelection("beerId is not null and (" + whereBeerName + ")", whereArgs)
 						.orderBy("timeEntered IS NULL, timeEntered desc").limit(25));
+		// TODO Add places and brewers
 		return Observable.merge(lastHistoric.map(SearchSuggestion::fromHistoricSearch), localBeers.map(SearchSuggestion::fromBeer),
 				localRatings.map(SearchSuggestion::fromRating)).distinct(searchSuggestion -> searchSuggestion.suggestion);
 	}

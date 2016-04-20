@@ -161,7 +161,8 @@ public class MainActivity extends RateBeerActivity implements ActivityCompat.OnR
 	@Override
 	protected void onResume() {
 		super.onResume();
-		refreshTab(tabSelected);
+		if (tabTypes.get(tabSelected) == TAB_RATINGS)
+			refreshTab(tabSelected);
 		preventLocationPermissionRequest = false;
 	}
 

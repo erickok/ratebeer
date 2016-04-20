@@ -139,13 +139,13 @@
 		android:id="@+id/empty_text"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:paddingTop="19dp"
 		android:layout_margin="24dp"
 		android:gravity="center_horizontal"
-		android:text="@string/error_nolocationpermission"
+		android:paddingTop="19dp"
 		android:visibility="gone"
 		app:layout_anchor="@id/lists_pager"
 		app:layout_anchorGravity="center"
+		tools:text="@string/error_nolocationpermission"
 		tools:visibility="visible" />
 
 	<android.support.design.widget.FloatingActionButton

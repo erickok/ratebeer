@@ -17,7 +17,9 @@
 	<string name="signin_username">User name</string>
 	<string name="signin_password">Password</string>
 
-	<string name="search_hint">Search a beer…</string>
+	<string name="search_beers">Beers</string>
+	<string name="search_places">Places</string>
+	<string name="search_hint">Search a beer, place…</string>
 	<string name="search_scan">Scan barcode</string>
 	<string name="search_noresults">Nothing found</string>
 
@@ -114,6 +116,7 @@
 	<string name="error_noratings">No ratings yet!\n\nTime to crack open a beer…</string>
 	<string name="error_nofeeditems">No recent activity here…</string>
 	<string name="error_noplaces">No places can be found around you</string>
+	<string name="error_noresults">No results.\n\nTry using part of the name, but at least 3 characters.</string>
 	<string name="error_nolocationpermission">This feature requires access to your location.\n\nYour location is only coarsely determined - roughly a city block - and is never shared in any way or even send to RateBeer.</string>
 	<string name="error_locationpermissionrequired">Location access denied: nearby places not available</string>
 	<string name="error_cannotopenurl">This link cannot be opened on your device</string>

@@ -9,6 +9,7 @@ import com.ratebeer.android.api.model.FeedItem;
 import com.ratebeer.android.api.model.PlaceCheckinResult;
 import com.ratebeer.android.api.model.PlaceDetails;
 import com.ratebeer.android.api.model.PlaceNearby;
+import com.ratebeer.android.api.model.PlaceSearchResult;
 import com.ratebeer.android.api.model.UserInfo;
 import com.ratebeer.android.api.model.UserRateCount;
 import com.ratebeer.android.api.model.UserRating;
@@ -73,6 +74,9 @@ interface Routes {
 	Observable<Response<Void>> updateRating(@Field("BeerId") int beerId, @Field("RatingId") int ratingId, @Field("aroma") int aroma,
 											@Field("appearance") int appearance, @Field("flavor") int flavor, @Field("palate") int palate,
 											@Field("overall") int overall, @Field(value = "Comments", encoded = true) String comments);
+
+	@GET("psstring.asp")
+	Observable<List<PlaceSearchResult>> searchPlaces(@Query("k") String key, @Query("s") String query);
 
 	@GET("beerme.asp")
 	Observable<List<PlaceNearby>> getPlacesNearby(@Query("k") String key, @Query("mi") int radius, @Query("la") double latitude,
