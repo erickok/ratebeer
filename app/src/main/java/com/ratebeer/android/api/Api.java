@@ -17,6 +17,8 @@ import com.ratebeer.android.api.model.BeerSearchResult;
 import com.ratebeer.android.api.model.BeerSearchResultDeserializer;
 import com.ratebeer.android.api.model.FeedItem;
 import com.ratebeer.android.api.model.FeedItemDeserializer;
+import com.ratebeer.android.api.model.PlaceCheckinResult;
+import com.ratebeer.android.api.model.PlaceCheckinResultDeserializer;
 import com.ratebeer.android.api.model.PlaceDetails;
 import com.ratebeer.android.api.model.PlaceDetailsDeserializer;
 import com.ratebeer.android.api.model.PlaceNearby;
@@ -102,6 +104,7 @@ public final class Api {
 				.registerTypeAdapter(BeerRating.class, new BeerRatingDeserializer())
 				.registerTypeAdapter(PlaceNearby.class, new PlaceNearbyDeserializer())
 				.registerTypeAdapter(PlaceDetails.class, new PlaceDetailsDeserializer())
+				.registerTypeAdapter(PlaceCheckinResult.class, new PlaceCheckinResultDeserializer())
 				.create();
 		Retrofit retrofit = new Retrofit.Builder()
 				.baseUrl(ENDPOINT)
@@ -306,6 +309,16 @@ public final class Api {
 	 */
 	public Observable<PlaceDetails> getPlaceDetails(long placeId) {
 		return routes.getPlaceDetails(KEY, (int) placeId).flatMapIterable(places -> places).first();
+	}
+
+	/**
+	 * Performs a place check-in on the server and returns true or false to indicate success, or throws an exception if the check-in request failed
+	 */
+	public Observable<Boolean> performPlaceCheckin(long placeId) {
+		Observable<Boolean> checkin = routes.performCheckin(KEY, (int) placeId).map(result -> !TextUtils.isEmpty(result.okResult));
+		if (!haveLoginCookie())
+			checkin = checkin.startWith(getLoginCookie());
+		return checkin;
 	}
 
 }

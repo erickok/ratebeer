@@ -22,6 +22,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.ratebeer.android.R;
+import com.ratebeer.android.api.Api;
 import com.ratebeer.android.db.Db;
 import com.ratebeer.android.db.Place;
 import com.ratebeer.android.gui.lists.PropertiesAdapter;
@@ -37,6 +38,8 @@ public final class PlaceActivity extends RateBeerActivity {
 	private MapView mapView;
 	private ProgressBar loadingProgress;
 	private View detailsLayout;
+
+	private long placeId;
 
 	public static Intent start(Context context, long placeId) {
 		return new Intent(context, PlaceActivity.class).putExtra("placeId", placeId);
@@ -73,9 +76,9 @@ public final class PlaceActivity extends RateBeerActivity {
 	private void refresh(boolean forceFresh) {
 
 		// Load place from database or live
-		long placeId = getIntent().getLongExtra("placeId", 0);
-		Db.getPlace(this, placeId, forceFresh).compose(onIoToUi())
-				.compose(bindToLifecycle()).subscribe(this::showPlace, e -> Snackbar.show(this, R.string.error_connectionfailure));
+		placeId = getIntent().getLongExtra("placeId", 0);
+		Db.getPlace(this, placeId, forceFresh).compose(onIoToUi()).compose(bindToLifecycle()).subscribe(this::showPlace, e -> Snackbar.show(this, R
+				.string.error_connectionfailure));
 
 	}
 
@@ -87,8 +90,8 @@ public final class PlaceActivity extends RateBeerActivity {
 			map.getUiSettings().setMapToolbarEnabled(false);
 			map.setOnMapClickListener(latLng -> {
 				try {
-					startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(String.format(Locale.US, "geo:%1$f,%2$f?q=%3$s&z=%4$d", place.latitude, place
-							.longitude, Uri.encode(place.name), 17))));
+					startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(String.format(Locale.US, "geo:%1$f,%2$f?q=%3$s&z=%4$d", place.latitude,
+							place.longitude, Uri.encode(place.name), 17))));
 				} catch (Exception e) {
 					Snackbar.show(this, R.string.error_cannotopenurl);
 				}
@@ -191,8 +194,9 @@ public final class PlaceActivity extends RateBeerActivity {
 	}
 
 	private void performCheckin() {
-		// TODO Implement call to server
-		Snackbar.show(this, "TODO Check in");
+		Api.get().performPlaceCheckin(placeId).compose(onIoToUi()).compose(bindToLifecycle()).subscribe(wasSuccessful -> Snackbar.show(this,
+				wasSuccessful ? R.string.place_checkin_ok : R.string.place_checkin_error), e -> Snackbar.show(this, R.string
+				.error_connectionfailure));
 	}
 
 }

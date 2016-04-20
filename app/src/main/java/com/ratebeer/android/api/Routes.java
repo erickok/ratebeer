@@ -6,6 +6,7 @@ import com.ratebeer.android.api.model.BeerDetails;
 import com.ratebeer.android.api.model.BeerRating;
 import com.ratebeer.android.api.model.BeerSearchResult;
 import com.ratebeer.android.api.model.FeedItem;
+import com.ratebeer.android.api.model.PlaceCheckinResult;
 import com.ratebeer.android.api.model.PlaceDetails;
 import com.ratebeer.android.api.model.PlaceNearby;
 import com.ratebeer.android.api.model.UserInfo;
@@ -79,6 +80,9 @@ interface Routes {
 
 	@GET("pss.asp")
 	Observable<List<PlaceDetails>> getPlaceDetails(@Query("k") String key, @Query("pid") int placeId);
+
+	@GET("ci.asp?t=Log")
+	Observable<PlaceCheckinResult> performCheckin(@Query("k") String key, @Query("p") int placeId);
 
 	// Brewer details
 	// http://ratebeer.com/json/bi.asp?k=tTmwRTWT-W7tpBhtL&b=12

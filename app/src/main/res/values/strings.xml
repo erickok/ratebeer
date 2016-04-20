@@ -75,6 +75,8 @@
 	<string name="place_bottles">%1$s bottles</string>
 	<string name="place_checkin">Perform check-in</string>
 	<string name="place_opentimes">Open %1$s</string>
+	<string name="place_checkin_ok">You checked in</string>
+	<string name="place_checkin_error">You have already checked into this place recently</string>
 
 	<string name="place_type_brewpub">A brewpub</string>
 	<string name="place_type_bar">A bar</string>
