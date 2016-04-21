@@ -139,8 +139,8 @@ public class MainActivity extends RateBeerActivity implements ActivityCompat.OnR
 		searchList.setLayoutManager(new LinearLayoutManager(this));
 		searchList.setAdapter(searchSuggestionsAdaper = new SearchSuggestionsAdapter());
 		ItemClickSupport.addTo(searchList).setOnItemClickListener((parent, pos, v) -> searchFromSuggestion(searchSuggestionsAdaper.get(pos)));
-		Observable<SearchViewQueryTextEvent> queryTextChangeEvents =
-				RxSearchView.queryTextChangeEvents(searchEdit).compose(onUi()).replay(1).refCount();
+		Observable<SearchViewQueryTextEvent> queryTextChangeEvents = RxSearchView.queryTextChangeEvents(searchEdit).compose(onUi()).replay(1)
+				.refCount();
 		queryTextChangeEvents.map(event -> !TextUtils.isEmpty(event.queryText())).subscribe(hasQuery -> {
 			searchList.setVisibility(hasQuery ? View.VISIBLE : View.GONE);
 			tabLayout.setVisibility(hasQuery ? View.GONE : (tabs.size() == 1 ? View.GONE : View.VISIBLE));
@@ -181,8 +181,8 @@ public class MainActivity extends RateBeerActivity implements ActivityCompat.OnR
 					startActivity(BeerActivity.start(this, results.get(0).beerId));
 				} else {
 					// Multiple matches; show selection dialog
-					new AlertDialog.Builder(this).setAdapter(new BarcodeSearchResultsAdapter(this, results),
-							(dialogInterface, i) -> startActivity(BeerActivity.start(this, results.get(i).beerId))).show();
+					new AlertDialog.Builder(this).setAdapter(new BarcodeSearchResultsAdapter(this, results), (dialogInterface, i) -> startActivity
+							(BeerActivity.start(this, results.get(i).beerId))).show();
 				}
 			}, e -> Snackbar.show(this, R.string.error_connectionfailure));
 		}
@@ -201,14 +201,11 @@ public class MainActivity extends RateBeerActivity implements ActivityCompat.OnR
 						break;
 					}
 				}
-				if (placesTab == -1) {
-					// No places tab shown: no action needed
-					return;
-				} else if (placesTab == tabSelected) {
+				if (placesTab == tabSelected) {
 					// Showing the places tab now: refresh
 					refreshTab(placesTab);
-				} else {
-					// Not showing the places tab: show it (which enforces a data refresh)
+				} else if (placesTab >= 0) {
+					// Not showing the places tab: scroll to it (which enforces a data refresh)
 					listsPager.setCurrentItem(placesTab);
 				}
 
@@ -292,15 +289,13 @@ public class MainActivity extends RateBeerActivity implements ActivityCompat.OnR
 			}
 
 			// Show (fresh and cached) nearby places as list
-			// TODO And on a map
 			Animations.fadeFlip(loadingProgress, listsPager);
 			ItemClickSupport.addTo(view).setOnItemClickListener((parent, pos, v) -> openLocalPlace(((LocalPlacesAdapter) view.getAdapter()).get
 					(pos)));
 			Observable<Location> lastOrQuickLocation = new RxLocation(this).getLastOrQuickLocation().compose(onUi());
 			Observable.combineLatest(lastOrQuickLocation, lastOrQuickLocation.compose(toIo()).flatMap(showLocation -> Db.getPlacesNearby(this,
-					showLocation)),
-					RxTuples.toPair()).map(place -> LocalPlace.from(place.getValue1(), place.getValue0())).toSortedList().compose(toUi())
-					.compose(bindToLifecycle()).subscribe(places -> {
+					showLocation)), RxTuples.toPair()).map(place -> LocalPlace.from(place.getValue1(), place.getValue0())).toSortedList().compose
+					(toUi()).compose(bindToLifecycle()).subscribe(places -> {
 				if (view.getAdapter() == null)
 					view.setAdapter(new LocalPlacesAdapter(this, places));
 				else
@@ -366,7 +361,8 @@ public class MainActivity extends RateBeerActivity implements ActivityCompat.OnR
 	}
 
 	private void openLocalPlace(LocalPlace place) {
-		startActivity(PlaceActivity.start(this, place.place._id));
+		if (place != null)
+			startActivity(PlaceActivity.start(this, place.place._id));
 	}
 
 	@Override
