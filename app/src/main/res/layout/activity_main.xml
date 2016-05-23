@@ -85,8 +85,6 @@
 			android:id="@+id/sliding_tabs"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			app:tabGravity="fill"
-			app:tabMode="fixed"
 			app:tabSelectedTextColor="@color/yellow_main"
 			app:tabTextColor="@android:color/white" />
 

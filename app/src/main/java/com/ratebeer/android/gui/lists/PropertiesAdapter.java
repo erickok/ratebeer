@@ -1,44 +1,31 @@
 package com.ratebeer.android.gui.lists;
 
-import android.view.View;
+import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-
-import com.ratebeer.android.gui.widget.PropertyView;
 
 import java.util.List;
 
-public final class PropertiesAdapter extends BaseAdapter {
+public final class PropertiesAdapter extends RecyclerView.Adapter<Property.PropertyHolder> {
 
-	private final List<PropertyView> properties;
+	private final List<Property> properties;
 
-	public PropertiesAdapter(List<PropertyView> properties) {
+	public PropertiesAdapter(List<Property> properties) {
 		this.properties = properties;
 	}
 
 	@Override
-	public int getCount() {
+	public Property.PropertyHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+		return Property.PropertyHolder.build(parent);
+	}
+
+	@Override
+	public void onBindViewHolder(Property.PropertyHolder holder, int position) {
+		holder.bind(properties.get(position));
+	}
+
+	@Override
+	public int getItemCount() {
 		return properties.size();
-	}
-
-	@Override
-	public PropertyView getItem(int position) {
-		return properties.get(position);
-	}
-
-	@Override
-	public long getItemId(int position) {
-		return position;
-	}
-
-	@Override
-	public boolean hasStableIds() {
-		return true;
-	}
-
-	@Override
-	public View getView(int position, View convertView, ViewGroup parent) {
-		return properties.get(position);
 	}
 
 }

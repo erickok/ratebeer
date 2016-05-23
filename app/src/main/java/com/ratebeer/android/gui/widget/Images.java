@@ -21,7 +21,6 @@ public final class Images {
 		return new Images(context);
 	}
 
-
 	public RequestCreator loadBeer(long beerId) {
 		return loadBeer(beerId, false);
 	}
@@ -29,6 +28,18 @@ public final class Images {
 	public RequestCreator loadBeer(long beerId, boolean highResolution) {
 		RequestCreator request =
 				Picasso.with(context).load(highResolution ? ImageUrls.getBeerPhotoHighResUrl(beerId) : ImageUrls.getBeerPhotoUrl(beerId));
+		if (Session.get().inDataSaverMode() && ConnectivityHelper.current(context) != ConnectivityHelper.ConnectivityType.Wifi)
+			request.networkPolicy(NetworkPolicy.OFFLINE);
+		return request;
+	}
+
+	public RequestCreator loadBrewery(long breweryId) {
+		return loadBrewery(breweryId, false);
+	}
+
+	public RequestCreator loadBrewery(long breweryId, boolean highResolution) {
+		RequestCreator request = Picasso.with(context).load(highResolution ? ImageUrls.getBreweryPhotoHighResUrl(breweryId) : ImageUrls
+				.getBreweryPhotoUrl(breweryId));
 		if (Session.get().inDataSaverMode() && ConnectivityHelper.current(context) != ConnectivityHelper.ConnectivityType.Wifi)
 			request.networkPolicy(NetworkPolicy.OFFLINE);
 		return request;

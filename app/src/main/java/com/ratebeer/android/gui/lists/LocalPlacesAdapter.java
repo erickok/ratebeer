@@ -78,14 +78,17 @@ public final class LocalPlacesAdapter extends RecyclerView.Adapter<RecyclerView.
 				googleMap.getUiSettings().setMyLocationButtonEnabled(false);
 				if (!markerPlaceIds.isEmpty())
 					googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds.build(), padding));
-				googleMap.setOnInfoWindowClickListener(marker -> mapHeaderHolder.mapView.getContext().startActivity(PlaceActivity.start
-						(mapHeaderHolder.mapView.getContext(), markerPlaceIds.get(marker))));
+				googleMap.setOnInfoWindowClickListener(marker -> {
+					if (markerPlaceIds != null && markerPlaceIds.get(marker) != null)
+						mapHeaderHolder.mapView.getContext().startActivity(PlaceActivity.start(mapHeaderHolder.mapView.getContext(), markerPlaceIds
+								.get(marker)));
+				});
 
 			});
 
 		} else {
 
-			LocalPlace place = places.get(position);
+			LocalPlace place = places.get(position - 1);
 			ItemHolder itemHolder = (ItemHolder) holder;
 			itemHolder.distanceLayout.setBackgroundResource(ImageUrls.getColor(position));
 			itemHolder.distanceUnitText.setText(unitString);

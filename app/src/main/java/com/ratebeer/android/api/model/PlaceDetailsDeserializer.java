@@ -28,7 +28,6 @@ public final class PlaceDetailsDeserializer implements JsonDeserializer<PlaceDet
 			placeDetails.countryId = object.get("CountryID").getAsInt();
 		if (object.has("StateId") && !(object.get("StateID") instanceof JsonNull))
 			placeDetails.stateId = object.get("StateID").getAsInt();
-		placeDetails.address = Normalizer.get().cleanHtml(object.get("Address").getAsString());
 		placeDetails.phoneNumber = Normalizer.get().cleanHtml(object.get("PhoneNumber").getAsString());
 		if (object.has("WebSiteURL") && !(object.get("WebSiteURL") instanceof JsonNull))
 			placeDetails.websiteUrl = Normalizer.get().cleanHtml(object.get("WebSiteURL").getAsString());

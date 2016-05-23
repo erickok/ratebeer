@@ -5,6 +5,9 @@ import com.ratebeer.android.api.model.BeerAliasId;
 import com.ratebeer.android.api.model.BeerDetails;
 import com.ratebeer.android.api.model.BeerRating;
 import com.ratebeer.android.api.model.BeerSearchResult;
+import com.ratebeer.android.api.model.BreweryBeer;
+import com.ratebeer.android.api.model.BreweryDetails;
+import com.ratebeer.android.api.model.BrewerySearchResult;
 import com.ratebeer.android.api.model.FeedItem;
 import com.ratebeer.android.api.model.PlaceCheckinResult;
 import com.ratebeer.android.api.model.PlaceDetails;
@@ -75,6 +78,15 @@ interface Routes {
 											@Field("appearance") int appearance, @Field("flavor") int flavor, @Field("palate") int palate,
 											@Field("overall") int overall, @Field(value = "Comments", encoded = true) String comments);
 
+	@GET("bss.asp")
+	Observable<List<BrewerySearchResult>> searchBreweries(@Query("k") String key, @Query("bn") String query);
+
+	@GET("bi.asp")
+	Observable<List<BreweryDetails>> getBreweryDetails(@Query("k") String key, @Query("b") int breweryId);
+
+	@GET("bw.asp")
+	Observable<List<BreweryBeer>> getBreweryBeers(@Query("k") String key, @Query("b") int breweryId, @Query("u") Integer userId);
+
 	@GET("psstring.asp")
 	Observable<List<PlaceSearchResult>> searchPlaces(@Query("k") String key, @Query("s") String query);
 
@@ -87,10 +99,5 @@ interface Routes {
 
 	@GET("ci.asp?t=Log")
 	Observable<PlaceCheckinResult> performCheckin(@Query("k") String key, @Query("p") int placeId);
-
-	// Brewer details
-	// http://ratebeer.com/json/bi.asp?k=tTmwRTWT-W7tpBhtL&b=12
-	// Brewer beers
-	// http://ratebeer.com/json/bw.asp?k=tTmwRTWT-W7tpBhtL&b=12&u=101051
 
 }

@@ -376,12 +376,19 @@ public class MainActivity extends RateBeerActivity implements ActivityCompat.OnR
 	}
 
 	private void searchFromSuggestion(SearchSuggestion searchSuggestion) {
-		if (searchSuggestion.beerId == null) {
+		if ((searchSuggestion.type == SearchSuggestion.TYPE_BEER || searchSuggestion.type == SearchSuggestion.TYPE_RATING) && searchSuggestion
+				.itemId != null) {
+			// Directly open the searched beer
+			startActivity(BeerActivity.start(this, searchSuggestion.itemId));
+		} else if (searchSuggestion.type == SearchSuggestion.TYPE_BREWERY && searchSuggestion.itemId != null) {
+			// Directly open the searched brewery
+			startActivity(BreweryActivity.start(this, searchSuggestion.itemId));
+		} else if (searchSuggestion.type == SearchSuggestion.TYPE_PLACE && searchSuggestion.itemId != null) {
+			// Directly open the searched place
+			startActivity(PlaceActivity.start(this, searchSuggestion.itemId));
+		} else {
 			// Start a new search
 			performSearch(searchSuggestion.suggestion);
-		} else {
-			// Directly open the searched beer
-			startActivity(BeerActivity.start(this, searchSuggestion.beerId));
 		}
 	}
 

@@ -6,12 +6,13 @@ import android.content.Intent;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.StyleSpan;
 import android.view.View;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -26,8 +27,8 @@ import com.ratebeer.android.api.Api;
 import com.ratebeer.android.db.Db;
 import com.ratebeer.android.db.Place;
 import com.ratebeer.android.gui.lists.PropertiesAdapter;
+import com.ratebeer.android.gui.lists.Property;
 import com.ratebeer.android.gui.widget.Animations;
-import com.ratebeer.android.gui.widget.PropertyView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -122,7 +123,7 @@ public final class PlaceActivity extends RateBeerActivity {
 		}
 
 		((TextView) findViewById(R.id.place_name_text)).setText(place.name);
-		if (place.isRetired)
+		if (place.isRetired != null && place.isRetired)
 			findViewById(R.id.retired_badge).setVisibility(View.VISIBLE);
 
 		((TextView) findViewById(R.id.mark_overall_text)).setText(place.getOverallPercentileString());
@@ -130,63 +131,46 @@ public final class PlaceActivity extends RateBeerActivity {
 		((TextView) findViewById(R.id.mark_weighted_text)).setText(place.getPercentileScoreString());
 
 		// Show additional data as (clickable) properties in a list
-		List<PropertyView> properties = new ArrayList<>();
+		List<Property> properties = new ArrayList<>();
 
-		PropertyView checkinProperty = new PropertyView(this);
-		checkinProperty.setPropertyImage(R.drawable.ic_prop_checkin);
-		checkinProperty.setPropertyText(getString(R.string.place_checkin));
-		checkinProperty.setClickable(true);
-		checkinProperty.setOnClickListener(v -> performCheckin());
+		Property checkinProperty = new Property(R.drawable.ic_prop_checkin, getString(R.string.place_checkin), v -> performCheckin());
 		properties.add(checkinProperty);
 		if (!TextUtils.isEmpty(place.hours)) {
-			PropertyView hoursProperty = new PropertyView(this);
-			hoursProperty.setPropertyImage(R.drawable.ic_prop_hours);
-			hoursProperty.setPropertyText(getString(R.string.place_opentimes, place.hours));
-			properties.add(hoursProperty);
+			properties.add(new Property(R.drawable.ic_prop_hours, getString(R.string.place_opentimes, place.hours), null));
 		}
 		if (!TextUtils.isEmpty(place.taps) || !TextUtils.isEmpty(place.bottles)) {
-			PropertyView tapsBottlesProperty = new PropertyView(this);
-			tapsBottlesProperty.setPropertyImage(R.drawable.ic_prop_taps);
+			Property tapsBottlesProperty = new Property();
+			tapsBottlesProperty.image = R.drawable.ic_prop_taps;
 			if (TextUtils.isEmpty(place.taps)) {
-				tapsBottlesProperty.setPropertyText(getString(R.string.place_bottles, place.bottles));
+				tapsBottlesProperty.text = getString(R.string.place_bottles, place.bottles);
 			} else if (TextUtils.isEmpty(place.bottles)) {
-				tapsBottlesProperty.setPropertyText(getString(R.string.place_taps, place.taps));
+				tapsBottlesProperty.text = getString(R.string.place_taps, place.taps);
 			} else {
-				tapsBottlesProperty.setPropertyText(getString(R.string.place_taps, place.taps) + "\n" + getString(R.string.place_bottles, place
-						.bottles));
+				tapsBottlesProperty.text = getString(R.string.place_taps, place.taps) + "\n" + getString(R.string.place_bottles, place.bottles);
 			}
 			properties.add(tapsBottlesProperty);
 		}
 		if (!TextUtils.isEmpty(place.phoneNumber)) {
-			PropertyView phoneProperty = new PropertyView(this);
-			phoneProperty.setPropertyImage(R.drawable.ic_prop_phone);
-			phoneProperty.setPropertyText(place.phoneNumber);
-			phoneProperty.setClickable(true);
-			phoneProperty.setOnClickListener(v -> {
+			properties.add(new Property(R.drawable.ic_prop_phone, place.phoneNumber, v -> {
 				try {
 					startActivity(new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + place.phoneNumber.replaceAll("[^0-9|\\+]", ""))));
 				} catch (Exception e) {
 					Snackbar.show(this, R.string.error_cannotopenurl);
 				}
-			});
-			properties.add(phoneProperty);
+			}));
 		}
 		if (!TextUtils.isEmpty(place.website)) {
-			PropertyView websiteProperty = new PropertyView(this);
-			websiteProperty.setPropertyImage(R.drawable.ic_prop_website);
-			websiteProperty.setPropertyText(place.getWebsiteUrl());
-			websiteProperty.setClickable(true);
-			websiteProperty.setOnClickListener(v -> {
+			properties.add(new Property(R.drawable.ic_prop_website, place.getWebsiteUrl(), v -> {
 				try {
 					startActivity(new Intent(Intent.ACTION_VIEW, place.getWebsiteUri()));
 				} catch (Exception e) {
 					Snackbar.show(this, R.string.error_cannotopenurl);
 				}
-			});
-			properties.add(websiteProperty);
+			}));
 		}
 
-		ListView propertiesList = (ListView) findViewById(R.id.properties_list);
+		RecyclerView propertiesList = (RecyclerView) findViewById(R.id.properties_list);
+		propertiesList.setLayoutManager(new LinearLayoutManager(this));
 		propertiesList.setAdapter(new PropertiesAdapter(properties));
 
 		Animations.fadeFlip(detailsLayout, loadingProgress);

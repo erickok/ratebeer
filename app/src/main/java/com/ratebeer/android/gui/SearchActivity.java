@@ -19,8 +19,10 @@ import com.jakewharton.rxbinding.support.v7.widget.RxSearchView;
 import com.ratebeer.android.R;
 import com.ratebeer.android.api.Api;
 import com.ratebeer.android.api.model.BeerSearchResult;
+import com.ratebeer.android.api.model.BrewerySearchResult;
 import com.ratebeer.android.api.model.PlaceSearchResult;
 import com.ratebeer.android.gui.lists.BeerSearchResultAdapter;
+import com.ratebeer.android.gui.lists.BrewerySearchResultAdapter;
 import com.ratebeer.android.gui.lists.PlaceSearchResultAdapter;
 import com.ratebeer.android.gui.widget.Animations;
 import com.ratebeer.android.gui.widget.ItemClickSupport;
@@ -38,7 +40,8 @@ public class SearchActivity extends RateBeerActivity {
 	public static final String EXTRA_BEERNAME = "beerName";
 
 	private static final int TAB_BEERS = 0;
-	private static final int TAB_PLACES = 1;
+	private static final int TAB_BREWERIES = 1;
+	private static final int TAB_PLACES = 2;
 
 	private boolean modeBeerPicker;
 	private SearchView searchEdit;
@@ -82,6 +85,7 @@ public class SearchActivity extends RateBeerActivity {
 		tabsTitles = new ArrayList<>(3);
 		addTab(TAB_BEERS, R.string.search_beers);
 		if (!modeBeerPicker) {
+			addTab(TAB_BREWERIES, R.string.search_breweries);
 			addTab(TAB_PLACES, R.string.search_places);
 		}
 		RxViewPager.pageSelected(resultsPager).subscribe(this::refreshTab);
@@ -124,6 +128,21 @@ public class SearchActivity extends RateBeerActivity {
 					Animations.fadeFlipOut(view, emptyText, loadingProgress);
 			});
 
+		} else if (type == TAB_BREWERIES) {
+
+			ItemClickSupport.addTo(view).setOnItemClickListener((parent, pos, v) -> handleBreweryResult(((BrewerySearchResultAdapter) view
+					.getAdapter()).get(pos)));
+			debouncedQueries.switchMap(query -> Api.get().searchBreweries(query.toString()).toList().compose(toUi()).doOnError(e -> Snackbar.show
+					(SearchActivity.this, R.string.error_connectionfailure)).onErrorResumeNext(Observable.empty())).compose(bindToLifecycle())
+					.subscribe(results -> {
+
+				view.setAdapter(new BrewerySearchResultAdapter(results));
+				if (results.isEmpty())
+					Animations.fadeFlipOut(emptyText, view, loadingProgress);
+				else
+					Animations.fadeFlipOut(view, emptyText, loadingProgress);
+			});
+
 		} else if (type == TAB_PLACES) {
 
 			ItemClickSupport.addTo(view).setOnItemClickListener((parent, pos, v) -> handlePlaceResult(((PlaceSearchResultAdapter) view.getAdapter())
@@ -152,6 +171,10 @@ public class SearchActivity extends RateBeerActivity {
 					.beerName));
 			finish();
 		}
+	}
+
+	private void handleBreweryResult(BrewerySearchResult brewerySearchResult) {
+		startActivity(BreweryActivity.start(this, brewerySearchResult.brewerId));
 	}
 
 	private void handlePlaceResult(PlaceSearchResult placeSearchResult) {

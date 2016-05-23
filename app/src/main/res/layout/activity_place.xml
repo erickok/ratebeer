@@ -168,20 +168,17 @@
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_gravity="center"
-				android:layout_marginBottom="16dp"
 				tools:background="@color/grey_dark" />
 
 		</FrameLayout>
 
 	</android.support.design.widget.AppBarLayout>
 
-	<ListView
+	<android.support.v7.widget.RecyclerView
 		android:id="@+id/properties_list"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
 		android:clipToPadding="false"
-		android:listSelector="@android:color/transparent"
-		android:divider="@null"
 		android:paddingBottom="8dp"
 		android:paddingTop="8dp"
 		app:layout_behavior="@string/appbar_scrolling_view_behavior"

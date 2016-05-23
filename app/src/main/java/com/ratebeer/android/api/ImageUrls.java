@@ -22,12 +22,20 @@ public final class ImageUrls {
 		return "http://res.cloudinary.com/ratebeer/image/upload/w_300,c_limit,q_100,d_beer_def.png/beer_" + beerId + ".jpg";
 	}
 
-	public static String getUserPhotoUrl(String username) {
-		return "http://res.cloudinary.com/ratebeer/image/upload/w_300,c_limit,q_100,d_user_def.png/user_" + username + ".jpg";
-	}
-
 	public static String getBeerPhotoHighResUrl(long beerId) {
 		return "http://res.cloudinary.com/ratebeer/image/upload/w_1024,c_limit,q_100,d_beer_def.png/beer_" + beerId + ".jpg";
+	}
+
+	public static String getBreweryPhotoUrl(long breweryId) {
+		return "http://res.cloudinary.com/ratebeer/image/upload/w_300,c_limit,q_100/brew_" + breweryId + ".jpg";
+	}
+
+	public static String getBreweryPhotoHighResUrl(long breweryId) {
+		return "http://res.cloudinary.com/ratebeer/image/upload/w_1024,c_limit,q_100/brew_" + breweryId + ".jpg";
+	}
+
+	public static String getUserPhotoUrl(String username) {
+		return "http://res.cloudinary.com/ratebeer/image/upload/w_300,c_limit,q_100,d_user_def.png/user_" + username + ".jpg";
 	}
 
 	public static String getUserPhotoHighResUrl(String username) {

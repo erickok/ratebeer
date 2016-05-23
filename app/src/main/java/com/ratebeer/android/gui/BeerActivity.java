@@ -42,6 +42,7 @@ public final class BeerActivity extends RateBeerActivity {
 	private View detailsLayout;
 	private View numbersLayout;
 	private View labelsLayout;
+	private TextView brewerNameText;
 	private FloatingActionButton rateButton;
 
 	private long beerId;
@@ -70,6 +71,7 @@ public final class BeerActivity extends RateBeerActivity {
 		detailsLayout = findViewById(R.id.details_layout);
 		numbersLayout = findViewById(R.id.numbers_layout);
 		labelsLayout = findViewById(R.id.labels_layout);
+		brewerNameText = (TextView) findViewById(R.id.brewer_name_text);
 		rateButton = (FloatingActionButton) findViewById(R.id.rate_button);
 		rateButton.setVisibility(View.GONE);
 
@@ -112,15 +114,16 @@ public final class BeerActivity extends RateBeerActivity {
 			int brewerEnd = brewerStart + beer.brewerName.length();
 			brewerStyleMarkup.setSpan(new StyleSpan(Typeface.BOLD), styleStart, styleEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 			brewerStyleMarkup.setSpan(new StyleSpan(Typeface.BOLD), brewerStart, brewerEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-			((TextView) findViewById(R.id.brewer_name_text)).setText(brewerStyleMarkup);
+			brewerNameText.setText(brewerStyleMarkup);
 		} else {
 			String brewerText = getString(R.string.beer_brewer, beer.brewerName);
 			SpannableStringBuilder brewerMarkup = new SpannableStringBuilder(brewerText);
 			int brewerStart = brewerText.indexOf(beer.brewerName);
 			int brewerEnd = brewerStart + beer.brewerName.length();
 			brewerMarkup.setSpan(new StyleSpan(Typeface.BOLD), brewerStart, brewerEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-			((TextView) findViewById(R.id.brewer_name_text)).setText(brewerMarkup);
+			brewerNameText.setText(brewerMarkup);
 		}
+		brewerNameText.setOnClickListener(v -> startActivity(BreweryActivity.start(this, beer.brewerId)));
 
 		((TextView) findViewById(R.id.beer_name_text)).setText(beer.name);
 

@@ -87,6 +87,9 @@
                         android:fontFamily="sans-serif-condensed"
                         android:textColor="@android:color/black"
                         android:textSize="20sp"
+                        android:focusable="true"
+                        android:clickable="true"
+                        android:background="?attr/selectableItemBackground"
                         tools:text="A Spice/Herb/Special Grain by 8 Wired Brewery Co" />
 
                 </LinearLayout>

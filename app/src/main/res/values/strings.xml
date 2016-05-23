@@ -18,8 +18,9 @@
 	<string name="signin_password">Password</string>
 
 	<string name="search_beers">Beers</string>
+	<string name="search_breweries">Breweries</string>
 	<string name="search_places">Places</string>
-	<string name="search_hint">Search a beer, place…</string>
+	<string name="search_hint">Search a beer, brewery, place…</string>
 	<string name="search_scan">Scan barcode</string>
 	<string name="search_noresults">Nothing found</string>
 
@@ -51,6 +52,18 @@
 	<string name="beer_mark_breakdown">Arithmetic average: %1$s\nWeighted average: %1$s</string>
 	<string name="beer_isalias">This beer is an alias, such as an alternative market distribution or a name change</string>
 	<string name="beer_findalias">Open aliased beer</string>
+
+	<string name="brewery_typelocation">%1$s in %2$s</string>
+	<string name="brewery_type_brewery">A brewery</string>
+	<string name="brewery_type_micro">A microbrewery</string>
+	<string name="brewery_type_brewpub">A brew pub</string>
+	<string name="brewery_type_brewery_pub">A brew pub/brewery</string>
+	<string name="brewery_type_contract">A contract brewer</string>
+	<string name="brewery_type_client">A client brewery</string>
+	<string name="brewery_type_commissioner">A commissioner</string>
+	<string name="brewery_type_meadery">A meadery</string>
+	<string name="brewery_type_cidery">A cidery</string>
+	<string name="brewery_type_sake">A sake producer</string>
 
 	<string name="rate_enterrating">Enter rating</string>
 	<string name="rate_offline_badge">offline only</string>

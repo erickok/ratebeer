@@ -31,6 +31,9 @@
 			android:theme="@style/AppTheme.NoStatusBar" />
 		<activity android:name=".gui.RateActivity" />
 		<activity
+			android:name=".gui.BreweryActivity"
+			android:theme="@style/AppTheme.NoStatusBar" />
+		<activity
 			android:name=".gui.PlaceActivity"
 			android:theme="@style/AppTheme.NoStatusBar" />
 		<activity android:name=".gui.PhotoActivity" />
