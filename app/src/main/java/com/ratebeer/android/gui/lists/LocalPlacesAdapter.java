@@ -75,7 +75,8 @@ public final class LocalPlacesAdapter extends RecyclerView.Adapter<RecyclerView.
 						.getDisplayMetrics());
 				//noinspection MissingPermission Already checked permission before loading the places
 				googleMap.setMyLocationEnabled(true);
-				googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds.build(), padding));
+				if (!markerPlaceIds.isEmpty())
+					googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds.build(), padding));
 				googleMap.setOnInfoWindowClickListener(marker -> mapHeaderHolder.mapView.getContext().startActivity(PlaceActivity.start
 						(mapHeaderHolder.mapView.getContext(), markerPlaceIds.get(marker))));
 
