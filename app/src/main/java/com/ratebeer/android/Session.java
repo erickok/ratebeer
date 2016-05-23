@@ -120,4 +120,12 @@ public class Session {
 		prefs.edit().putBoolean("data_saver_mode", useDataSaverMode).apply();
 	}
 
+	public boolean useMetricUnits() {
+		return prefs.getBoolean("units_in_metric", true);
+	}
+
+	public void setUseMetricUnits(boolean useMetricUnits) {
+		prefs.edit().putBoolean("units_in_metric", useMetricUnits).apply();
+	}
+
 }

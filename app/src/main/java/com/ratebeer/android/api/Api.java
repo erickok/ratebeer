@@ -17,6 +17,14 @@ import com.ratebeer.android.api.model.BeerSearchResult;
 import com.ratebeer.android.api.model.BeerSearchResultDeserializer;
 import com.ratebeer.android.api.model.FeedItem;
 import com.ratebeer.android.api.model.FeedItemDeserializer;
+import com.ratebeer.android.api.model.PlaceCheckinResult;
+import com.ratebeer.android.api.model.PlaceCheckinResultDeserializer;
+import com.ratebeer.android.api.model.PlaceDetails;
+import com.ratebeer.android.api.model.PlaceDetailsDeserializer;
+import com.ratebeer.android.api.model.PlaceNearby;
+import com.ratebeer.android.api.model.PlaceNearbyDeserializer;
+import com.ratebeer.android.api.model.PlaceSearchResult;
+import com.ratebeer.android.api.model.PlaceSearchResultDeserializer;
 import com.ratebeer.android.api.model.UserInfo;
 import com.ratebeer.android.api.model.UserInfoDeserializer;
 import com.ratebeer.android.api.model.UserRateCount;
@@ -96,6 +104,10 @@ public final class Api {
 				.registerTypeAdapter(BarcodeSearchResult.class, new BarcodeSearchResultDeserializer())
 				.registerTypeAdapter(BeerDetails.class, new BeerDetailsDeserializer())
 				.registerTypeAdapter(BeerRating.class, new BeerRatingDeserializer())
+				.registerTypeAdapter(PlaceSearchResult.class, new PlaceSearchResultDeserializer())
+				.registerTypeAdapter(PlaceNearby.class, new PlaceNearbyDeserializer())
+				.registerTypeAdapter(PlaceDetails.class, new PlaceDetailsDeserializer())
+				.registerTypeAdapter(PlaceCheckinResult.class, new PlaceCheckinResultDeserializer())
 				.create();
 		Retrofit retrofit = new Retrofit.Builder()
 				.baseUrl(ENDPOINT)
@@ -286,6 +298,37 @@ public final class Api {
 					rating.mouthfeel, rating.overall, comments);
 		return post.flatMap(posted -> routes.getBeerRatings(KEY, rating.beerId.intValue(), (int) userId, 1, 1).flatMapIterable(ratings -> ratings))
 				.filter(storedRating -> storedRating.timeEntered != null).first();
+	}
+
+	/**
+	 * Returns an observable sequence (list) of places (search results) for a text query
+	 */
+	public Observable<PlaceSearchResult> searchPlaces(String query) {
+		return routes.searchPlaces(KEY, Normalizer.get().normalizeSearchQuery(query)).flatMapIterable(results -> results);
+	}
+
+	/**
+	 * Returns a (possibly empty) observable sequence (list) of nearby places
+	 */
+	public Observable<PlaceNearby> getPlacesNearby(int radius, double latitude, double longitude) {
+		return routes.getPlacesNearby(KEY, radius, latitude, longitude).flatMapIterable(places -> places);
+	}
+
+	/**
+	 * Returns the full details for a place, or throws an exception if it could not be retrieved
+	 */
+	public Observable<PlaceDetails> getPlaceDetails(long placeId) {
+		return routes.getPlaceDetails(KEY, (int) placeId).flatMapIterable(places -> places).first();
+	}
+
+	/**
+	 * Performs a place check-in on the server and returns true or false to indicate success, or throws an exception if the check-in request failed
+	 */
+	public Observable<Boolean> performPlaceCheckin(long placeId) {
+		Observable<Boolean> checkin = routes.performCheckin(KEY, (int) placeId).map(result -> !TextUtils.isEmpty(result.okResult));
+		if (!haveLoginCookie())
+			checkin = checkin.startWith(getLoginCookie());
+		return checkin;
 	}
 
 }
