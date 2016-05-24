@@ -37,8 +37,10 @@ public final class BreweryBeerDeserializer implements JsonDeserializer<BreweryBe
 		breweryBeer.rateCount = object.get("RateCount").getAsInt();
 
 		breweryBeer.alcohol = object.get("Alcohol").getAsFloat();
-		breweryBeer.alias = object.get("IsAlias").getAsBoolean();
-		breweryBeer.retired = object.get("Retired").getAsBoolean();
+		if (object.has("IsAlias") && !(object.get("IsAlias") instanceof JsonNull))
+			breweryBeer.alias = object.get("IsAlias").getAsBoolean();
+		if (object.has("Retired") && !(object.get("Retired") instanceof JsonNull))
+			breweryBeer.retired = object.get("Retired").getAsBoolean();
 		if (!(object.get("UserHadIt") instanceof JsonNull))
 			breweryBeer.ratedByUser = object.get("UserHadIt").getAsInt() == 1;
 		if (!(object.get("UserRating") instanceof JsonNull))

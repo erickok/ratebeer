@@ -60,4 +60,9 @@ public final class SearchSuggestion {
 		return suggestion;
 	}
 
+	public String uniqueCode() {
+		// A search suggestion is unique per type (but beers and ratings are not) and per id (or suggestion text if no id is available)
+		return (type == TYPE_BEER? TYPE_RATING: type) + (itemId != null? Long.toString(itemId): suggestion);
+	}
+
 }

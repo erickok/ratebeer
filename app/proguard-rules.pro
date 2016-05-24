@@ -99,6 +99,7 @@
 -keep class com.ratebeer.android.db.Brewery { *; }
 -keep class com.ratebeer.android.db.HistoricSearch { *; }
 -keep class com.ratebeer.android.db.OfflineRating { *; }
+-keep class com.ratebeer.android.db.Place { *; }
 -keep class com.ratebeer.android.db.Rating { *; }
 -keep class com.ratebeer.android.db.StoredSession { *; }
 -keep class com.ratebeer.android.db.Style { *; }
