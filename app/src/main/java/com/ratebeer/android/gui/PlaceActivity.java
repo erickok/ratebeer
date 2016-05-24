@@ -133,8 +133,11 @@ public final class PlaceActivity extends RateBeerActivity {
 		// Show additional data as (clickable) properties in a list
 		List<Property> properties = new ArrayList<>();
 
-		Property checkinProperty = new Property(R.drawable.ic_prop_checkin, getString(R.string.place_checkin), v -> performCheckin());
-		properties.add(checkinProperty);
+		if (place.brewerId != null && place.brewerId > 0) {
+			properties.add(new Property(R.drawable.ic_type_brewery, getString(R.string.place_openbrewer), v -> startActivity(BreweryActivity.start
+					(this, place.brewerId))));
+		}
+		properties.add(new Property(R.drawable.ic_prop_checkin, getString(R.string.place_checkin), v -> performCheckin()));
 		if (!TextUtils.isEmpty(place.hours)) {
 			properties.add(new Property(R.drawable.ic_prop_hours, getString(R.string.place_opentimes, place.hours), null));
 		}

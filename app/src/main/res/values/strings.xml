@@ -88,6 +88,7 @@
 	<string name="place_miles">m</string>
 	<string name="place_taps">%1$s taps</string>
 	<string name="place_bottles">%1$s bottles</string>
+	<string name="place_openbrewer">View associated brewery</string>
 	<string name="place_checkin">Perform check-in</string>
 	<string name="place_opentimes">Open %1$s</string>
 	<string name="place_checkin_ok">You checked in</string>
