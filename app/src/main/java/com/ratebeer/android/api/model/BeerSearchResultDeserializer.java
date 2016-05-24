@@ -23,7 +23,8 @@ public final class BeerSearchResultDeserializer implements JsonDeserializer<Beer
 		if (!(object.get("OverallPctl") instanceof JsonNull))
 			beerSearchResult.overallPercentile = object.get("OverallPctl").getAsFloat();
 		beerSearchResult.rateCount = object.get("RateCount").getAsInt();
-		beerSearchResult.unrateable = object.get("Unrateable").getAsBoolean();
+		if (object.has("Unrateable") && !(object.get("Unrateable") instanceof JsonNull))
+			beerSearchResult.unrateable = object.get("Unrateable").getAsBoolean();
 		if (object.has("IsAlias") && !(object.get("IsAlias") instanceof JsonNull))
 			beerSearchResult.alias = object.get("IsAlias").getAsBoolean();
 		beerSearchResult.retired = object.get("Retired").getAsBoolean();

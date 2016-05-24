@@ -51,7 +51,7 @@ public final class Db {
 
 		return Observable.merge(lastHistoric.map(SearchSuggestion::fromHistoricSearch), localBrewers.map(SearchSuggestion::fromBrewery),
 				localRatings.map(SearchSuggestion::fromRating), localPlaces.map(SearchSuggestion::fromPlace), localBeers.map
-						(SearchSuggestion::fromBeer)).distinct(searchSuggestion -> searchSuggestion.suggestion);
+						(SearchSuggestion::fromBeer)).distinct(searchSuggestion -> searchSuggestion.uniqueCode());
 	}
 
 	public static Observable<Beer> getBeer(Context context, long beerId) {
