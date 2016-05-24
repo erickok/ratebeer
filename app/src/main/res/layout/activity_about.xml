@@ -1,158 +1,173 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:tools="http://schemas.android.com/tools"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent"
-	xmlns:app="http://schemas.android.com/apk/res-auto"
-	android:orientation="vertical"
-	tools:context=".gui.HelpActivity">
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+              tools:context=".gui.HelpActivity">
 
-	<RelativeLayout
-		android:layout_width="match_parent"
-		android:layout_height="0dp"
-		android:layout_weight="1"
-		android:background="@color/blue_main"
-		android:paddingBottom="16dp">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@color/blue_main"
+        android:paddingBottom="16dp">
 
-		<android.support.v7.widget.Toolbar
-			android:id="@+id/main_toolbar"
-			android:layout_width="match_parent"
-			android:layout_height="?attr/actionBarSize"
-			app:theme="@style/AppTheme.Toolbar" />
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/main_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:theme="@style/AppTheme.Toolbar"/>
 
-		<TextView
-			android:id="@+id/developer_text"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:fontFamily="sans-serif-condensed"
-			android:layout_alignParentBottom="true"
-			android:layout_marginLeft="16dp"
-			android:layout_marginStart="16dp"
-			android:text="@string/help_developer"
-			android:textColor="@android:color/white"
-			android:textSize="16sp"
-			android:onClick="openGithub" />
+        <TextView
+            android:id="@+id/developer_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginLeft="16dp"
+            android:layout_marginStart="16dp"
+            android:fontFamily="sans-serif-condensed"
+            android:onClick="openGithub"
+            android:text="@string/help_developer"
+            android:textColor="@android:color/white"
+            android:textSize="16sp"/>
 
-		<ImageView
-			android:id="@+id/icon_image"
-			android:layout_width="wrap_content"
-			android:layout_above="@id/developer_text"
-			android:layout_height="wrap_content"
-			android:layout_marginBottom="8dp"
-			android:layout_marginLeft="7dp"
-			android:layout_marginStart="7dp"
-			android:contentDescription="@null"
-			android:src="@mipmap/ic_launcher"
-			android:onClick="openGithub" />
+        <ImageView
+            android:id="@+id/icon_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/developer_text"
+            android:layout_marginBottom="8dp"
+            android:layout_marginLeft="7dp"
+            android:layout_marginStart="7dp"
+            android:contentDescription="@null"
+            android:onClick="openGithub"
+            android:src="@mipmap/ic_launcher"/>
 
-		<TextView
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_above="@id/developer_text"
-			android:layout_marginBottom="2dp"
-			android:layout_marginLeft="3dp"
-			android:layout_marginStart="3dp"
-			android:layout_toRightOf="@id/icon_image"
-			android:layout_toEndOf="@id/icon_image"
-			android:fontFamily="sans-serif-condensed"
-			android:text="@string/app_name"
-			android:textColor="@android:color/white"
-			android:textSize="35sp"
-			android:onClick="openGithub" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/developer_text"
+            android:layout_marginBottom="2dp"
+            android:layout_marginLeft="3dp"
+            android:layout_marginStart="3dp"
+            android:layout_toEndOf="@id/icon_image"
+            android:layout_toRightOf="@id/icon_image"
+            android:fontFamily="sans-serif-condensed"
+            android:onClick="openGithub"
+            android:text="@string/app_name"
+            android:textColor="@android:color/white"
+            android:textSize="35sp"/>
 
-	</RelativeLayout>
+    </RelativeLayout>
 
-	<FrameLayout
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content">
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-		<Button
-			android:id="@+id/signinout_button"
-			style="@style/AppButton.Line"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:onClick="openSignInOut"
-			tools:text="@string/help_signin" />
+        <Button
+            android:id="@+id/signinout_button"
+            style="@style/AppButton.Line"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="openSignInOut"
+            tools:text="@string/help_signin"/>
 
-		<ProgressBar
-			android:id="@+id/signout_progress"
-			style="@style/Widget.AppCompat.ProgressBar"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_gravity="center_horizontal"
-			android:visibility="gone"
-			tools:background="@color/grey_dark"
-			tools:visibility="visible" />
+        <ProgressBar
+            android:id="@+id/signout_progress"
+            style="@style/Widget.AppCompat.ProgressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:visibility="gone"
+            tools:background="@color/grey_dark"
+            tools:visibility="visible"/>
 
-	</FrameLayout>
+    </FrameLayout>
 
-	<View
-		android:layout_width="match_parent"
-		android:layout_height="0.75dp"
-		android:background="@color/grey_dark"/>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.75dp"
+        android:background="@color/grey_dark"/>
 
-	<Button
-		style="@style/AppButton.Line"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:onClick="openHelpWhereRatings"
-		android:text="@string/help_whereratings" />
+    <Button
+        style="@style/AppButton.Line"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="openHelpWhereRatings"
+        android:text="@string/help_whereratings"/>
 
-	<View
-		android:layout_width="match_parent"
-		android:layout_height="0.75dp"
-		android:background="@color/grey_dark"/>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.75dp"
+        android:background="@color/grey_dark"/>
 
-	<Button
-		style="@style/AppButton.Line"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:onClick="openReport"
-		android:text="@string/help_report" />
+    <Button
+        style="@style/AppButton.Line"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="openReport"
+        android:text="@string/help_report"/>
 
-	<View
-		android:layout_width="match_parent"
-		android:layout_height="0.75dp"
-		android:background="@color/grey_dark"/>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.75dp"
+        android:background="@color/grey_dark"/>
 
-	<Button
-		style="@style/AppButton.Line"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:onClick="openRatebeer"
-		android:text="@string/help_visitrb" />
+    <Button
+        style="@style/AppButton.Line"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="openRatebeer"
+        android:text="@string/help_visitrb"/>
 
-	<View
-		android:layout_width="match_parent"
-		android:layout_height="0.75dp"
-		android:background="@color/grey_dark"/>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.75dp"
+        android:background="@color/grey_dark"/>
 
-	<Button
-		style="@style/AppButton.Line"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:onClick="openUserAgreement"
-		android:text="@string/help_useragreement" />
+    <Button
+        style="@style/AppButton.Line"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="openUserAgreement"
+        android:text="@string/help_useragreement"/>
 
-	<View
-		android:layout_width="match_parent"
-		android:layout_height="0.75dp"
-		android:background="@color/grey_dark"/>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.75dp"
+        android:background="@color/grey_dark"/>
 
-	<CheckBox
-		android:id="@+id/datasaver_check"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:layout_marginLeft="8dp"
-		android:layout_marginStart="8dp"
-		android:layout_marginRight="8dp"
-		android:layout_marginEnd="8dp"
-		android:paddingTop="16dp"
-		android:paddingBottom="16dp"
-		android:text="@string/settings_savedata" />
+    <CheckBox
+        android:id="@+id/datasaver_check"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:paddingBottom="8dp"
+        android:paddingTop="8dp"
+        android:text="@string/settings_savedata"/>
 
-	<View
-		android:layout_width="match_parent"
-		android:layout_height="6dp"/>
+    <CheckBox
+        android:id="@+id/metricunits_check"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginStart="8dp"
+        android:checked="true"
+        android:paddingBottom="8dp"
+        android:paddingTop="8dp"
+        android:text="@string/settings_metricunits"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="6dp"/>
 
 </LinearLayout>

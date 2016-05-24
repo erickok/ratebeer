@@ -17,7 +17,7 @@
 			android:layout_width="0dp"
 			android:layout_height="0dp"
 			android:focusable="true"
-			android:focusableInTouchMode="true"/>
+			android:focusableInTouchMode="true" />
 
 		<android.support.v7.widget.Toolbar
 			android:id="@+id/main_toolbar"
@@ -33,6 +33,15 @@
 
 		</android.support.v7.widget.Toolbar>
 
+		<android.support.design.widget.TabLayout
+			android:id="@+id/sliding_tabs"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			app:tabGravity="fill"
+			app:tabMode="fixed"
+			app:tabSelectedTextColor="@color/yellow_main"
+			app:tabTextColor="@android:color/white" />
+
 	</android.support.design.widget.AppBarLayout>
 
 	<FrameLayout
@@ -40,13 +49,22 @@
 		android:layout_height="0dp"
 		android:layout_weight="1">
 
-		<android.support.v7.widget.RecyclerView
-			android:id="@+id/results_list"
+		<android.support.v4.view.ViewPager
+			android:id="@+id/results_pager"
 			android:layout_width="match_parent"
-			android:layout_height="match_parent"
-			android:clipToPadding="false"
-			android:paddingBottom="8dp"
-			android:paddingTop="8dp" />
+			android:layout_height="match_parent" />
+
+		<TextView
+			android:id="@+id/empty_text"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_gravity="center"
+			android:layout_margin="24dp"
+			android:gravity="center_horizontal"
+			android:paddingTop="19dp"
+			android:text="@string/error_noresults"
+			android:visibility="gone"
+			tools:visibility="visible" />
 
 		<ProgressBar
 			android:id="@+id/loading_progress"

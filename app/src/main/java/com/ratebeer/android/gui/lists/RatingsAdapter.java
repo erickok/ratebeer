@@ -1,8 +1,6 @@
 package com.ratebeer.android.gui.lists;
 
 import android.content.Context;
-import android.content.res.TypedArray;
-import android.graphics.drawable.Drawable;
 import android.support.v7.widget.ActionMenuView;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
@@ -32,17 +30,12 @@ public final class RatingsAdapter extends RecyclerView.Adapter<RecyclerView.View
 
 	private final Context context;
 	private final MenuInflater menuInflater;
-	private final Drawable selectableBackgroundDrawable;
 	private List<Rating> ratings;
 
 	public RatingsAdapter(Context context, MenuInflater menuInflater, List<Rating> ratings) {
 		this.context = context;
 		this.ratings = ratings;
 		this.menuInflater = menuInflater;
-		int[] attrs = new int[]{android.R.attr.selectableItemBackground};
-		TypedArray ta = context.obtainStyledAttributes(attrs);
-		selectableBackgroundDrawable = ta.getDrawable(0);
-		ta.recycle();
 	}
 
 	@Override
@@ -57,7 +50,8 @@ public final class RatingsAdapter extends RecyclerView.Adapter<RecyclerView.View
 	public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
 		if (holder instanceof HeaderHolder) {
 			HeaderHolder headerHolder = (HeaderHolder) holder;
-			Images.with(headerHolder.avatarImage.getContext()).loadUser(Session.get().getUserName()).placeholder(R.color.grey_dark).fit().centerCrop()
+			Images.with(headerHolder.avatarImage.getContext()).loadUser(Session.get().getUserName()).placeholder(R.color.grey_dark).fit()
+					.centerCrop()
 					.into(headerHolder.avatarImage);
 			headerHolder.userNameText.setText(Session.get().getUserName());
 			headerHolder.refreshMenu.setOnMenuItemClickListener(item -> {
@@ -73,7 +67,6 @@ public final class RatingsAdapter extends RecyclerView.Adapter<RecyclerView.View
 			Rating rating = ratings.get(position - 1);
 			ItemHolder itemHolder = (ItemHolder) holder;
 			if (rating.beerId != null && rating.beerId > 0) {
-				itemHolder.rowLayout.setBackgroundDrawable(selectableBackgroundDrawable.getConstantState().newDrawable().mutate());
 				Images.with(itemHolder.photoImage.getContext()).loadBeer(rating.beerId).placeholder(android.R.color.white).fit().centerInside()
 						.into(itemHolder.photoImage);
 			} else {

@@ -1,10 +1,18 @@
 package com.ratebeer.android.api;
 
 import com.ratebeer.android.api.model.BarcodeSearchResult;
+import com.ratebeer.android.api.model.BeerAliasId;
 import com.ratebeer.android.api.model.BeerDetails;
 import com.ratebeer.android.api.model.BeerRating;
 import com.ratebeer.android.api.model.BeerSearchResult;
+import com.ratebeer.android.api.model.BreweryBeer;
+import com.ratebeer.android.api.model.BreweryDetails;
+import com.ratebeer.android.api.model.BrewerySearchResult;
 import com.ratebeer.android.api.model.FeedItem;
+import com.ratebeer.android.api.model.PlaceCheckinResult;
+import com.ratebeer.android.api.model.PlaceDetails;
+import com.ratebeer.android.api.model.PlaceNearby;
+import com.ratebeer.android.api.model.PlaceSearchResult;
 import com.ratebeer.android.api.model.UserInfo;
 import com.ratebeer.android.api.model.UserRateCount;
 import com.ratebeer.android.api.model.UserRating;
@@ -16,6 +24,7 @@ import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.Path;
 import retrofit2.http.Query;
 import rx.Observable;
 
@@ -53,6 +62,10 @@ interface Routes {
 	Observable<List<BeerRating>> getBeerRatings(@Query("k") String key, @Query("bid") int beerId, @Query("uid") Integer userId, @Query("p") int page,
 												@Query("s") int sortOrder);
 
+	// NOTE This is an html page, parsed manually via the HtmlConverterFactory
+	@GET("/beer/alias/{beerId}/")
+	Observable<BeerAliasId> getBeerAlias(@Path("beerId") int beerId);
+
 	@FormUrlEncoded
 	@POST("/saverating.asp")
 	Observable<Response<Void>> postRating(@Field("BeerId") int beerId, @Field("aroma") int aroma, @Field("appearance") int appearance,
@@ -65,9 +78,26 @@ interface Routes {
 											@Field("appearance") int appearance, @Field("flavor") int flavor, @Field("palate") int palate,
 											@Field("overall") int overall, @Field(value = "Comments", encoded = true) String comments);
 
-	// Brewer details
-	// http://ratebeer.com/json/bi.asp?k=tTmwRTWT-W7tpBhtL&b=12
-	// Brewer beers
-	// http://ratebeer.com/json/bw.asp?k=tTmwRTWT-W7tpBhtL&b=12&u=101051
+	@GET("bss.asp")
+	Observable<List<BrewerySearchResult>> searchBreweries(@Query("k") String key, @Query("bn") String query);
+
+	@GET("bi.asp")
+	Observable<List<BreweryDetails>> getBreweryDetails(@Query("k") String key, @Query("b") int breweryId);
+
+	@GET("bw.asp")
+	Observable<List<BreweryBeer>> getBreweryBeers(@Query("k") String key, @Query("b") int breweryId, @Query("u") Integer userId);
+
+	@GET("psstring.asp")
+	Observable<List<PlaceSearchResult>> searchPlaces(@Query("k") String key, @Query("s") String query);
+
+	@GET("beerme.asp")
+	Observable<List<PlaceNearby>> getPlacesNearby(@Query("k") String key, @Query("mi") int radius, @Query("la") double latitude,
+												  @Query("lo") double longitude);
+
+	@GET("pss.asp")
+	Observable<List<PlaceDetails>> getPlaceDetails(@Query("k") String key, @Query("pid") int placeId);
+
+	@GET("ci.asp?t=Log")
+	Observable<PlaceCheckinResult> performCheckin(@Query("k") String key, @Query("p") int placeId);
 
 }

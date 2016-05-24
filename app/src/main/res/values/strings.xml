@@ -17,7 +17,10 @@
 	<string name="signin_username">User name</string>
 	<string name="signin_password">Password</string>
 
-	<string name="search_hint">Search a beer…</string>
+	<string name="search_beers">Beers</string>
+	<string name="search_breweries">Breweries</string>
+	<string name="search_places">Places</string>
+	<string name="search_hint">Search a beer, brewery, place…</string>
 	<string name="search_scan">Scan barcode</string>
 	<string name="search_noresults">Nothing found</string>
 
@@ -25,6 +28,7 @@
 	<string name="main_friends">Friends</string>
 	<string name="main_local">Local</string>
 	<string name="main_global">Global</string>
+	<string name="main_nearby">Nearby</string>
 
 	<string name="feed_isdrinking">is drinking</string>
 	<string name="feed_wasawarded">was awarded</string>
@@ -36,6 +40,8 @@
 	<string name="beer_overall">Overall</string>
 	<string name="beer_instyle">Style</string>
 	<string name="beer_ratecount">Ratings</string>
+	<string name="beer_weighted">Weighted</string>
+	<string name="beer_realavg">Average</string>
 	<string name="beer_abv">ABV</string>
 	<string name="beer_ibu">IBU</string>
 	<string name="beer_calories">Calories</string>
@@ -44,6 +50,20 @@
 	<string name="beer_rated">rated</string>
 	<string name="beer_unrateable">unrateable</string>
 	<string name="beer_mark_breakdown">Arithmetic average: %1$s\nWeighted average: %1$s</string>
+	<string name="beer_isalias">This beer is an alias, such as an alternative market distribution or a name change</string>
+	<string name="beer_findalias">Open aliased beer</string>
+
+	<string name="brewery_typelocation">%1$s in %2$s</string>
+	<string name="brewery_type_brewery">A brewery</string>
+	<string name="brewery_type_micro">A microbrewery</string>
+	<string name="brewery_type_brewpub">A brew pub</string>
+	<string name="brewery_type_brewery_pub">A brew pub/brewery</string>
+	<string name="brewery_type_contract">A contract brewer</string>
+	<string name="brewery_type_client">A client brewery</string>
+	<string name="brewery_type_commissioner">A commissioner</string>
+	<string name="brewery_type_meadery">A meadery</string>
+	<string name="brewery_type_cidery">A cidery</string>
+	<string name="brewery_type_sake">A sake producer</string>
 
 	<string name="rate_enterrating">Enter rating</string>
 	<string name="rate_offline_badge">offline only</string>
@@ -63,6 +83,26 @@
 	<string name="rate_error_norating">You have not yet finished your scoring</string>
 	<string name="rate_error_commentlength">You comment must be at lesat 80 characters</string>
 
+	<string name="place_typelocation">%1$s in %2$s</string>
+	<string name="place_km">km</string>
+	<string name="place_miles">m</string>
+	<string name="place_taps">%1$s taps</string>
+	<string name="place_bottles">%1$s bottles</string>
+	<string name="place_checkin">Perform check-in</string>
+	<string name="place_opentimes">Open %1$s</string>
+	<string name="place_checkin_ok">You checked in</string>
+	<string name="place_checkin_error">You have already checked into this place recently</string>
+
+	<string name="place_type_brewpub">A brewpub</string>
+	<string name="place_type_bar">A bar</string>
+	<string name="place_type_beerstore">A beer store</string>
+	<string name="place_type_restaurant">A restaurant</string>
+	<string name="place_type_brewery">A brewery/taproom</string>
+	<string name="place_type_homebrewshop">A homebrew shop</string>
+	<string name="place_type_grocerystore">A grocery store</string>
+	<string name="place_type_internetbased">An internet-based store</string>
+	<string name="place_type_unkkown">A business</string>
+
 	<string name="sync_usesync">Tap to synchronize your ratings</string>
 	<string name="sync_insync">Synchronizing your ratings</string>
 	<string name="sync_error">Ratings synchronization failed</string>
@@ -79,11 +119,19 @@
 	<string name="help_useragreement">User agreement</string>
 
 	<string name="settings_savedata">Data saver mode (photos on wifi only)</string>
+	<string name="settings_metricunits">Use metric units (meters, liters)</string>
 
 	<string name="error_connectionunavailable">No wifi or mobile network available</string>
 	<string name="error_connectionfailure">Connection failure - your connection is poor or RateBeer is not responding</string>
 	<string name="error_upgradefailed">Sorry, your account could not be upgraded</string>
 	<string name="error_authenticationfailed">Your username or password is incorrect</string>
 	<string name="error_nouserorpass">Both username and password are required fields</string>
+	<string name="error_noratings">No ratings yet!\n\nTime to crack open a beer…</string>
+	<string name="error_nofeeditems">No recent activity here…</string>
+	<string name="error_noplaces">No places can be found around you</string>
+	<string name="error_noresults">No results.\n\nTry using part of the name, but at least 3 characters.</string>
+	<string name="error_nolocationpermission">This feature requires access to your location.\n\nYour location is only coarsely determined - roughly a city block - and is never shared in any way or even send to RateBeer.</string>
+	<string name="error_locationpermissionrequired">Location access denied: nearby places not available</string>
+	<string name="error_cannotopenurl">This link cannot be opened on your device</string>
 
 </resources>

@@ -42,7 +42,10 @@ public final class BeerActivity extends RateBeerActivity {
 	private View detailsLayout;
 	private View numbersLayout;
 	private View labelsLayout;
+	private TextView brewerNameText;
 	private FloatingActionButton rateButton;
+
+	private long beerId;
 
 	public static Intent start(Context context, long beerId) {
 		return new Intent(context, BeerActivity.class).putExtra("beerId", beerId);
@@ -68,6 +71,7 @@ public final class BeerActivity extends RateBeerActivity {
 		detailsLayout = findViewById(R.id.details_layout);
 		numbersLayout = findViewById(R.id.numbers_layout);
 		labelsLayout = findViewById(R.id.labels_layout);
+		brewerNameText = (TextView) findViewById(R.id.brewer_name_text);
 		rateButton = (FloatingActionButton) findViewById(R.id.rate_button);
 		rateButton.setVisibility(View.GONE);
 
@@ -82,7 +86,7 @@ public final class BeerActivity extends RateBeerActivity {
 	private void refresh(boolean forceFresh) {
 
 		// Load beer from database or live, with a fallback on the bare beer name taken from an offline rating
-		long beerId = getIntent().getLongExtra("beerId", 0);
+		beerId = getIntent().getLongExtra("beerId", 0);
 		Db.getBeer(this, beerId, forceFresh).onErrorResumeNext(Db.getOfflineRatingForBeer(this, beerId).map(this::ratingToBeer)).compose(onIoToUi())
 				.compose(bindToLifecycle()).subscribe(this::showBeer, e -> Snackbar.show(this, R.string.error_connectionfailure));
 
@@ -110,18 +114,24 @@ public final class BeerActivity extends RateBeerActivity {
 			int brewerEnd = brewerStart + beer.brewerName.length();
 			brewerStyleMarkup.setSpan(new StyleSpan(Typeface.BOLD), styleStart, styleEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 			brewerStyleMarkup.setSpan(new StyleSpan(Typeface.BOLD), brewerStart, brewerEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-			((TextView) findViewById(R.id.brewer_name_text)).setText(brewerStyleMarkup);
+			brewerNameText.setText(brewerStyleMarkup);
 		} else {
 			String brewerText = getString(R.string.beer_brewer, beer.brewerName);
 			SpannableStringBuilder brewerMarkup = new SpannableStringBuilder(brewerText);
 			int brewerStart = brewerText.indexOf(beer.brewerName);
 			int brewerEnd = brewerStart + beer.brewerName.length();
 			brewerMarkup.setSpan(new StyleSpan(Typeface.BOLD), brewerStart, brewerEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-			((TextView) findViewById(R.id.brewer_name_text)).setText(brewerMarkup);
+			brewerNameText.setText(brewerMarkup);
 		}
+		brewerNameText.setOnClickListener(v -> startActivity(BreweryActivity.start(this, beer.brewerId)));
 
 		((TextView) findViewById(R.id.beer_name_text)).setText(beer.name);
-		if (beer.overallPercentile == null && beer.stylePercentile == null && beer.rateCount == 0 && beer.alcohol == null) {
+
+		if (beer.isAlias()) {
+			numbersLayout.setVisibility(View.GONE);
+			labelsLayout.setVisibility(View.GONE);
+			findViewById(R.id.alias_layout).setVisibility(View.VISIBLE);
+		} else if (beer.overallPercentile == null && beer.stylePercentile == null && beer.rateCount == 0 && beer.alcohol == null) {
 			// No additional beer numbers available at all: hide the numbers bar
 			numbersLayout.setVisibility(View.GONE);
 			labelsLayout.setVisibility(View.GONE);
@@ -136,6 +146,7 @@ public final class BeerActivity extends RateBeerActivity {
 			((TextView) findViewById(R.id.mark_ibu_text)).setText(beer.getIbuString());
 			((TextView) findViewById(R.id.mark_calories_text)).setText(beer.getCaloriesString());
 			// Show weighted and arithmetic averages when overall percentage is tapped
+			// TODO Make this score breakdown more findable and more attractive
 			RxView.clicks(markOverallText).subscribe(clicked -> new AlertDialog.Builder(this)
 					.setMessage(getString(R.string.beer_mark_breakdown, beer.getRealRatingString(), beer.getWeightedRatingString()))
 					.setPositiveButton(android.R.string.ok, null).show());
@@ -181,6 +192,15 @@ public final class BeerActivity extends RateBeerActivity {
 		beer.name = rating.beerName;
 		beer.brewerName = rating.brewerName;
 		return beer;
+	}
+
+	public void openAlias(View view) {
+		// Look up the aliased beer id and open this beer instead (closing the current view)
+		Api.get().getBeerAlias(beerId).compose(onIoToUi())
+				.compose(bindToLifecycle()).subscribe(aliasBeerId -> {
+			startActivity(BeerActivity.start(this, aliasBeerId));
+			finish();
+		}, e -> Snackbar.show(this, R.string.error_connectionfailure));
 	}
 
 }

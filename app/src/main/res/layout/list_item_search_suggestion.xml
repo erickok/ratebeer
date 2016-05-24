@@ -11,6 +11,17 @@
 	android:paddingRight="8dp"
 	android:paddingStart="16dp">
 
+	<ImageView
+		android:id="@+id/type_image"
+		android:layout_width="24dp"
+		android:layout_height="24dp"
+		android:layout_gravity="center_vertical"
+		android:layout_marginEnd="12dp"
+		android:layout_marginRight="12dp"
+		tools:contentDescription="Property description"
+		tools:ignore="ContentDescription"
+		tools:src="@drawable/ic_type_brewery" />
+
 	<TextView
 		android:id="@+id/name_text"
 		android:layout_width="0dp"
@@ -29,8 +40,8 @@
 
 	<ImageView
 		android:id="@+id/photo_image"
-		android:layout_width="@dimen/block_size"
-		android:layout_height="@dimen/block_size"
+		android:layout_width="48dp"
+		android:layout_height="48dp"
 		android:layout_gravity="center_vertical"
 		android:layout_marginBottom="2dp"
 		android:layout_marginTop="2dp"

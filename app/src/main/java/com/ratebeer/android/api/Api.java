@@ -15,8 +15,22 @@ import com.ratebeer.android.api.model.BeerRating;
 import com.ratebeer.android.api.model.BeerRatingDeserializer;
 import com.ratebeer.android.api.model.BeerSearchResult;
 import com.ratebeer.android.api.model.BeerSearchResultDeserializer;
+import com.ratebeer.android.api.model.BreweryBeer;
+import com.ratebeer.android.api.model.BreweryDetails;
+import com.ratebeer.android.api.model.BreweryDetailsDeserializer;
+import com.ratebeer.android.api.model.BreweryBeerDeserializer;
+import com.ratebeer.android.api.model.BrewerySearchResult;
+import com.ratebeer.android.api.model.BrewerySearchResultDeserializer;
 import com.ratebeer.android.api.model.FeedItem;
 import com.ratebeer.android.api.model.FeedItemDeserializer;
+import com.ratebeer.android.api.model.PlaceCheckinResult;
+import com.ratebeer.android.api.model.PlaceCheckinResultDeserializer;
+import com.ratebeer.android.api.model.PlaceDetails;
+import com.ratebeer.android.api.model.PlaceDetailsDeserializer;
+import com.ratebeer.android.api.model.PlaceNearby;
+import com.ratebeer.android.api.model.PlaceNearbyDeserializer;
+import com.ratebeer.android.api.model.PlaceSearchResult;
+import com.ratebeer.android.api.model.PlaceSearchResultDeserializer;
 import com.ratebeer.android.api.model.UserInfo;
 import com.ratebeer.android.api.model.UserInfoDeserializer;
 import com.ratebeer.android.api.model.UserRateCount;
@@ -38,10 +52,10 @@ import java.util.concurrent.TimeUnit;
 import okhttp3.JavaNetCookieJar;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
-import retrofit2.GsonConverterFactory;
 import retrofit2.Response;
 import retrofit2.Retrofit;
-import retrofit2.RxJavaCallAdapterFactory;
+import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
+import retrofit2.converter.gson.GsonConverterFactory;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
@@ -96,11 +110,19 @@ public final class Api {
 				.registerTypeAdapter(BarcodeSearchResult.class, new BarcodeSearchResultDeserializer())
 				.registerTypeAdapter(BeerDetails.class, new BeerDetailsDeserializer())
 				.registerTypeAdapter(BeerRating.class, new BeerRatingDeserializer())
+				.registerTypeAdapter(BrewerySearchResult.class, new BrewerySearchResultDeserializer())
+				.registerTypeAdapter(BreweryDetails.class, new BreweryDetailsDeserializer())
+				.registerTypeAdapter(BreweryBeer.class, new BreweryBeerDeserializer())
+				.registerTypeAdapter(PlaceSearchResult.class, new PlaceSearchResultDeserializer())
+				.registerTypeAdapter(PlaceNearby.class, new PlaceNearbyDeserializer())
+				.registerTypeAdapter(PlaceDetails.class, new PlaceDetailsDeserializer())
+				.registerTypeAdapter(PlaceCheckinResult.class, new PlaceCheckinResultDeserializer())
 				.create();
 		Retrofit retrofit = new Retrofit.Builder()
 				.baseUrl(ENDPOINT)
 				.client(httpclient)
 				.addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+				.addConverterFactory(new HtmlConverterFactory())
 				.addConverterFactory(GsonConverterFactory.create(gson))
 				.build();
 		// @formatter:on
@@ -227,6 +249,13 @@ public final class Api {
 	}
 
 	/**
+	 * Returns a single id of the beer that is aliased to from a certain beer id, or throws an exception if it could not be retrieved
+	 */
+	public Observable<Long> getBeerAlias(long beerId) {
+		return routes.getBeerAlias((int) beerId).filter(alias -> alias != null).first().map(alias -> alias.id);
+	}
+
+	/**
 	 * Returns a (possibly empty) observable sequence (list) of the most recent ratings for a beer
 	 */
 	public Observable<BeerRating> getBeerRatings(long beerId) {
@@ -278,6 +307,58 @@ public final class Api {
 					rating.mouthfeel, rating.overall, comments);
 		return post.flatMap(posted -> routes.getBeerRatings(KEY, rating.beerId.intValue(), (int) userId, 1, 1).flatMapIterable(ratings -> ratings))
 				.filter(storedRating -> storedRating.timeEntered != null).first();
+	}
+
+	/**
+	 * Returns an observable sequence (list) of breweries (search results) for a text query
+	 */
+	public Observable<BrewerySearchResult> searchBreweries(String query) {
+		return routes.searchBreweries(KEY, Normalizer.get().normalizeSearchQuery(query)).flatMapIterable(results -> results);
+	}
+
+	/**
+	 * Returns the full details for a brewery, or throws an exception if it could not be retrieved
+	 */
+	public Observable<BreweryDetails> getBreweryDetails(long breweryId) {
+		return routes.getBreweryDetails(KEY, (int) breweryId).flatMapIterable(breweries -> breweries).first();
+	}
+
+	/**
+	 * Returns a (possibly empty) observable sequence (list) of beers made by some brewery
+	 */
+	public Observable<BreweryBeer> getBreweryBeers(long breweryId) {
+		return routes.getBreweryBeers(KEY, (int) breweryId, Session.get().getUserId()).flatMapIterable(beers -> beers);
+	}
+
+	/**
+	 * Returns an observable sequence (list) of places (search results) for a text query
+	 */
+	public Observable<PlaceSearchResult> searchPlaces(String query) {
+		return routes.searchPlaces(KEY, Normalizer.get().normalizeSearchQuery(query)).flatMapIterable(results -> results);
+	}
+
+	/**
+	 * Returns a (possibly empty) observable sequence (list) of nearby places
+	 */
+	public Observable<PlaceNearby> getPlacesNearby(int radius, double latitude, double longitude) {
+		return routes.getPlacesNearby(KEY, radius, latitude, longitude).flatMapIterable(places -> places);
+	}
+
+	/**
+	 * Returns the full details for a place, or throws an exception if it could not be retrieved
+	 */
+	public Observable<PlaceDetails> getPlaceDetails(long placeId) {
+		return routes.getPlaceDetails(KEY, (int) placeId).flatMapIterable(places -> places).first();
+	}
+
+	/**
+	 * Performs a place check-in on the server and returns true or false to indicate success, or throws an exception if the check-in request failed
+	 */
+	public Observable<Boolean> performPlaceCheckin(long placeId) {
+		Observable<Boolean> checkin = routes.performCheckin(KEY, (int) placeId).map(result -> !TextUtils.isEmpty(result.okResult));
+		if (!haveLoginCookie())
+			checkin = checkin.startWith(getLoginCookie());
+		return checkin;
 	}
 
 }

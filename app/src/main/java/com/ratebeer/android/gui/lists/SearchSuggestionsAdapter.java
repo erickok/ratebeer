@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import com.ratebeer.android.R;
 import com.ratebeer.android.gui.widget.Images;
+import com.squareup.picasso.RequestCreator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,10 +30,29 @@ public final class SearchSuggestionsAdapter extends RecyclerView.Adapter<SearchS
 	@Override
 	public void onBindViewHolder(ViewHolder holder, int position) {
 		SearchSuggestion searchSuggestion = searchSuggestions.get(position);
+		int typeResId = 0;
+		if (searchSuggestion.type == SearchSuggestion.TYPE_HISTORY) {
+			typeResId = R.drawable.ic_type_historic;
+		} else if (searchSuggestion.type == SearchSuggestion.TYPE_BREWERY) {
+			typeResId = R.drawable.ic_type_brewery;
+		} else if (searchSuggestion.type == SearchSuggestion.TYPE_PLACE) {
+			typeResId = R.drawable.ic_type_place;
+		} else if (searchSuggestion.type == SearchSuggestion.TYPE_BEER) {
+			typeResId = R.drawable.ic_type_beer;
+		} else if (searchSuggestion.type == SearchSuggestion.TYPE_RATING) {
+			typeResId = R.drawable.ic_type_rating;
+		}
+		holder.typeImage.setImageResource(typeResId);
 		holder.nameText.setText(searchSuggestion.suggestion);
-		if (searchSuggestion.beerId != null) {
+		RequestCreator request = null;
+		if (searchSuggestion.type == SearchSuggestion.TYPE_BEER && searchSuggestion.itemId != null) {
+			request = Images.with(holder.photoImage.getContext()).loadBeer(searchSuggestion.itemId);
+		} else if (searchSuggestion.type == SearchSuggestion.TYPE_BREWERY && searchSuggestion.itemId != null) {
+			request = Images.with(holder.photoImage.getContext()).loadBrewery(searchSuggestion.itemId);
+		}
+		if (request != null) {
 			holder.photoImage.setVisibility(View.VISIBLE);
-			Images.with(holder.photoImage.getContext()).loadBeer(searchSuggestion.beerId).placeholder(android.R.color.white).fit().centerInside().into(holder.photoImage);
+			request.placeholder(android.R.color.white).fit().centerInside().into(holder.photoImage);
 		} else {
 			holder.photoImage.setVisibility(View.GONE);
 		}
@@ -55,11 +75,13 @@ public final class SearchSuggestionsAdapter extends RecyclerView.Adapter<SearchS
 
 	static class ViewHolder extends RecyclerView.ViewHolder {
 
+		final ImageView typeImage;
 		final TextView nameText;
 		final ImageView photoImage;
 
 		public ViewHolder(View v) {
 			super(v);
+			typeImage = (ImageView) v.findViewById(R.id.type_image);
 			nameText = (TextView) v.findViewById(R.id.name_text);
 			photoImage = (ImageView) v.findViewById(R.id.photo_image);
 		}
