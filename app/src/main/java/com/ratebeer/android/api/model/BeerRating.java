@@ -7,7 +7,7 @@ public final class BeerRating {
 	public int ratingId;
 	public int userId;
 	public String userName;
-	public int userCountryId;
+	public Integer userCountryId;
 	public String userCountryName;
 	public int userRateCount;
 
