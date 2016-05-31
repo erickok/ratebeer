@@ -98,7 +98,7 @@ public final class Api {
 				.readTimeout(10, TimeUnit.SECONDS)
 				.cookieJar(new JavaNetCookieJar(cookieManager))
 				.addInterceptor(logging)
-				.addNetworkInterceptor(new LoginHeaderInterceptor())
+				.addNetworkInterceptor(new ResponseInterceptor())
 				.build();
 		Gson gson = new GsonBuilder()
 				.disableHtmlEscaping()
@@ -135,9 +135,9 @@ public final class Api {
 			return false;
 		boolean hasUserCookie = false, hasSessionCookie = false;
 		for (HttpCookie cookie : cookieManager.getCookieStore().getCookies()) {
-			if (cookie.getName().equals(COOKIE_USERID) && !TextUtils.isEmpty(cookie.getValue()))
+			if (cookie.getName().equals(COOKIE_USERID) && !TextUtils.isEmpty(cookie.getValue()) && !cookie.hasExpired())
 				hasUserCookie = true;
-			if (cookie.getName().equals(COOKIE_SESSIONID) && !TextUtils.isEmpty(cookie.getValue()))
+			if (cookie.getName().equals(COOKIE_SESSIONID) && !TextUtils.isEmpty(cookie.getValue()) && !cookie.hasExpired())
 				hasSessionCookie = true;
 		}
 		return hasUserCookie && hasSessionCookie;
