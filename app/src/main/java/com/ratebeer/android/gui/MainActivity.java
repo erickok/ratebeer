@@ -31,10 +31,12 @@ import com.ratebeer.android.R;
 import com.ratebeer.android.Session;
 import com.ratebeer.android.api.Api;
 import com.ratebeer.android.api.model.FeedItem;
+import com.ratebeer.android.db.views.CustomListWithCount;
 import com.ratebeer.android.db.Db;
 import com.ratebeer.android.db.HistoricSearch;
 import com.ratebeer.android.db.Rating;
 import com.ratebeer.android.gui.lists.BarcodeSearchResultsAdapter;
+import com.ratebeer.android.gui.lists.CustomListsAdapter;
 import com.ratebeer.android.gui.lists.FeedItemsAdapter;
 import com.ratebeer.android.gui.lists.LocalPlace;
 import com.ratebeer.android.gui.lists.LocalPlacesAdapter;
@@ -64,6 +66,7 @@ public class MainActivity extends RateBeerActivity implements ActivityCompat.OnR
 	private static final int TAB_FEED_LOCAL = 2;
 	private static final int TAB_FEED_GLOBAL = 3;
 	private static final int TAB_NEARBY = 4;
+	private static final int TAB_MY_LISTS = 5;
 
 	private static final int REQUEST_LOCATION_PERMISSION = 1;
 
@@ -73,12 +76,14 @@ public class MainActivity extends RateBeerActivity implements ActivityCompat.OnR
 	private TextView statusText;
 	private TextView emptyText;
 	private FloatingActionButton rateButton;
+	private FloatingActionButton listAddButton;
 	private SearchSuggestionsAdapter searchSuggestionsAdaper;
 	private List<Integer> tabTypes;
 	private List<View> tabs;
 	private List<String> tabsTitles;
 	private int tabSelected = 0;
 	private Subscription syncSubscription;
+	private boolean freshStart = true;
 	private boolean preventLocationPermissionRequest = false;
 
 	public static Intent start(Context context) {
@@ -110,6 +115,7 @@ public class MainActivity extends RateBeerActivity implements ActivityCompat.OnR
 		emptyText = (TextView) findViewById(R.id.empty_text);
 		RecyclerView searchList = (RecyclerView) findViewById(R.id.search_list);
 		rateButton = (FloatingActionButton) findViewById(R.id.rate_button);
+		listAddButton = (FloatingActionButton) findViewById(R.id.list_add_button);
 
 		// Set up tabs
 		tabTypes = new ArrayList<>(3);
@@ -119,16 +125,19 @@ public class MainActivity extends RateBeerActivity implements ActivityCompat.OnR
 			addTab(TAB_RATINGS, R.string.main_myratings);
 			addTab(TAB_FEED_FRIENDS, R.string.main_friends);
 			addTab(TAB_FEED_LOCAL, R.string.main_local);
-			addTab(TAB_NEARBY, R.string.main_nearby);
 		} else {
 			addTab(TAB_FEED_GLOBAL, R.string.main_global);
-			addTab(TAB_NEARBY, R.string.main_nearby);
 		}
+		addTab(TAB_NEARBY, R.string.main_nearby);
+		addTab(TAB_MY_LISTS, R.string.main_mylists);
 		RxViewPager.pageSelected(listsPager).subscribe(this::refreshTab);
 		listsPager.setAdapter(new ActivityPagerAdapter());
 		tabLayout.setupWithViewPager(listsPager);
-		if (tabs.size() == 1)
+		if (tabs.size() == 1) {
 			tabLayout.setVisibility(View.GONE);
+		} else if (tabs.size() > 4) {
+			tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
+		}
 
 		// Set up access buttons
 		RxView.clicks(scanButton).compose(bindToLifecycle()).subscribe(v -> new BarcodeIntentIntegrator(this).initiateScan());
@@ -161,8 +170,9 @@ public class MainActivity extends RateBeerActivity implements ActivityCompat.OnR
 	@Override
 	protected void onResume() {
 		super.onResume();
-		if (tabTypes.get(tabSelected) == TAB_RATINGS)
+		if (freshStart || tabTypes.get(tabSelected) == TAB_RATINGS || tabTypes.get(tabSelected) == TAB_MY_LISTS)
 			refreshTab(tabSelected);
+		freshStart = false;
 		preventLocationPermissionRequest = false;
 	}
 
@@ -270,6 +280,7 @@ public class MainActivity extends RateBeerActivity implements ActivityCompat.OnR
 			});
 			ItemClickSupport.addTo(view).setOnItemClickListener((parent, pos, v) -> openRating(((RatingsAdapter) view.getAdapter()).get(pos)));
 			rateButton.show();
+			listAddButton.hide();
 
 		} else if (type == TAB_NEARBY) {
 
@@ -278,6 +289,7 @@ public class MainActivity extends RateBeerActivity implements ActivityCompat.OnR
 			statusText.setVisibility(View.GONE);
 			emptyText.setVisibility(View.GONE);
 			rateButton.hide();
+			listAddButton.hide();
 
 			if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 				// No permission yet to use the user location
@@ -309,6 +321,33 @@ public class MainActivity extends RateBeerActivity implements ActivityCompat.OnR
 				Snackbar.show(this, R.string.error_connectionfailure);
 			}, () -> Animations.fadeFlip(listsPager, loadingProgress));
 
+		} else if (type == TAB_MY_LISTS) {
+
+			if (syncSubscription != null)
+				syncSubscription.unsubscribe();
+			statusText.setVisibility(View.GONE);
+			emptyText.setVisibility(View.GONE);
+			rateButton.hide();
+			listAddButton.show();
+
+			// Show the custom, local user lists
+			Animations.fadeFlip(loadingProgress, listsPager);
+			ItemClickSupport.addTo(view).setOnItemClickListener((parent, pos, v) -> openCustomList(((CustomListsAdapter) view.getAdapter()).get
+					(pos)));
+			Db.getCustomLists(this).toSortedList().compose(onIoToUi()).compose(bindToLifecycle()).subscribe(customLists -> {
+				if (view.getAdapter() == null)
+					view.setAdapter(new CustomListsAdapter(customLists));
+				else
+					((CustomListsAdapter) view.getAdapter()).update(customLists);
+				if (customLists.isEmpty()) {
+					emptyText.setVisibility(View.VISIBLE);
+					emptyText.setText(R.string.error_nolists);
+				}
+			}, e -> {
+				Animations.fadeFlip(listsPager, loadingProgress);
+				Snackbar.show(this, R.string.error_connectionfailure);
+			}, () -> Animations.fadeFlip(listsPager, loadingProgress));
+
 		} else {
 
 			if (syncSubscription != null)
@@ -316,6 +355,7 @@ public class MainActivity extends RateBeerActivity implements ActivityCompat.OnR
 			statusText.setVisibility(View.GONE);
 			emptyText.setVisibility(View.GONE);
 			rateButton.hide();
+			listAddButton.hide();
 
 			// Load a feed (global, local or friends)
 			Animations.fadeFlip(loadingProgress, listsPager);
@@ -365,6 +405,10 @@ public class MainActivity extends RateBeerActivity implements ActivityCompat.OnR
 			startActivity(PlaceActivity.start(this, place.place._id));
 	}
 
+	private void openCustomList(CustomListWithCount customList) {
+		startActivity(CustomListActivity.start(this, customList._id));
+	}
+
 	@Override
 	public void onBackPressed() {
 		if (!TextUtils.isEmpty(searchEdit.getQuery())) {
@@ -408,6 +452,10 @@ public class MainActivity extends RateBeerActivity implements ActivityCompat.OnR
 
 	public void startOfflineRating(View view) {
 		startActivity(RateActivity.start(this));
+	}
+
+	public void startCustomList(View view) {
+		startActivity(CustomListActivity.start(this));
 	}
 
 	private class ActivityPagerAdapter extends PagerAdapter {

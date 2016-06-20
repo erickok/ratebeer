@@ -37,6 +37,7 @@
 			android:name=".gui.PlaceActivity"
 			android:theme="@style/AppTheme.NoStatusBar" />
 		<activity android:name=".gui.PhotoActivity" />
+		<activity android:name=".gui.CustomListActivity" />
 		<activity android:name=".gui.HelpActivity" />
 		<activity android:name=".gui.HelpWhereRatingsActivity" />
 

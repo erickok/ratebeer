@@ -152,6 +152,13 @@
 		<item name="android:textColor">@android:color/black</item>
 	</style>
 
+	<style name="RatingBar" parent="Theme.AppCompat">
+		<item name="android:progressDrawable">@drawable/ic_view_star</item>
+		<item name="android:height">36dp</item>
+		<item name="android:minHeight">36dp</item>
+		<item name="android:maxHeight">36dp</item>
+	</style>
+
 	<!-- This has a v21 version that uses selectableItemBackgroundBorderless instead -->
 	<style name="NumberPicker">
 		<item name="android:layout_height">@dimen/block_size</item>

@@ -86,7 +86,7 @@
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			app:tabSelectedTextColor="@color/yellow_main"
-			app:tabTextColor="@android:color/white" />
+			app:tabTextColor="@android:color/white"/>
 
 	</android.support.design.widget.AppBarLayout>
 
@@ -154,6 +154,19 @@
 		android:contentDescription="@string/rate_enterrating"
 		android:onClick="startOfflineRating"
 		android:src="@drawable/ic_action_rate"
+		android:visibility="gone"
+		app:layout_anchor="@id/lists_pager"
+		app:layout_anchorGravity="bottom|right|end"
+		tools:visibility="visible" />
+
+	<android.support.design.widget.FloatingActionButton
+		android:id="@+id/list_add_button"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_margin="16dp"
+		android:contentDescription="@string/lists_create_new"
+		android:onClick="startCustomList"
+		android:src="@drawable/ic_action_add"
 		android:visibility="gone"
 		app:layout_anchor="@id/lists_pager"
 		app:layout_anchorGravity="bottom|right|end"
