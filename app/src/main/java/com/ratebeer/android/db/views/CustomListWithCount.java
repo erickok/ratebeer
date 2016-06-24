@@ -2,10 +2,11 @@ package com.ratebeer.android.db.views;
 
 import android.support.annotation.NonNull;
 
-public class CustomListWithCount implements Comparable<CustomListWithCount> {
+public final class CustomListWithCount implements Comparable<CustomListWithCount> {
 
 	public Long _id;
 	public String name;
+
 	public int beerCount;
 
 	@Override

@@ -17,6 +17,8 @@ import com.ratebeer.android.db.CustomListBeer;
 import com.ratebeer.android.db.Db;
 import com.ratebeer.android.db.RBLog;
 import com.ratebeer.android.gui.lists.CustomListBeersAdapter;
+import com.ratebeer.android.rx.RecyclerAdapterDataEvent;
+import com.ratebeer.android.rx.RxRecyclerViewAdapter;
 
 import static com.ratebeer.android.db.CupboardDbHelper.database;
 import static com.ratebeer.android.db.CupboardDbHelper.rxdb;
@@ -74,14 +76,14 @@ public final class CustomListActivity extends RateBeerActivity {
 		Db.getCustomListBeerChanges(this, list._id).compose(bindToLifecycle()).subscribe(change -> customListBeersAdapter.change(change), e -> RBLog
 				.e("Error handling a beer list change", e));
 
-		// Load current beers list
-		Db.getCustomListBeers(this, list._id).toList().compose(onIoToUi()).compose(bindToLifecycle()).subscribe(beers -> {
-			emptyText.setVisibility(beers.isEmpty() ? View.VISIBLE : View.GONE);
-			beersList.setVisibility(beers.isEmpty() ? View.GONE : View.VISIBLE);
-			customListBeersAdapter.init(beers);
-			/*ItemClickSupport.addTo(beersList).setOnItemClickListener((recyclerView, position, v) -> openListing(((CustomListBeersAdapter) beersList
-					.getAdapter()).get(position)));*/
-		}, e -> Snackbar.show(this, R.string.error_unexpectederror));
+		// Load current beers list and always have it update the empty view visibility when adding/removing beers
+		Db.getCustomListBeers(this, list._id).toList().compose(onIoToUi()).compose(bindToLifecycle()).subscribe(beers -> customListBeersAdapter.init
+				(beers), e -> Snackbar.show(this, R.string.error_unexpectederror));
+		RxRecyclerViewAdapter.dataEvents(customListBeersAdapter).filter(event -> event.getKind() != RecyclerAdapterDataEvent.Kind.RANGE_CHANGE)
+				.subscribe(event -> {
+			emptyText.setVisibility(customListBeersAdapter.getItemCount() == 0 ? View.VISIBLE : View.GONE);
+			beersList.setVisibility(customListBeersAdapter.getItemCount() == 0 ? View.GONE : View.VISIBLE);
+		}, e -> RBLog.e("Unexpected error when handling list addition/removal", e));
 	}
 
 	@Override

@@ -43,6 +43,7 @@
 				android:layout_height="wrap_content"
 				android:fontFamily="sans-serif-condensed"
 				android:hint="@string/lists_listname"
+				android:imeOptions="actionDone"
 				android:inputType="textShortMessage"
 				android:textColor="@android:color/white"
 				android:textSize="30sp"

@@ -334,7 +334,7 @@ public class MainActivity extends RateBeerActivity implements ActivityCompat.OnR
 			Animations.fadeFlip(loadingProgress, listsPager);
 			ItemClickSupport.addTo(view).setOnItemClickListener((parent, pos, v) -> openCustomList(((CustomListsAdapter) view.getAdapter()).get
 					(pos)));
-			Db.getCustomLists(this).toSortedList().compose(onIoToUi()).compose(bindToLifecycle()).subscribe(customLists -> {
+			Db.getCustomListsWithCount(this).toSortedList().compose(onIoToUi()).compose(bindToLifecycle()).subscribe(customLists -> {
 				if (view.getAdapter() == null)
 					view.setAdapter(new CustomListsAdapter(customLists));
 				else

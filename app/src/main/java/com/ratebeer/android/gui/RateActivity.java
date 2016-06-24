@@ -216,6 +216,7 @@ public final class RateActivity extends RateBeerActivity {
 				text.setText(((TextView) view).getText());
 				popup.dismiss();
 			});
+			//noinspection deprecation Hack to have the background transparent
 			popup.setBackgroundDrawable(new BitmapDrawable());
 			popup.setOutsideTouchable(true);
 			popup.showAsDropDown(button);

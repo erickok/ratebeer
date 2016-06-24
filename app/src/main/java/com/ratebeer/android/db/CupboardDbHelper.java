@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.ratebeer.android.db.views.CustomListWithCount;
+import com.ratebeer.android.db.views.CustomListWithPresence;
 
 import nl.nl2312.rxcupboard.RxCupboard;
 import nl.nl2312.rxcupboard.RxDatabase;
@@ -52,6 +53,7 @@ public final class CupboardDbHelper extends SQLiteOpenHelper {
 		cupboardAll.register(CustomListBeer.class);
 		// Views
 		cupboardAll.register(CustomListWithCount.class);
+		cupboardAll.register(CustomListWithPresence.class);
 	}
 
 	public CupboardDbHelper(Context context) {
