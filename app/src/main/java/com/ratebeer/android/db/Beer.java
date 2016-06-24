@@ -87,7 +87,7 @@ public final class Beer {
 	public String getAlcoholString() {
 		if (alcohol == null || alcohol == 0)
 			return "-";
-		return String.format(Locale.getDefault(), "%1f", alcohol);
+		return String.format(Locale.getDefault(), "%s", alcohol);
 	}
 
 	public String getIbuString() {
