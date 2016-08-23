@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:layout_margin="16dp"
+	android:background="@drawable/back_popup"
+	android:orientation="vertical">
+
+	<com.ratebeer.android.gui.widget.MaxHeightRecyclerView
+		android:id="@+id/lists_list"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:clipToPadding="false"
+		android:maxHeight="220dp"
+		android:paddingBottom="8dp"
+		android:paddingTop="8dp"
+		tools:listitem="@layout/list_item_custom_list_popup" />
+
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal"
+		android:paddingBottom="4dp"
+		android:paddingEnd="8dp"
+		android:paddingLeft="8dp"
+		android:paddingRight="8dp"
+		android:paddingStart="8dp"
+		android:paddingTop="4dp">
+
+		<EditText
+			android:id="@+id/create_name_edit"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_marginEnd="4dp"
+			android:layout_marginRight="4dp"
+			android:layout_weight="1"
+			android:hint="@string/lists_create_new"
+			android:imeOptions="actionDone"
+			android:inputType="textShortMessage" />
+
+		<ImageButton
+			android:id="@+id/create_add_button"
+			style="@style/AppImageButton.Orange"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_gravity="center_vertical"
+			android:src="@drawable/ic_action_add" />
+
+	</LinearLayout>
+
+</LinearLayout>

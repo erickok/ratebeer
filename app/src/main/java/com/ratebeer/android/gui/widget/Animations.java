@@ -5,8 +5,14 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.Transformation;
+
+import com.ratebeer.android.R;
 
 public final class Animations {
+
+	private static final long EXPAND_COLLAPSE_DURATION = 600; // ms
 
 	public static void fadeFlip(final View in, final View out) {
 		ObjectAnimator animOut = ObjectAnimator.ofFloat(out, "alpha", 1F, 0F);
@@ -72,6 +78,64 @@ public final class Animations {
 			}
 		});
 		animSetXY.start();
+	}
+
+	public static void collapseToTop(View view) {
+		final int startHeight = (int) view.getTag(R.id.expand_collapse_height_tag);
+		Animation animation = new Animation() {
+			@Override
+			protected void applyTransformation(float interpolatedTime, Transformation t) {
+				super.applyTransformation(interpolatedTime, t);
+				view.getLayoutParams().height = (int) (startHeight * (1 - interpolatedTime));
+				view.requestLayout();
+			}
+
+			@Override
+			public boolean willChangeBounds() {
+				return true;
+			}
+		};
+		animation.setDuration(EXPAND_COLLAPSE_DURATION);
+		animation.setAnimationListener(new Animation.AnimationListener() {
+			@Override
+			public void onAnimationStart(Animation animation) {
+
+			}
+
+			@Override
+			public void onAnimationEnd(Animation animation) {
+				view.getLayoutParams().height = startHeight;
+				view.setVisibility(View.GONE);
+				view.requestLayout();
+			}
+
+			@Override
+			public void onAnimationRepeat(Animation animation) {
+
+			}
+		});
+		view.startAnimation(animation);
+	}
+
+	public static void expandFromTop(View view) {
+		view.setVisibility(View.VISIBLE);
+		Animation animation = new Animation() {
+			@Override
+			protected void applyTransformation(float interpolatedTime, Transformation t) {
+				super.applyTransformation(interpolatedTime, t);
+				if (view.getTag(R.id.expand_collapse_height_tag) == null)
+					view.setTag(R.id.expand_collapse_height_tag, view.getHeight());
+				view.getLayoutParams().height = (int) (((int) view.getTag(R.id.expand_collapse_height_tag)) * interpolatedTime);
+				view.requestLayout();
+			}
+
+			@Override
+			public boolean willChangeBounds() {
+				return true;
+			}
+		};
+		animation.setDuration(EXPAND_COLLAPSE_DURATION);
+		view.startAnimation(animation);
 	}
 
 }

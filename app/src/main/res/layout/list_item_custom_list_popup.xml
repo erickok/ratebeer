@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CheckedTextView
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:id="@+id/name_text"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:background="?android:attr/selectableItemBackground"
+	android:drawableLeft="@drawable/ic_view_checked_or_not"
+	android:drawablePadding="8dp"
+	android:drawableStart="@drawable/ic_view_checked_or_not"
+	android:fontFamily="sans-serif-condensed"
+	android:paddingBottom="8dp"
+	android:paddingEnd="16dp"
+	android:paddingLeft="16dp"
+	android:paddingRight="16dp"
+	android:paddingStart="16dp"
+	android:paddingTop="8dp"
+	android:textColor="@android:color/black"
+	android:textSize="16sp"
+	android:textStyle="bold"
+	tools:checked="true"
+	tools:text="Borefts 2016 wants" />

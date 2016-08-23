@@ -58,6 +58,11 @@
 		<item name="android:textSize">15sp</item>
 	</style>
 
+	<style name="AppImageButton.Orange" parent="Widget.AppCompat.ImageButton">
+		<item name="android:background">@drawable/back_selectable_red</item>
+		<item name="android:padding">4dp</item>
+	</style>
+
 	<style name="Badge">
 		<item name="android:padding">4dp</item>
 		<item name="android:textColor">@android:color/white</item>
@@ -89,21 +94,25 @@
 	<style name="Marker">
 		<item name="android:layout_width">0dp</item>
 		<item name="android:layout_weight">1</item>
+		<item name="android:layout_height">wrap_content</item>
+		<item name="android:orientation">vertical</item>
 		<item name="android:layout_marginRight">4dp</item>
 		<item name="android:layout_marginEnd" tools:targetApi="jelly_bean_mr1">4dp</item>
 	</style>
 
 	<style name="Marker.Number">
-		<item name="android:layout_height">28dp</item>
+		<item name="android:layout_width">match_parent</item>
+		<item name="android:layout_height">28sp</item>
 		<item name="android:textSize">20sp</item>
 		<item name="android:gravity">center</item>
 		<item name="android:textColor">@android:color/black</item>
 	</style>
 
 	<style name="Marker.Label">
+		<item name="android:layout_width">match_parent</item>
 		<item name="android:layout_height">wrap_content</item>
 		<item name="android:gravity">center_horizontal</item>
-		<item name="android:textSize">12sp</item>
+		<item name="android:textSize">11.5sp</item>
 		<item name="android:textAllCaps">true</item>
 		<item name="android:textColor">@color/grey_dark</item>
 		<item name="android:fontFamily" tools:targetApi="jelly_bean">sans-serif-condensed</item>
@@ -150,6 +159,13 @@
 
 	<style name="RatingLength.Sufficient">
 		<item name="android:textColor">@android:color/black</item>
+	</style>
+
+	<style name="RatingBar" parent="Theme.AppCompat">
+		<item name="android:progressDrawable">@drawable/ic_view_star</item>
+		<item name="android:height">36dp</item>
+		<item name="android:minHeight">36dp</item>
+		<item name="android:maxHeight">36dp</item>
 	</style>
 
 	<!-- This has a v21 version that uses selectableItemBackgroundBorderless instead -->

@@ -247,7 +247,7 @@
 		android:contentDescription="@string/rate_discard_rating"
 		android:onClick="deleteRating"
 		android:padding="6dp"
-		android:src="@drawable/ic_delete_black_24dp" />
+		android:src="@drawable/ic_action_delete" />
 
 	<FrameLayout
 		android:id="@+id/upload_layout"

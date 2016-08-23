@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.ratebeer.android.gui.widget.ForegroundRelativeLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:layout_marginBottom="@dimen/list_item_margin_bottom"
+	android:background="@drawable/back_highlightable"
+	android:descendantFocusability="afterDescendants"
+	android:foreground="?android:attr/selectableItemBackground"
+	android:stateListAnimator="@animator/item_highlight"
+	android:orientation="vertical">
+
+	<FrameLayout
+		android:id="@+id/stars_button"
+		android:layout_width="@dimen/block_size"
+		android:layout_height="@dimen/block_size"
+		android:layout_marginEnd="8dp"
+		android:layout_marginRight="8dp"
+		tools:background="@color/blue_main">
+
+		<ImageView
+			android:id="@+id/stars_empty"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:scaleType="center"
+			android:src="@drawable/ic_action_star"
+			android:visibility="gone"
+			tools:visibility="visible" />
+
+		<TextView
+			android:id="@+id/stars_text"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:gravity="center"
+			android:textColor="@android:color/white"
+			android:textSize="30sp"
+			android:visibility="gone"
+			tools:text="4"
+			tools:visibility="visible" />
+
+	</FrameLayout>
+
+	<ImageView
+		android:id="@+id/photo_image"
+		android:layout_width="@dimen/block_size"
+		android:layout_height="@dimen/block_size"
+		android:layout_alignParentEnd="true"
+		android:layout_alignParentRight="true"
+		android:layout_marginBottom="2dp"
+		android:layout_marginEnd="4dp"
+		android:layout_marginLeft="8dp"
+		android:layout_marginRight="4dp"
+		android:layout_marginStart="8dp"
+		android:layout_marginTop="2dp"
+		android:scaleType="fitCenter"
+		tools:src="@drawable/beer_208708" />
+
+	<TextView
+		android:id="@+id/name_text"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginBottom="2dp"
+		android:layout_marginTop="8dp"
+		android:layout_toEndOf="@+id/stars_button"
+		android:layout_toLeftOf="@+id/photo_image"
+		android:layout_toRightOf="@+id/stars_button"
+		android:layout_toStartOf="@+id/photo_image"
+		android:fontFamily="sans-serif-condensed"
+		android:textColor="@android:color/black"
+		android:textSize="16sp"
+		android:textStyle="bold"
+		tools:text="À l’Abri de la Tempête Palabre de la Corne de Glace" />
+
+	<TextView
+		android:id="@+id/note_text"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_below="@+id/name_text"
+		android:layout_marginBottom="8dp"
+		android:layout_marginTop="2dp"
+		android:layout_toEndOf="@+id/stars_button"
+		android:layout_toLeftOf="@+id/photo_image"
+		android:layout_toRightOf="@+id/stars_button"
+		android:layout_toStartOf="@+id/photo_image"
+		android:fontFamily="sans-serif-condensed"
+		android:paddingEnd="4dp"
+		android:paddingLeft="4dp"
+		android:paddingRight="4dp"
+		android:paddingStart="4dp"
+		android:paddingTop="2dp"
+		android:textColor="@android:color/black"
+		android:textSize="16sp"
+		tools:text="Black bodied, creamy beige head. Dark bread, chocoalte, brown sugar toffee. Enough bitterness, no alcohol, very rich taste. Perhaps even better than the 13% version. Love it. World." />
+
+	<EditText
+		android:id="@+id/note_entry_edit"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_below="@+id/name_text"
+		android:layout_marginTop="2dp"
+		android:layout_toEndOf="@+id/stars_button"
+		android:layout_toLeftOf="@+id/photo_image"
+		android:layout_toRightOf="@+id/stars_button"
+		android:layout_toStartOf="@+id/photo_image"
+		android:fontFamily="sans-serif-condensed"
+		android:hint="@string/lists_note"
+		android:paddingEnd="4dp"
+		android:paddingLeft="4dp"
+		android:paddingRight="4dp"
+		android:paddingStart="4dp"
+		android:paddingTop="2dp"
+		android:textColor="@android:color/black"
+		android:textSize="16sp"
+		android:inputType="textMultiLine|textCapSentences"
+		tools:text="Black bodied, creamy beige head. Dark bread, chocoalte, brown sugar toffee. Enough bitterness, no alcohol, very rich taste. Perhaps even better than the 13% version. Love it. World." />
+
+	<RatingBar
+		android:id="@+id/stars_entry_rating"
+		style="@style/RatingBar"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_below="@id/note_entry_edit"
+		android:layout_marginBottom="8dp"
+		android:layout_marginTop="2dp"
+		android:layout_toEndOf="@+id/stars_button"
+		android:layout_toRightOf="@+id/stars_button"
+		android:numStars="5"
+		android:stepSize="1" />
+
+	<ImageButton
+		android:id="@+id/remove_beer_button"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_below="@id/note_entry_edit"
+		android:layout_alignParentRight="true"
+		android:layout_alignParentEnd="true"
+		android:layout_marginRight="20dp"
+		android:layout_marginEnd="20dp"
+		android:background="?attr/selectableItemBackgroundBorderless"
+		android:contentDescription="@string/rate_discard_rating"
+		android:padding="8dp"
+		android:src="@drawable/ic_action_list_remove" />
+
+	<ImageButton
+		android:id="@+id/open_beer_button"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_below="@id/note_entry_edit"
+		android:layout_toLeftOf="@id/remove_beer_button"
+		android:layout_toStartOf="@id/remove_beer_button"
+		android:background="?attr/selectableItemBackgroundBorderless"
+		android:contentDescription="@string/rate_discard_rating"
+		android:layout_marginRight="4dp"
+		android:layout_marginEnd="4dp"
+		android:padding="8dp"
+		android:src="@drawable/ic_action_open" />
+
+</com.ratebeer.android.gui.widget.ForegroundRelativeLayout>

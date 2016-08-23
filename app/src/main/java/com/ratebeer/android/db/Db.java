@@ -1,21 +1,27 @@
 package com.ratebeer.android.db;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.location.Location;
 
 import com.pacoworks.rxtuples.RxTuples;
 import com.ratebeer.android.ConnectivityHelper;
+import com.ratebeer.android.db.views.CustomListWithCount;
+import com.ratebeer.android.db.views.CustomListWithPresence;
 import com.ratebeer.android.gui.lists.SearchSuggestion;
 
 import java.util.Date;
 
+import nl.nl2312.rxcupboard.DatabaseChange;
+import nl.nl2312.rxcupboard.RxCupboard;
 import rx.Observable;
 import rx.functions.Action1;
 import rx.functions.Func1;
 
 import static com.ratebeer.android.api.Api.api;
 import static com.ratebeer.android.db.CupboardDbHelper.connection;
+import static com.ratebeer.android.db.CupboardDbHelper.cupboard;
 import static com.ratebeer.android.db.CupboardDbHelper.database;
 import static com.ratebeer.android.db.CupboardDbHelper.rxdb;
 
@@ -168,6 +174,30 @@ public final class Db {
 			return fresh;
 		else
 			return getFresh(rxdb(context).get(Place.class, placeId), fresh, place -> isFresh(context, place.timeCached));
+	}
+
+	public static Observable<CustomListWithCount> getCustomListsWithCount(Context context) {
+		Cursor cursor = connection(context).rawQuery("select l._id, l.name, count(b._id) as beerCount from CustomList as l left outer join " +
+				"CustomListBeer as b on b.listId = l._id group by l._id having beerCount > 0 or (l.name is not null and l.name != '')", null);
+		return RxCupboard.with(cupboard(), cursor).iterate(CustomListWithCount.class);
+	}
+
+	public static Observable<CustomListWithPresence> getCustomLists(Context context, long withBeerId) {
+		Cursor cursor = connection(context).rawQuery("select l._id, l.name, (select count(*) from CustomListBeer as b where b.listId = l._id and " +
+				"b.beerId = ?) > 0 as hasBeer from CustomList as l", new String[]{Long.toString(withBeerId)});
+		return RxCupboard.with(cupboard(), cursor).iterate(CustomListWithPresence.class);
+	}
+
+	public static Observable<CustomListBeer> getCustomListBeer(Context context, long listId, long beerId) {
+		return rxdb(context).query(CustomListBeer.class, "listId = ? and beerId = ?", Long.toString(listId), Long.toString(beerId));
+	}
+
+	public static Observable<CustomListBeer> getCustomListBeers(Context context, long listId) {
+		return rxdb(context).query(CustomListBeer.class, "listId = ?", Long.toString(listId));
+	}
+
+	public static Observable<DatabaseChange<CustomListBeer>> getCustomListBeerChanges(Context context, long listId) {
+		return rxdb(context).changes(CustomListBeer.class).filter(change -> change.entity().listId == listId);
 	}
 
 	private static <T> Observable<T> getFresh(Observable<T> db, Observable<T> server, Func1<T, Boolean> isFresh) {

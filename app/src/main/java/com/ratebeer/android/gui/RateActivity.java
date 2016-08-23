@@ -216,6 +216,7 @@ public final class RateActivity extends RateBeerActivity {
 				text.setText(((TextView) view).getText());
 				popup.dismiss();
 			});
+			//noinspection deprecation Hack to have the background transparent
 			popup.setBackgroundDrawable(new BitmapDrawable());
 			popup.setOutsideTouchable(true);
 			popup.showAsDropDown(button);
@@ -302,7 +303,7 @@ public final class RateActivity extends RateBeerActivity {
 		Db.deleteOfflineRating(this, rating, Session.get().getUserId()).compose(onIoToUi()).compose(bindToLifecycle())
 				.subscribe(refreshed -> {}, e -> {
 					Animations.fadeFlipIn(deleteButton, actionButton, uploadProgress);
-					Snackbar.show(this, R.string.error_connectionfailure);
+					Snackbar.show(this, R.string.error_unexpectederror);
 				}, this::finish);
 	}
 
