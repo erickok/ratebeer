@@ -10,6 +10,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
@@ -78,6 +79,7 @@ public class SearchActivity extends RateBeerActivity {
 
 		// Set up tabs
 		searchEdit.setQuery(getIntent().getStringExtra("query"), false);
+		searchEdit.setInputType(InputType.TYPE_CLASS_TEXT);
 		tabTypes = new ArrayList<>(3);
 		tabs = new ArrayList<>(3);
 		tabsTitles = new ArrayList<>(3);
