@@ -5,11 +5,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.jakewharton.rxbinding.support.v7.widget.RxToolbar;
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.ratebeer.android.R;
 import com.ratebeer.android.db.CustomList;
@@ -17,8 +19,11 @@ import com.ratebeer.android.db.CustomListBeer;
 import com.ratebeer.android.db.Db;
 import com.ratebeer.android.db.RBLog;
 import com.ratebeer.android.gui.lists.CustomListBeersAdapter;
+import com.ratebeer.android.gui.widget.Animations;
 import com.ratebeer.android.rx.RecyclerAdapterDataEvent;
 import com.ratebeer.android.rx.RxRecyclerViewAdapter;
+
+import rx.Observable;
 
 import static com.ratebeer.android.db.CupboardDbHelper.database;
 import static com.ratebeer.android.db.CupboardDbHelper.rxdb;
@@ -46,7 +51,9 @@ public final class CustomListActivity extends RateBeerActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_customlist);
 
-		setupDefaultUpButton();
+		// Set up toolbar
+		Toolbar mainToolbar = setupDefaultUpButton();
+		mainToolbar.inflateMenu(R.menu.menu_delete);
 
 		EditText listNameEdit = (EditText) findViewById(R.id.list_name_edit);
 		beersList = (RecyclerView) findViewById(R.id.beers_list);
@@ -65,6 +72,13 @@ public final class CustomListActivity extends RateBeerActivity {
 			list = new CustomList();
 			rxdb(this).put(list);
 		}
+
+		// Allow deleting the entire list
+		RxToolbar.itemClicks(mainToolbar).compose(onUi())
+				.filter(item -> item.getItemId() == R.id.menu_delete).compose(toIo())
+				.flatMap(event -> Db.deleteCustomList(this, list)).compose(toUi())
+				.doOnEach(RBLog::rx).first().toCompletable()
+				.subscribe(e -> Snackbar.show(this, R.string.error_unexpectederror), this::finish);
 
 		// Directly persist name changes
 		RxTextView.textChanges(listNameEdit).map(name -> {
@@ -106,10 +120,6 @@ public final class CustomListActivity extends RateBeerActivity {
 		if (TextUtils.isEmpty(list.name) && customListBeersAdapter.getItemCount() == 0) {
 			rxdb(this).delete(list);
 		}
-	}
-
-	private void openListing(CustomListBeer customListBeer) {
-		// TODO
 	}
 
 	public void quickAddBeer(View view) {

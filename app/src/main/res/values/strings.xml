@@ -108,6 +108,7 @@
 	<string name="place_type_internetbased">An internet-based store</string>
 	<string name="place_type_unkkown">A business</string>
 
+	<string name="lists_delete">Delete list</string>
 	<string name="lists_create_new">Create new list</string>
 	<string name="lists_select_list">Select a list</string>
 	<string name="lists_listname">List name</string>

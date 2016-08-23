@@ -200,6 +200,11 @@ public final class Db {
 		return rxdb(context).changes(CustomListBeer.class).filter(change -> change.entity().listId == listId);
 	}
 
+	public static Observable<Integer> deleteCustomList(Context context, CustomList list) {
+		return Observable.defer(() -> Observable.just(database(context).delete(CustomListBeer.class, "listId = ?", Long.toString(list._id))))
+				.first().doOnNext(ignore -> rxdb(context).delete(list));
+	}
+
 	private static <T> Observable<T> getFresh(Observable<T> db, Observable<T> server, Func1<T, Boolean> isFresh) {
 		db = db.filter(item -> item != null);
 		return Observable.concat(Observable.concat(db, server).takeFirst(isFresh::call), db).take(1);
