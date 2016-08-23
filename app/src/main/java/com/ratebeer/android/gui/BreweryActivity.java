@@ -20,6 +20,7 @@ import android.widget.TextView;
 import com.ratebeer.android.R;
 import com.ratebeer.android.api.Api;
 import com.ratebeer.android.api.model.BreweryBeer;
+import com.ratebeer.android.db.Beer;
 import com.ratebeer.android.db.Brewery;
 import com.ratebeer.android.db.Db;
 import com.ratebeer.android.gui.lists.BreweryPropertiesBeersAdapter;
@@ -119,18 +120,18 @@ public final class BreweryActivity extends RateBeerActivity {
 				}
 			}));
 		}
-		ItemClickSupport.addTo(propertiesBeersList).setOnItemClickListener((parent, pos, v) -> handleBeerResult(((BreweryPropertiesBeersAdapter)
-				propertiesBeersList.getAdapter()).getBeer(pos)));
+		ItemClickSupport.addTo(propertiesBeersList).setOnItemClickListener((parent, pos, v) -> {
+			Object clicked = ((BreweryPropertiesBeersAdapter) propertiesBeersList.getAdapter()).getItem(pos);
+			if (clicked instanceof BreweryBeer) {
+				startActivity(BeerActivity.start(this, ((BreweryBeer) clicked).beerId));
+			} else if (clicked instanceof Property) {
+				((Property) clicked).clickListener.onClick(v);
+			}
+		});
 		propertiesBeersAdapter.setProperties(properties);
 
 		Animations.fadeFlipIn(detailsLayout, propertiesBeersList, loadingProgress);
 
-	}
-
-	private void handleBeerResult(BreweryBeer beer) {
-		if (beer != null) {
-			startActivity(BeerActivity.start(this, beer.beerId));
-		}
 	}
 
 	private void showBeers(List<BreweryBeer> beers) {

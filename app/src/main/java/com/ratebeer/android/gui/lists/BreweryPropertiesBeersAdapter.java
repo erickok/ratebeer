@@ -40,8 +40,10 @@ public final class BreweryPropertiesBeersAdapter extends RecyclerView.Adapter<Re
 		}
 	}
 
-	public BreweryBeer getBeer(int position) {
-		if (properties != null && beers != null && position >= properties.size() + 1) {
+	public Object getItem(int position) {
+		if (properties != null && position < properties.size()) {
+			return properties.get(position);
+		} else if (beers != null && position >= properties.size() + 1) {
 			return beers.get(position - (properties.size() + 1));
 		}
 		return null;

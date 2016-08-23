@@ -33,6 +33,7 @@ public final class Property {
 		final int staticBackground;
 		final int selectableBackground;
 		Drawable selectableBackgroundDrawable;
+		Property property;
 
 		private PropertyHolder(View v, int staticBackgroundResId, int selectableBackgroundResId) {
 			super(v);
@@ -57,6 +58,7 @@ public final class Property {
 		}
 
 		public void bind(Property property) {
+			this.property = property;
 			propertyImage.setImageResource(property.image);
 			propertyText.setText(property.text);
 			if (property.clickListener == null) {
@@ -66,7 +68,7 @@ public final class Property {
 				view.setFocusable(false);
 				view.setBackgroundResource(staticBackground);
 			} else {
-				view.setOnClickListener(property.clickListener);
+				view.setOnClickListener(this.property.clickListener);
 				view.setClickable(true);
 				view.setFocusable(true);
 				if (selectableBackground > 0) {
