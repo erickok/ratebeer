@@ -163,7 +163,7 @@ public class MainActivity extends RateBeerActivity implements ActivityCompat.OnR
 				return Db.getSuggestions(this, query).toList();
 			}
 		}).compose(onIoToUi()).compose(bindToLifecycle()).subscribe(suggestions -> searchSuggestionsAdaper.update(suggestions));
-		searchEdit.setInputType(InputType.TYPE_TEXT_VARIATION_FILTER);
+		searchEdit.setInputType(InputType.TYPE_CLASS_TEXT);
 
 	}
 
