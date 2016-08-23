@@ -216,7 +216,7 @@ public final class BeerActivity extends RateBeerActivity {
 				addListPopup.setBackgroundDrawable(new BitmapDrawable());
 				addListPopup.setOutsideTouchable(true);
 				int popupMargin = (int) getResources().getDimension(R.dimen.static_popup_margin);
-				addListPopup.showAtLocation(listAddButton, Gravity.TOP | Gravity.END, popupMargin, popupMargin);
+				addListPopup.showAtLocation(listAddButton, Gravity.TOP | Gravity.CENTER_HORIZONTAL, 0, popupMargin);
 				createNameEdit.requestFocus();
 				Observable.timer(100, TimeUnit.MILLISECONDS).subscribe(event -> ImeUtils.showIme(createNameEdit));
 
