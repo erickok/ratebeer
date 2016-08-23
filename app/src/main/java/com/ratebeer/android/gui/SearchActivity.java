@@ -10,6 +10,8 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.text.InputType;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
@@ -73,13 +75,11 @@ public class SearchActivity extends RateBeerActivity {
 
 		setupDefaultUpButton();
 
-		// When in picker mode, only search beers and set the activity result as cancelled until we actually picked a beer
 		modeBeerPicker = getIntent().getBooleanExtra("modeBeerPicker", false);
-		if (modeBeerPicker)
-			setResult(RESULT_CANCELED);
 
 		// Set up tabs
 		searchEdit.setQuery(getIntent().getStringExtra("query"), false);
+		searchEdit.setInputType(InputType.TYPE_CLASS_TEXT);
 		tabTypes = new ArrayList<>(3);
 		tabs = new ArrayList<>(3);
 		tabsTitles = new ArrayList<>(3);
@@ -94,6 +94,16 @@ public class SearchActivity extends RateBeerActivity {
 		if (tabs.size() == 1)
 			tabLayout.setVisibility(View.GONE);
 		refreshTab(0);
+
+		// When in picker mode, only search beers and set the activity result as cancelled until we actually picked a beer
+		if (modeBeerPicker) {
+			setResult(RESULT_CANCELED);
+			if (TextUtils.isEmpty(searchEdit.getQuery())) {
+				// No query given so focus on search field and do not show loading spinner until an input is given
+				loadingProgress.setVisibility(View.INVISIBLE);
+				searchEdit.requestFocus();
+			}
+		}
 
 	}
 

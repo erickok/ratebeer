@@ -16,9 +16,9 @@ import com.ratebeer.android.api.model.BeerRatingDeserializer;
 import com.ratebeer.android.api.model.BeerSearchResult;
 import com.ratebeer.android.api.model.BeerSearchResultDeserializer;
 import com.ratebeer.android.api.model.BreweryBeer;
+import com.ratebeer.android.api.model.BreweryBeerDeserializer;
 import com.ratebeer.android.api.model.BreweryDetails;
 import com.ratebeer.android.api.model.BreweryDetailsDeserializer;
-import com.ratebeer.android.api.model.BreweryBeerDeserializer;
 import com.ratebeer.android.api.model.BrewerySearchResult;
 import com.ratebeer.android.api.model.BrewerySearchResultDeserializer;
 import com.ratebeer.android.api.model.FeedItem;
@@ -100,7 +100,7 @@ public final class Api {
 				.readTimeout(10, TimeUnit.SECONDS)
 				.cookieJar(new JavaNetCookieJar(cookieManager))
 				.addInterceptor(logging)
-				.addNetworkInterceptor(new LoginHeaderInterceptor())
+				.addNetworkInterceptor(new ResponseInterceptor())
 				.build();
 		Gson gson = new GsonBuilder()
 				.disableHtmlEscaping()
@@ -137,9 +137,9 @@ public final class Api {
 			return false;
 		boolean hasUserCookie = false, hasSessionCookie = false;
 		for (HttpCookie cookie : cookieManager.getCookieStore().getCookies()) {
-			if (cookie.getName().equals(COOKIE_USERID) && !TextUtils.isEmpty(cookie.getValue()))
+			if (cookie.getName().equals(COOKIE_USERID) && !TextUtils.isEmpty(cookie.getValue()) && !cookie.hasExpired())
 				hasUserCookie = true;
-			if (cookie.getName().equals(COOKIE_SESSIONID) && !TextUtils.isEmpty(cookie.getValue()))
+			if (cookie.getName().equals(COOKIE_SESSIONID) && !TextUtils.isEmpty(cookie.getValue()) && !cookie.hasExpired())
 				hasSessionCookie = true;
 		}
 		return hasUserCookie && hasSessionCookie;
@@ -285,16 +285,14 @@ public final class Api {
 		if (Session.get().getUserId() == null)
 			return Observable.empty();
 		// Based on the up-to-date rate count, get all pages of ratings necessary and emit them in reverse order
-		Observable<Integer> pageCount =
-				routes.getUserRateCount(KEY, Session.get().getUserId()).subscribeOn(Schedulers.io()).flatMapIterable(counts -> counts)
-						.doOnNext(counts -> Session.get().updateCounts(counts))
-						.map(counts -> (int) Math.ceil((float) counts.rateCount / RATINGS_PER_PAGE));
-		Observable<UserRating> ratings =
-				Observable.combineLatest(pageCount, pageCount.lift(new AsRangeOperator()).onBackpressureBuffer(), RxTuples.toPair()).flatMap(
-						page -> Observable.combineLatest(Observable.just(page), routes.getUserRatings(KEY, page.getValue1() + 1), RxTuples.toPair()))
-						.observeOn(AndroidSchedulers.mainThread()).doOnNext(
-						objects -> onPageProgress.call((((float) objects.getValue0().getValue1() + 1) / objects.getValue0().getValue0()) * 100))
-						.observeOn(Schedulers.io()).flatMapIterable(Pair::getValue1);
+		Observable<Integer> pageCount = routes.getUserRateCount(KEY, Session.get().getUserId()).subscribeOn(Schedulers.io()).flatMapIterable(counts
+				-> counts).doOnNext(counts -> Session.get().updateCounts(counts)).map(counts -> (int) Math.ceil((float) counts.rateCount /
+				RATINGS_PER_PAGE));
+		Observable<UserRating> ratings = Observable.combineLatest(pageCount, pageCount.lift(new AsRangeOperator()).onBackpressureBuffer(), RxTuples
+				.toPair()).onBackpressureBuffer().flatMap(page -> Observable.combineLatest(Observable.just(page), routes.getUserRatings(KEY, page
+				.getValue1() + 1), RxTuples.toPair())).observeOn(AndroidSchedulers.mainThread()).doOnNext(objects -> onPageProgress.call((((float)
+				objects.getValue0().getValue1() + 1) / objects.getValue0().getValue0()) * 100)).observeOn(Schedulers.io()).flatMapIterable
+				(Pair::getValue1);
 		if (!isSignedIn())
 			ratings = ratings.startWith(getLoginCookie());
 		return ratings;

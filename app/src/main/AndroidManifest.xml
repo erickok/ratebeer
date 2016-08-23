@@ -28,7 +28,8 @@
 		<activity android:name=".gui.SearchActivity" />
 		<activity
 			android:name=".gui.BeerActivity"
-			android:theme="@style/AppTheme.NoStatusBar" />
+			android:theme="@style/AppTheme.NoStatusBar"
+			android:windowSoftInputMode="adjustPan"/>
 		<activity android:name=".gui.RateActivity" />
 		<activity
 			android:name=".gui.BreweryActivity"
@@ -37,6 +38,7 @@
 			android:name=".gui.PlaceActivity"
 			android:theme="@style/AppTheme.NoStatusBar" />
 		<activity android:name=".gui.PhotoActivity" />
+		<activity android:name=".gui.CustomListActivity" />
 		<activity android:name=".gui.HelpActivity" />
 		<activity android:name=".gui.HelpWhereRatingsActivity" />
 

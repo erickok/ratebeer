@@ -31,10 +31,11 @@ public abstract class RateBeerActivity extends RxAppCompatActivity {
 	}
 
 	@SuppressLint("PrivateResource")
-	protected final void setupDefaultUpButton() {
+	protected final Toolbar setupDefaultUpButton() {
 		Toolbar mainToolbar = (Toolbar) findViewById(R.id.main_toolbar);
 		mainToolbar.setNavigationIcon(R.drawable.abc_ic_ab_back_mtrl_am_alpha);
 		RxToolbar.navigationClicks(mainToolbar).subscribe(ignore -> navigateUp());
+		return mainToolbar;
 	}
 
 	protected final void navigateUp() {
