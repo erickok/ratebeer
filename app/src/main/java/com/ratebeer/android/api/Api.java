@@ -67,10 +67,12 @@ public final class Api {
 	private static final String KEY = "tTmwRTWT-W7tpBhtL";
 	private static final String COOKIE_USERID = "UserID";
 	private static final String COOKIE_SESSIONID = "SessionID";
+	private static final long SESSION_TIMEOUT_FORCED = 30 * 60 * 1000; // 30 minute session max until forced sign in
 	private static final int RATINGS_PER_PAGE = 100;
 
 	private final Routes routes;
 	private final CookieManager cookieManager;
+	private long lastSignIn = 0;
 
 	private static class Holder {
 		// Holder with static instance which implements a thread safe lazy loading singleton
@@ -143,6 +145,10 @@ public final class Api {
 		return hasUserCookie && hasSessionCookie;
 	}
 
+	private boolean isSignedIn() {
+		return lastSignIn >= System.currentTimeMillis() - SESSION_TIMEOUT_FORCED && haveLoginCookie();
+	}
+
 	private Observable<Boolean> getLoginRoute(String username, String password) {
 		return routes.login(username, password, "on").flatMap(result -> {
 			if (haveLoginCookie()) {
@@ -179,6 +185,8 @@ public final class Api {
 						RxTuples.toPair()))
 				// Store in our own instance the new user data
 				.doOnNext(user -> Session.get().startSession(user.getValue0().userId, username, password, user.getValue1()))
+				// Store the time of this last successful login to time out the session forcefully after some time
+				.doOnNext(ignore -> lastSignIn = System.currentTimeMillis())
 				// Return login success
 				.map(ignore -> true);
 		// @formatter:on
@@ -212,7 +220,7 @@ public final class Api {
 	 */
 	public Observable<FeedItem> getLocalFeed() {
 		Observable<FeedItem> feed = routes.getFeed(KEY, 2).flatMapIterable(items -> items);
-		if (!haveLoginCookie())
+		if (!isSignedIn())
 			feed = feed.startWith(getLoginCookie());
 		return feed;
 	}
@@ -222,7 +230,7 @@ public final class Api {
 	 */
 	public Observable<FeedItem> getFriendsFeed() {
 		Observable<FeedItem> feed = routes.getFeed(KEY, 0).flatMapIterable(items -> items);
-		if (!haveLoginCookie())
+		if (!isSignedIn())
 			feed = feed.startWith(getLoginCookie());
 		return feed;
 	}
@@ -287,7 +295,7 @@ public final class Api {
 						.observeOn(AndroidSchedulers.mainThread()).doOnNext(
 						objects -> onPageProgress.call((((float) objects.getValue0().getValue1() + 1) / objects.getValue0().getValue0()) * 100))
 						.observeOn(Schedulers.io()).flatMapIterable(Pair::getValue1);
-		if (!haveLoginCookie())
+		if (!isSignedIn())
 			ratings = ratings.startWith(getLoginCookie());
 		return ratings;
 	}
@@ -356,7 +364,7 @@ public final class Api {
 	 */
 	public Observable<Boolean> performPlaceCheckin(long placeId) {
 		Observable<Boolean> checkin = routes.performCheckin(KEY, (int) placeId).map(result -> !TextUtils.isEmpty(result.okResult));
-		if (!haveLoginCookie())
+		if (!isSignedIn())
 			checkin = checkin.startWith(getLoginCookie());
 		return checkin;
 	}
