@@ -31,15 +31,17 @@ import com.ratebeer.android.R;
 import com.ratebeer.android.Session;
 import com.ratebeer.android.api.Api;
 import com.ratebeer.android.api.model.FeedItem;
-import com.ratebeer.android.db.views.CustomListWithCount;
 import com.ratebeer.android.db.Db;
 import com.ratebeer.android.db.HistoricSearch;
 import com.ratebeer.android.db.Rating;
+import com.ratebeer.android.db.views.CustomListWithCount;
 import com.ratebeer.android.gui.lists.BarcodeSearchResultsAdapter;
 import com.ratebeer.android.gui.lists.CustomListsAdapter;
 import com.ratebeer.android.gui.lists.FeedItemsAdapter;
 import com.ratebeer.android.gui.lists.LocalPlace;
 import com.ratebeer.android.gui.lists.LocalPlacesAdapter;
+import com.ratebeer.android.gui.lists.PropertiesAdapter;
+import com.ratebeer.android.gui.lists.Property;
 import com.ratebeer.android.gui.lists.RatingsAdapter;
 import com.ratebeer.android.gui.lists.SearchSuggestion;
 import com.ratebeer.android.gui.lists.SearchSuggestionsAdapter;
@@ -67,6 +69,7 @@ public class MainActivity extends RateBeerActivity implements ActivityCompat.OnR
 	private static final int TAB_FEED_GLOBAL = 3;
 	private static final int TAB_NEARBY = 4;
 	private static final int TAB_MY_LISTS = 5;
+	private static final int TAB_TOP50 = 6;
 
 	private static final int REQUEST_LOCATION_PERMISSION = 1;
 
@@ -130,6 +133,7 @@ public class MainActivity extends RateBeerActivity implements ActivityCompat.OnR
 		}
 		addTab(TAB_NEARBY, R.string.main_nearby);
 		addTab(TAB_MY_LISTS, R.string.main_mylists);
+		addTab(TAB_TOP50, R.string.main_top50);
 		RxViewPager.pageSelected(listsPager).subscribe(this::refreshTab);
 		listsPager.setAdapter(new ActivityPagerAdapter());
 		tabLayout.setupWithViewPager(listsPager);
@@ -347,6 +351,28 @@ public class MainActivity extends RateBeerActivity implements ActivityCompat.OnR
 				Animations.fadeFlip(listsPager, loadingProgress);
 				Snackbar.show(this, R.string.error_connectionfailure);
 			}, () -> Animations.fadeFlip(listsPager, loadingProgress));
+
+		} else if (type == TAB_TOP50) {
+
+			if (syncSubscription != null)
+				syncSubscription.unsubscribe();
+			statusText.setVisibility(View.GONE);
+			emptyText.setVisibility(View.GONE);
+			loadingProgress.setVisibility(View.GONE);
+			ItemClickSupport.removeFrom(view);
+			rateButton.hide();
+			listAddButton.hide();
+
+			// Show the links to overall and style top 50s
+			List<Property> listLinks = new ArrayList<>();
+			listLinks.add(new Property(R.drawable.ic_prop_top, getString(R.string.top_overall),
+					v -> startActivity(TopListActivity.start(this, TopListActivity.Mode.OVERALL))));
+			listLinks.add(new Property(R.drawable.ic_prop_country, getString(R.string.top_bycountry),
+					v -> startActivity(TopListActivity.start(this, TopListActivity.Mode.BY_COUNTRY))));
+			listLinks.add(new Property(R.drawable.ic_prop_style, getString(R.string.top_bystyle),
+					v -> startActivity(TopListActivity.start(this, TopListActivity.Mode.BY_STYLE))));
+			view.setAdapter(new PropertiesAdapter(listLinks));
+			listsPager.setVisibility(View.VISIBLE);
 
 		} else {
 

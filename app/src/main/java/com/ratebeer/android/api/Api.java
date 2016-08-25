@@ -11,6 +11,8 @@ import com.ratebeer.android.api.model.BarcodeSearchResult;
 import com.ratebeer.android.api.model.BarcodeSearchResultDeserializer;
 import com.ratebeer.android.api.model.BeerDetails;
 import com.ratebeer.android.api.model.BeerDetailsDeserializer;
+import com.ratebeer.android.api.model.BeerOnTopList;
+import com.ratebeer.android.api.model.BeerOnTopListDeserializer;
 import com.ratebeer.android.api.model.BeerRating;
 import com.ratebeer.android.api.model.BeerRatingDeserializer;
 import com.ratebeer.android.api.model.BeerSearchResult;
@@ -89,7 +91,6 @@ public final class Api {
 
 	private Api() {
 
-		// @formatter:off
 		HttpLoggingInterceptor logging = new HttpLoggingInterceptor(RBLog::v);
 		if (BuildConfig.DEBUG)
 			logging.setLevel(HttpLoggingInterceptor.Level.BODY);
@@ -119,6 +120,7 @@ public final class Api {
 				.registerTypeAdapter(PlaceNearby.class, new PlaceNearbyDeserializer())
 				.registerTypeAdapter(PlaceDetails.class, new PlaceDetailsDeserializer())
 				.registerTypeAdapter(PlaceCheckinResult.class, new PlaceCheckinResultDeserializer())
+				.registerTypeAdapter(BeerOnTopList.class, new BeerOnTopListDeserializer())
 				.create();
 		Retrofit retrofit = new Retrofit.Builder()
 				.baseUrl(ENDPOINT)
@@ -127,7 +129,6 @@ public final class Api {
 				.addConverterFactory(new HtmlConverterFactory())
 				.addConverterFactory(GsonConverterFactory.create(gson))
 				.build();
-		// @formatter:on
 		routes = retrofit.create(Routes.class);
 
 	}
@@ -160,7 +161,7 @@ public final class Api {
 	}
 
 	/**
-	 * A wrapper observable that returns an empty sequence on success such that we can use someLoginDependendCall.startWith(getLoginCookie())
+	 * A wrapper observable that returns an empty sequence on success such that we can use someLoginDependentCall.startWith(getLoginCookie())
 	 */
 	private <T> Observable<T> getLoginCookie() {
 		return getLoginRoute(Session.get().getUserName(), Session.get().getPassword()).subscribeOn(Schedulers.io())
@@ -365,6 +366,27 @@ public final class Api {
 		if (!isSignedIn())
 			checkin = checkin.startWith(getLoginCookie());
 		return checkin;
+	}
+
+	/**
+	 * Returns a (possibly empty) observable sequence (list) of the top 50 beers overall
+	 */
+	public Observable<BeerOnTopList> getTopOverall() {
+		return routes.getTopOverall(KEY).flatMapIterable(beers -> beers);
+	}
+
+	/**
+	 * Returns a (possibly empty) observable sequence (list) of the top 50 beers from a certain country
+	 */
+	public Observable<BeerOnTopList> getTopByCountry(long countryId) {
+		return routes.getTopByCountry(KEY, (int) countryId).flatMapIterable(beers -> beers);
+	}
+
+	/**
+	 * Returns a (possibly empty) observable sequence (list) of the top 50 beers from a certain country
+	 */
+	public Observable<BeerOnTopList> getTopByStyle(long styleId) {
+		return routes.getTopByStyle(KEY, (int) styleId).flatMapIterable(beers -> beers);
 	}
 
 }
