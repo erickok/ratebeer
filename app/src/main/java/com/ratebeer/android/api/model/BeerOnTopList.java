@@ -15,6 +15,12 @@ public final class BeerOnTopList {
 	public int rateCount;
 	public boolean ratedByUser;
 
+	public String getOverallPercentileString() {
+		if (overallPercentile == null)
+			return "-";
+		return String.format(Locale.getDefault(), "%1$.0f", overallPercentile);
+	}
+
 	public String getStylePercentileString() {
 		if (stylePercentile == null)
 			return "-";

@@ -17,9 +17,11 @@ import java.util.List;
 public final class BeerOnTopListAdapter extends RecyclerView.Adapter<BeerOnTopListAdapter.ViewHolder> {
 
 	private final List<BeerOnTopList> beersOnTopList;
+	private final boolean showStyleRating;
 
-	public BeerOnTopListAdapter(List<BeerOnTopList> beersOnTopList) {
+	public BeerOnTopListAdapter(List<BeerOnTopList> beersOnTopList, boolean showStyleRating) {
 		this.beersOnTopList = beersOnTopList;
+		this.showStyleRating = showStyleRating;
 	}
 
 	@Override
@@ -31,7 +33,7 @@ public final class BeerOnTopListAdapter extends RecyclerView.Adapter<BeerOnTopLi
 	public void onBindViewHolder(ViewHolder holder, int position) {
 		BeerOnTopList beerOnTopList = beersOnTopList.get(position);
 		holder.ratingText.setBackgroundResource(ImageUrls.getColor(position));
-		holder.ratingText.setText(beerOnTopList.getStylePercentileString());
+		holder.ratingText.setText(showStyleRating? beerOnTopList.getStylePercentileString(): beerOnTopList.getOverallPercentileString());
 		holder.titleText.setText(beerOnTopList.beerName);
 		Images.with(holder.photoImage.getContext()).loadBeer(beerOnTopList.beerId).placeholder(android.R.color.white).fit().centerInside()
 				.into(holder.photoImage);

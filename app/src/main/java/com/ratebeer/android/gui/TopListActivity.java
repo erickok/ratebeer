@@ -26,6 +26,9 @@ public final class TopListActivity extends RateBeerActivity {
 	private RecyclerView beersList;
 	private ProgressBar loadingProgress;
 
+	@Mode
+	private int mode;
+
 	public static Intent start(Context context, @Mode int mode) {
 		return new Intent(context, TopListActivity.class).putExtra("mode", mode);
 	}
@@ -35,7 +38,8 @@ public final class TopListActivity extends RateBeerActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_toplist);
 
-		@Mode int mode = getIntent().getIntExtra("mode", Mode.OVERALL);
+		//noinspection WrongConstant Enforced via the start() method
+		mode = getIntent().getIntExtra("mode", Mode.OVERALL);
 
 		// Set up toolbar
 		Toolbar mainToolbar = setupDefaultUpButton();
@@ -56,18 +60,21 @@ public final class TopListActivity extends RateBeerActivity {
 				break;
 			case Mode.BY_COUNTRY:
 				mainToolbar.setTitle(R.string.top_topbycountry);
+				filterEdit.setHint(R.string.top_country);
 				break;
 			case Mode.BY_STYLE:
-				mainToolbar.setTitle(R.string.top_topoverall);
+				mainToolbar.setTitle(R.string.top_topbystyle);
+				filterEdit.setHint(R.string.top_country);
 				break;
 		}
-
 	}
 
 	private void refresh(Observable<BeerOnTopList> topBeers) {
 		Animations.fadeFlip(loadingProgress, beersList);
-		topBeers.toList().compose(onIoToUi()).compose(bindToLifecycle()).subscribe(beers -> beersList.setAdapter(new BeerOnTopListAdapter(beers)),
-				e -> Snackbar.show(this, R.string.error_unexpectederror), () -> Animations.fadeFlip(beersList, loadingProgress));
+		topBeers.toList().compose(onIoToUi()).compose(bindToLifecycle()).subscribe(
+				beers -> beersList.setAdapter(new BeerOnTopListAdapter(beers, mode == Mode.BY_STYLE)),
+				e -> Snackbar.show(this, R.string.error_unexpectederror),
+				() -> Animations.fadeFlip(beersList, loadingProgress));
 	}
 
 	private void openBeer(BeerOnTopList beerOnTopList) {

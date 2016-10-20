@@ -9,11 +9,14 @@ import com.ratebeer.android.api.model.BeerSearchResult;
 import com.ratebeer.android.api.model.BreweryBeer;
 import com.ratebeer.android.api.model.BreweryDetails;
 import com.ratebeer.android.api.model.BrewerySearchResult;
+import com.ratebeer.android.api.model.CountryInfo;
 import com.ratebeer.android.api.model.FeedItem;
 import com.ratebeer.android.api.model.PlaceCheckinResult;
 import com.ratebeer.android.api.model.PlaceDetails;
 import com.ratebeer.android.api.model.PlaceNearby;
 import com.ratebeer.android.api.model.PlaceSearchResult;
+import com.ratebeer.android.api.model.StateInfo;
+import com.ratebeer.android.api.model.StyleInfo;
 import com.ratebeer.android.api.model.UserInfo;
 import com.ratebeer.android.api.model.UserRateCount;
 import com.ratebeer.android.api.model.UserRating;
@@ -109,5 +112,14 @@ interface Routes {
 
 	@GET("style.asp")
 	Observable<List<BeerOnTopList>> getTopByStyle(@Query("k") String key, @Query("s") int styleId);
+
+	@GET("country.asp")
+	Observable<List<CountryInfo>> getCountries(@Query("k") String key);
+
+	@GET("states.asp")
+	Observable<List<StateInfo>> getStates(@Query("k") String key);
+
+	@GET("styles.asp")
+	Observable<List<StyleInfo>> getStyles(@Query("k") String key);
 
 }

@@ -205,6 +205,12 @@ public final class Db {
 				.first().doOnNext(ignore -> rxdb(context).delete(list));
 	}
 
+	public static Observable<Style> getStyles(Context context) {
+		Observable<Style> fresh = api().getStyles().map(Style::fromInfo).flatMap(style -> rxdb(context).putRx(style));
+		// TODO
+		return fresh;
+	}
+
 	private static <T> Observable<T> getFresh(Observable<T> db, Observable<T> server, Func1<T, Boolean> isFresh) {
 		db = db.filter(item -> item != null);
 		return Observable.concat(Observable.concat(db, server).takeFirst(isFresh::call), db).take(1);

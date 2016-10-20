@@ -17,7 +17,7 @@ import nl.qbusict.cupboard.DatabaseCompartment;
 public final class CupboardDbHelper extends SQLiteOpenHelper {
 
 	private static final String DATABASE_NAME = "ratebeer.db";
-	private static final int DATABASE_VERSION = 13;
+	private static final int DATABASE_VERSION = 14;
 	private static final Cupboard cupboardTables;
 	private static final Cupboard cupboardAll;
 
