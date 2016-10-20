@@ -97,6 +97,21 @@ public final class BeerActivity extends RateBeerActivity {
 		rateButton = (FloatingActionButton) findViewById(R.id.rate_button);
 		rateButton.setVisibility(View.GONE);
 
+		beerId = getIntent().getLongExtra("beerId", 0);
+		if (getIntent().getAction() != null && getIntent().getAction().equals(Intent.ACTION_VIEW) && getIntent().getData() != null) {
+			List<String> segments = getIntent().getData().getPathSegments();
+			if (segments != null && segments.size() > 1) {
+				try {
+					beerId = Integer.parseInt(segments.get(1));
+				} catch (NumberFormatException e) {
+					// Not a supported URL; start the url in a browser instead (via missing beerId)
+				}
+			}
+		}
+		if (beerId == 0) {
+			startActivity(new Intent(Intent.ACTION_VIEW, getIntent().getData()));
+			finish();
+		}
 	}
 
 	@Override
@@ -108,7 +123,6 @@ public final class BeerActivity extends RateBeerActivity {
 	private void refresh(boolean forceFresh) {
 
 		// Load beer from database or live, with a fallback on the bare beer name taken from an offline rating
-		beerId = getIntent().getLongExtra("beerId", 0);
 		Db.getBeer(this, beerId, forceFresh).onErrorResumeNext(Db.getOfflineRatingForBeer(this, beerId).map(this::ratingToBeer)).compose(onIoToUi())
 				.compose(bindToLifecycle()).subscribe(this::showBeer, e -> Snackbar.show(this, R.string.error_connectionfailure));
 

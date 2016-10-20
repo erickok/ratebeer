@@ -11,6 +11,8 @@ import com.ratebeer.android.api.model.BarcodeSearchResult;
 import com.ratebeer.android.api.model.BarcodeSearchResultDeserializer;
 import com.ratebeer.android.api.model.BeerDetails;
 import com.ratebeer.android.api.model.BeerDetailsDeserializer;
+import com.ratebeer.android.api.model.BeerOnTopList;
+import com.ratebeer.android.api.model.BeerOnTopListDeserializer;
 import com.ratebeer.android.api.model.BeerRating;
 import com.ratebeer.android.api.model.BeerRatingDeserializer;
 import com.ratebeer.android.api.model.BeerSearchResult;
@@ -21,6 +23,8 @@ import com.ratebeer.android.api.model.BreweryDetails;
 import com.ratebeer.android.api.model.BreweryDetailsDeserializer;
 import com.ratebeer.android.api.model.BrewerySearchResult;
 import com.ratebeer.android.api.model.BrewerySearchResultDeserializer;
+import com.ratebeer.android.api.model.CountryInfo;
+import com.ratebeer.android.api.model.CountryInfoDeserializer;
 import com.ratebeer.android.api.model.FeedItem;
 import com.ratebeer.android.api.model.FeedItemDeserializer;
 import com.ratebeer.android.api.model.PlaceCheckinResult;
@@ -31,6 +35,10 @@ import com.ratebeer.android.api.model.PlaceNearby;
 import com.ratebeer.android.api.model.PlaceNearbyDeserializer;
 import com.ratebeer.android.api.model.PlaceSearchResult;
 import com.ratebeer.android.api.model.PlaceSearchResultDeserializer;
+import com.ratebeer.android.api.model.StateInfo;
+import com.ratebeer.android.api.model.StateInfoDeserializer;
+import com.ratebeer.android.api.model.StyleInfo;
+import com.ratebeer.android.api.model.StyleInfoDeserializer;
 import com.ratebeer.android.api.model.UserInfo;
 import com.ratebeer.android.api.model.UserInfoDeserializer;
 import com.ratebeer.android.api.model.UserRateCount;
@@ -39,6 +47,7 @@ import com.ratebeer.android.api.model.UserRating;
 import com.ratebeer.android.api.model.UserRatingDeserializer;
 import com.ratebeer.android.db.RBLog;
 import com.ratebeer.android.db.Rating;
+import com.ratebeer.android.db.Style;
 import com.ratebeer.android.rx.AsRangeOperator;
 
 import org.javatuples.Pair;
@@ -74,22 +83,8 @@ public final class Api {
 	private final CookieManager cookieManager;
 	private long lastSignIn = 0;
 
-	private static class Holder {
-		// Holder with static instance which implements a thread safe lazy loading singleton
-		static final Api INSTANCE = new Api();
-	}
-
-	public static Api get() {
-		return Holder.INSTANCE;
-	}
-
-	public static Api api() {
-		return get();
-	}
-
 	private Api() {
 
-		// @formatter:off
 		HttpLoggingInterceptor logging = new HttpLoggingInterceptor(RBLog::v);
 		if (BuildConfig.DEBUG)
 			logging.setLevel(HttpLoggingInterceptor.Level.BODY);
@@ -119,6 +114,10 @@ public final class Api {
 				.registerTypeAdapter(PlaceNearby.class, new PlaceNearbyDeserializer())
 				.registerTypeAdapter(PlaceDetails.class, new PlaceDetailsDeserializer())
 				.registerTypeAdapter(PlaceCheckinResult.class, new PlaceCheckinResultDeserializer())
+				.registerTypeAdapter(BeerOnTopList.class, new BeerOnTopListDeserializer())
+				.registerTypeAdapter(CountryInfo.class, new CountryInfoDeserializer())
+				.registerTypeAdapter(StateInfo.class, new StateInfoDeserializer())
+				.registerTypeAdapter(Style.class, new StyleInfoDeserializer())
 				.create();
 		Retrofit retrofit = new Retrofit.Builder()
 				.baseUrl(ENDPOINT)
@@ -127,9 +126,16 @@ public final class Api {
 				.addConverterFactory(new HtmlConverterFactory())
 				.addConverterFactory(GsonConverterFactory.create(gson))
 				.build();
-		// @formatter:on
 		routes = retrofit.create(Routes.class);
 
+	}
+
+	public static Api get() {
+		return Holder.INSTANCE;
+	}
+
+	public static Api api() {
+		return get();
 	}
 
 	private boolean haveLoginCookie() {
@@ -160,7 +166,7 @@ public final class Api {
 	}
 
 	/**
-	 * A wrapper observable that returns an empty sequence on success such that we can use someLoginDependendCall.startWith(getLoginCookie())
+	 * A wrapper observable that returns an empty sequence on success such that we can use someLoginDependentCall.startWith(getLoginCookie())
 	 */
 	private <T> Observable<T> getLoginCookie() {
 		return getLoginRoute(Session.get().getUserName(), Session.get().getPassword()).subscribeOn(Schedulers.io())
@@ -365,6 +371,53 @@ public final class Api {
 		if (!isSignedIn())
 			checkin = checkin.startWith(getLoginCookie());
 		return checkin;
+	}
+
+	/**
+	 * Returns a (possibly empty) observable sequence (list) of the top 50 beers overall
+	 */
+	public Observable<BeerOnTopList> getTopOverall() {
+		return routes.getTopOverall(KEY).flatMapIterable(beers -> beers);
+	}
+
+	/**
+	 * Returns a (possibly empty) observable sequence (list) of the top 50 beers from a certain country
+	 */
+	public Observable<BeerOnTopList> getTopByCountry(long countryId) {
+		return routes.getTopByCountry(KEY, (int) countryId).flatMapIterable(beers -> beers);
+	}
+
+	/**
+	 * Returns a (possibly empty) observable sequence (list) of the top 50 beers from a certain country
+	 */
+	public Observable<BeerOnTopList> getTopByStyle(long styleId) {
+		return routes.getTopByStyle(KEY, (int) styleId).flatMapIterable(beers -> beers);
+	}
+
+	/**
+	 * Returns a (possibly empty) observable sequence (list) of countries
+	 */
+	public Observable<CountryInfo> getCountries() {
+		return routes.getCountries(KEY).flatMapIterable(countries -> countries);
+	}
+
+	/**
+	 * Returns a (possibly empty) observable sequence (list) of states (of all countries)
+	 */
+	public Observable<StateInfo> getStates() {
+		return routes.getStates(KEY).flatMapIterable(states -> states);
+	}
+
+	/**
+	 * Returns a (possibly empty) observable sequence (list) of beer styles
+	 */
+	public Observable<StyleInfo> getStyles() {
+		return routes.getStyles(KEY).flatMapIterable(styles -> styles);
+	}
+
+	private static class Holder {
+		// Holder with static instance which implements a thread safe lazy loading singleton
+		static final Api INSTANCE = new Api();
 	}
 
 }

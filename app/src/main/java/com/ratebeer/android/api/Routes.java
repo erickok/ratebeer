@@ -3,16 +3,20 @@ package com.ratebeer.android.api;
 import com.ratebeer.android.api.model.BarcodeSearchResult;
 import com.ratebeer.android.api.model.BeerAliasId;
 import com.ratebeer.android.api.model.BeerDetails;
+import com.ratebeer.android.api.model.BeerOnTopList;
 import com.ratebeer.android.api.model.BeerRating;
 import com.ratebeer.android.api.model.BeerSearchResult;
 import com.ratebeer.android.api.model.BreweryBeer;
 import com.ratebeer.android.api.model.BreweryDetails;
 import com.ratebeer.android.api.model.BrewerySearchResult;
+import com.ratebeer.android.api.model.CountryInfo;
 import com.ratebeer.android.api.model.FeedItem;
 import com.ratebeer.android.api.model.PlaceCheckinResult;
 import com.ratebeer.android.api.model.PlaceDetails;
 import com.ratebeer.android.api.model.PlaceNearby;
 import com.ratebeer.android.api.model.PlaceSearchResult;
+import com.ratebeer.android.api.model.StateInfo;
+import com.ratebeer.android.api.model.StyleInfo;
 import com.ratebeer.android.api.model.UserInfo;
 import com.ratebeer.android.api.model.UserRateCount;
 import com.ratebeer.android.api.model.UserRating;
@@ -99,5 +103,23 @@ interface Routes {
 
 	@GET("ci.asp?t=Log")
 	Observable<PlaceCheckinResult> performCheckin(@Query("k") String key, @Query("p") int placeId);
+
+	@GET("tb.asp?m=top50")
+	Observable<List<BeerOnTopList>> getTopOverall(@Query("k") String key);
+
+	@GET("tb.asp?m=country")
+	Observable<List<BeerOnTopList>> getTopByCountry(@Query("k") String key, @Query("c") int countryId);
+
+	@GET("style.asp")
+	Observable<List<BeerOnTopList>> getTopByStyle(@Query("k") String key, @Query("s") int styleId);
+
+	@GET("country.asp")
+	Observable<List<CountryInfo>> getCountries(@Query("k") String key);
+
+	@GET("states.asp")
+	Observable<List<StateInfo>> getStates(@Query("k") String key);
+
+	@GET("styles.asp")
+	Observable<List<StyleInfo>> getStyles(@Query("k") String key);
 
 }

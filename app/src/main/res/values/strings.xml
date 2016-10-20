@@ -30,6 +30,7 @@
 	<string name="main_global">Global</string>
 	<string name="main_nearby">Nearby</string>
 	<string name="main_mylists">My lists</string>
+	<string name="main_top50">Top 50</string>
 
 	<string name="feed_isdrinking">is drinking</string>
 	<string name="feed_wasawarded">was awarded</string>
@@ -115,6 +116,15 @@
 	<string name="lists_quick_add">Quick add a beer</string>
 	<string name="lists_note">Personal note</string>
 	<string name="lists_open_beer">View beer</string>
+
+	<string name="top_overall">Top 50 overall</string>
+	<string name="top_topoverall">Top 50 overall</string>
+	<string name="top_bycountry">By country</string>
+	<string name="top_topbycountry">Top 50 by country</string>
+	<string name="top_bystyle">By style</string>
+	<string name="top_topbystyle">Top 25 by style</string>
+	<string name="top_country">Country</string>
+	<string name="top_style">Style</string>
 
 	<string name="sync_usesync">Tap to synchronize your ratings</string>
 	<string name="sync_insync">Synchronizing your ratings</string>
