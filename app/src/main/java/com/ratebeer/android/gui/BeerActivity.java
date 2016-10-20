@@ -19,7 +19,6 @@ import android.text.style.StyleSpan;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -38,7 +37,6 @@ import com.ratebeer.android.db.Beer;
 import com.ratebeer.android.db.CustomList;
 import com.ratebeer.android.db.CustomListBeer;
 import com.ratebeer.android.db.Db;
-import com.ratebeer.android.db.RBLog;
 import com.ratebeer.android.db.Rating;
 import com.ratebeer.android.gui.lists.BeerRatingsAdapter;
 import com.ratebeer.android.gui.lists.CustomListsPopupAdapter;
@@ -47,9 +45,7 @@ import com.ratebeer.android.gui.widget.CheckableImageButton;
 import com.ratebeer.android.gui.widget.Images;
 import com.ratebeer.android.gui.widget.ImeUtils;
 import com.ratebeer.android.gui.widget.ItemClickSupport;
-import com.trello.rxlifecycle.RxLifecycle;
-
-import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent;
+import com.trello.rxlifecycle.android.RxLifecycleAndroid;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -61,7 +57,6 @@ import static com.ratebeer.android.db.CupboardDbHelper.rxdb;
 
 public final class BeerActivity extends RateBeerActivity {
 
-	private View rootLayout;
 	private RecyclerView ratingsList;
 	private ProgressBar loadingProgress;
 	private View detailsLayout;
@@ -92,7 +87,6 @@ public final class BeerActivity extends RateBeerActivity {
 			refresh(true);
 		});
 
-		rootLayout = findViewById(R.id.root_layout);
 		ratingsList = (RecyclerView) findViewById(R.id.ratings_list);
 		loadingProgress = (ProgressBar) findViewById(R.id.loading_progress);
 		detailsLayout = findViewById(R.id.details_layout);
@@ -202,9 +196,9 @@ public final class BeerActivity extends RateBeerActivity {
 				listsList.setAdapter(new CustomListsPopupAdapter(lists));
 
 				// Handle new list creation and existing list clicks
-				RxTextView.textChanges(createNameEdit).map(name -> !TextUtils.isEmpty(name)).compose(RxLifecycle.bindView(createNameEdit)).subscribe
-						(createAddButton::setEnabled, e -> Snackbar.show(this, R.string.error_unexpectederror));
-				RxView.clicks(createAddButton).compose(RxLifecycle.bindView(createAddButton)).subscribe(name -> addBeerToNewCustomList(beer,
+				RxTextView.textChanges(createNameEdit).map(name -> !TextUtils.isEmpty(name)).compose(RxLifecycleAndroid.bindView(createNameEdit))
+						.subscribe(createAddButton::setEnabled, e -> Snackbar.show(this, R.string.error_unexpectederror));
+				RxView.clicks(createAddButton).compose(RxLifecycleAndroid.bindView(createAddButton)).subscribe(name -> addBeerToNewCustomList(beer,
 						createNameEdit.getText().toString(), addListPopup), e -> Snackbar.show(this, R.string.error_unexpectederror));
 				ItemClickSupport.addTo(listsList).setOnItemClickListener((recyclerView, position, v) -> addBeerToCustomList(beer, (
 						(CustomListsPopupAdapter) recyclerView.getAdapter()).get(position)._id, addListPopup));

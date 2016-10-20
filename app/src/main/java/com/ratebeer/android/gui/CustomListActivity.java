@@ -19,11 +19,8 @@ import com.ratebeer.android.db.CustomListBeer;
 import com.ratebeer.android.db.Db;
 import com.ratebeer.android.db.RBLog;
 import com.ratebeer.android.gui.lists.CustomListBeersAdapter;
-import com.ratebeer.android.gui.widget.Animations;
 import com.ratebeer.android.rx.RecyclerAdapterDataEvent;
 import com.ratebeer.android.rx.RxRecyclerViewAdapter;
-
-import rx.Observable;
 
 import static com.ratebeer.android.db.CupboardDbHelper.database;
 import static com.ratebeer.android.db.CupboardDbHelper.rxdb;
@@ -78,7 +75,7 @@ public final class CustomListActivity extends RateBeerActivity {
 				.filter(item -> item.getItemId() == R.id.menu_delete).compose(toIo())
 				.flatMap(event -> Db.deleteCustomList(this, list)).compose(toUi())
 				.doOnEach(RBLog::rx).first().toCompletable()
-				.subscribe(e -> Snackbar.show(this, R.string.error_unexpectederror), this::finish);
+				.subscribe(this::finish, e -> Snackbar.show(this, R.string.error_unexpectederror));
 
 		// Directly persist name changes
 		RxTextView.textChanges(listNameEdit).map(name -> {

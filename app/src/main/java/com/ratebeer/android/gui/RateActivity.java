@@ -301,10 +301,10 @@ public final class RateActivity extends RateBeerActivity {
 	private void deleteOfflineRating() {
 		Animations.fadeFlipOut(uploadProgress, actionButton, deleteButton);
 		Db.deleteOfflineRating(this, rating, Session.get().getUserId()).compose(onIoToUi()).compose(bindToLifecycle())
-				.toCompletable().subscribe(e -> {
+				.toCompletable().subscribe(this::finish, e -> {
 					Animations.fadeFlipIn(deleteButton, actionButton, uploadProgress);
 					Snackbar.show(this, R.string.error_unexpectederror);
-				}, this::finish);
+				});
 	}
 
 }
