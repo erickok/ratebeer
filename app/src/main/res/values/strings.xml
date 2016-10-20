@@ -20,7 +20,7 @@
 	<string name="search_beers">Beers</string>
 	<string name="search_breweries">Breweries</string>
 	<string name="search_places">Places</string>
-	<string name="search_hint">Search a beer, brewery, place…</string>
+	<string name="search_hint">Search a beer, brewery, place</string>
 	<string name="search_scan">Scan barcode</string>
 	<string name="search_noresults">Nothing found</string>
 

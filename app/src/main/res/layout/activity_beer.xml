@@ -202,7 +202,7 @@
 					android:visibility="gone"
 					app:layout_anchor="@id/numbers_layout"
 					app:layout_anchorGravity="bottom"
-					tools:visibility="gone">
+					tools:visibility="visible">
 
 					<View
 						android:layout_width="match_parent"
@@ -291,7 +291,7 @@
 					android:visibility="gone"
 					app:layout_anchor="@id/appbar_layout"
 					app:layout_anchorGravity="bottom"
-					tools:visibility="gone">
+					tools:visibility="visible">
 
 					<TextView
 						android:layout_width="match_parent"
