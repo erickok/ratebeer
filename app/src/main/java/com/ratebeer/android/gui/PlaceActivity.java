@@ -77,9 +77,11 @@ public final class PlaceActivity extends RateBeerActivity {
 
 		// Load place from database or live
 		placeId = getIntent().getLongExtra("placeId", 0);
-		Db.getPlace(this, placeId, forceFresh).compose(onIoToUi()).compose(bindToLifecycle()).subscribe(this::showPlace,
-				e -> Snackbar.show(this, R
-				.string.error_connectionfailure));
+		Db.getPlace(this, placeId, forceFresh)
+				.compose(onIoToUi())
+				.compose(bindToLifecycle())
+				.subscribe(this::showPlace, e -> Snackbar.show(this, R
+						.string.error_connectionfailure));
 
 	}
 
@@ -92,8 +94,8 @@ public final class PlaceActivity extends RateBeerActivity {
 				map.getUiSettings().setMapToolbarEnabled(false);
 				map.setOnMapClickListener(latLng -> {
 					try {
-						startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(String.format(Locale.US, "geo:%1$f,%2$f?q=%3$s&z=%4$d", place.latitude,
-								place.longitude, Uri.encode(place.name), 17))));
+						startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(String.format(Locale.US, "geo:%1$f,%2$f?q=%3$s&z=%4$d", place
+								.latitude, place.longitude, Uri.encode(place.name), 17))));
 					} catch (Exception e) {
 						Snackbar.show(this, R.string.error_cannotopenurl);
 					}
@@ -135,8 +137,9 @@ public final class PlaceActivity extends RateBeerActivity {
 			List<Property> properties = new ArrayList<>();
 
 			if (place.brewerId != null && place.brewerId > 0) {
-				properties.add(new Property(R.drawable.ic_type_brewery, getString(R.string.place_openbrewer), v -> startActivity(BreweryActivity.start
-						(this, place.brewerId))));
+				properties.add(new Property(R.drawable.ic_type_brewery, getString(R.string.place_openbrewer), v -> startActivity(BreweryActivity
+						.start
+								(this, place.brewerId))));
 			}
 			properties.add(new Property(R.drawable.ic_prop_checkin, getString(R.string.place_checkin), v -> performCheckin()));
 			if (!TextUtils.isEmpty(place.hours)) {
@@ -184,9 +187,13 @@ public final class PlaceActivity extends RateBeerActivity {
 	}
 
 	private void performCheckin() {
-		Api.get().performPlaceCheckin(placeId).compose(onIoToUi()).compose(bindToLifecycle()).subscribe(wasSuccessful -> Snackbar.show(this,
-				wasSuccessful ? R.string.place_checkin_ok : R.string.place_checkin_error), e -> Snackbar.show(this, R.string
-				.error_connectionfailure));
+		Api.get().performPlaceCheckin(placeId)
+				.compose(onIoToUi())
+				.compose(bindToLifecycle())
+				.subscribe(
+						wasSuccessful -> Snackbar.show(this, wasSuccessful ? R.string.place_checkin_ok : R.string.place_checkin_error),
+						e -> Snackbar.show(this, R.string
+								.error_connectionfailure));
 	}
 
 }

@@ -30,9 +30,9 @@ public class PhotoActivity extends RateBeerActivity {
 		// Set up toolbar
 		Toolbar mainToolbar = setupDefaultUpButton();
 		mainToolbar.inflateMenu(R.menu.menu_refresh);
-		RxToolbar.itemClicks(mainToolbar).filter(item -> item.getItemId() == R.id.menu_refresh).subscribe(item -> {
-			showPhoto(true);
-		});
+		RxToolbar.itemClicks(mainToolbar)
+				.filter(item -> item.getItemId() == R.id.menu_refresh)
+				.subscribe(item -> showPhoto(true));
 
 		showPhoto(false);
 

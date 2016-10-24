@@ -49,8 +49,9 @@ public final class TopListActivity extends RateBeerActivity {
 		beersList = (RecyclerView) findViewById(R.id.beers_list);
 		beersList.setLayoutManager(new LinearLayoutManager(this));
 
-		ItemClickSupport.addTo(beersList).setOnItemClickListener((parent, pos, v) ->
-				openBeer(((BeerOnTopListAdapter) beersList.getAdapter()).get(pos)));
+		ItemClickSupport.addTo(beersList)
+				.setOnItemClickListener((parent, pos, v) ->
+						openBeer(((BeerOnTopListAdapter) beersList.getAdapter()).get(pos)));
 
 		switch (mode) {
 			case Mode.OVERALL:
@@ -71,10 +72,13 @@ public final class TopListActivity extends RateBeerActivity {
 
 	private void refresh(Observable<BeerOnTopList> topBeers) {
 		Animations.fadeFlip(loadingProgress, beersList);
-		topBeers.toList().compose(onIoToUi()).compose(bindToLifecycle()).subscribe(
-				beers -> beersList.setAdapter(new BeerOnTopListAdapter(beers, mode == Mode.BY_STYLE)),
-				e -> Snackbar.show(this, R.string.error_unexpectederror),
-				() -> Animations.fadeFlip(beersList, loadingProgress));
+		topBeers.toList()
+				.compose(onIoToUi())
+				.compose(bindToLifecycle())
+				.subscribe(
+						beers -> beersList.setAdapter(new BeerOnTopListAdapter(beers, mode == Mode.BY_STYLE)),
+						e -> Snackbar.show(this, R.string.error_unexpectederror),
+						() -> Animations.fadeFlip(beersList, loadingProgress));
 	}
 
 	private void openBeer(BeerOnTopList beerOnTopList) {

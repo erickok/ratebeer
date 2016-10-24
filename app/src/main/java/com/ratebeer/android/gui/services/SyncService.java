@@ -44,8 +44,12 @@ public final class SyncService extends IntentService {
 
 		// Perform sync by loading and then storing all of the user's ratings
 		final AtomicInteger i = new AtomicInteger();
-		Db.syncRatings(this, progress -> reportProgress(true, null, progress)).toBlocking()
-				.subscribe(r -> RBLog.d("R:" + i.getAndIncrement()), e -> reportProgress(false, e, null), () -> reportProgress(false, null, 100F));
+		Db.syncRatings(this, progress -> reportProgress(true, null, progress))
+				.toBlocking()
+				.subscribe(
+						r -> RBLog.d("R:" + i.getAndIncrement()),
+						e -> reportProgress(false, e, null),
+						() -> reportProgress(false, null, 100F));
 
 	}
 
@@ -65,18 +69,29 @@ public final class SyncService extends IntentService {
 		// Show error (and allow retry) when sync failed
 		if (error != null) {
 			PendingIntent retryIntent = PendingIntent.getService(this, REQUEST_SYNC, start(this), PendingIntent.FLAG_CANCEL_CURRENT);
-			notificationManager.notify(NOTIFY_SYNC, new NotificationCompat.Builder(this).setPriority(NotificationCompat.PRIORITY_DEFAULT)
-					.setCategory(NotificationCompat.CATEGORY_ERROR).setAutoCancel(true).setSmallIcon(R.drawable.ic_stat_error)
-					.setContentTitle(getString(R.string.sync_error)).setContentText(getString(R.string.sync_tryagain)).setContentIntent(retryIntent)
+			notificationManager
+					.notify(NOTIFY_SYNC, new NotificationCompat.Builder(this)
+							.setPriority(NotificationCompat.PRIORITY_DEFAULT)
+							.setCategory(NotificationCompat.CATEGORY_ERROR)
+							.setAutoCancel(true)
+							.setSmallIcon(R.drawable.ic_stat_error)
+							.setContentTitle(getString(R.string.sync_error))
+							.setContentText(getString(R.string.sync_tryagain))
+							.setContentIntent(retryIntent)
 					.build());
 			return;
 		}
 
 		// Show ongoing sync progress
 		notificationManager.notify(NOTIFY_SYNC,
-				new NotificationCompat.Builder(this).setPriority(NotificationCompat.PRIORITY_LOW).setCategory(NotificationCompat.CATEGORY_SERVICE)
-						.setOngoing(true).setSmallIcon(R.drawable.ic_stat_default).setProgress(100, progress.intValue(), false)
-						.setContentTitle(getString(R.string.sync_insync)).build());
+				new NotificationCompat.Builder(this)
+						.setPriority(NotificationCompat.PRIORITY_LOW)
+						.setCategory(NotificationCompat.CATEGORY_SERVICE)
+						.setOngoing(true)
+						.setSmallIcon(R.drawable.ic_stat_default)
+						.setProgress(100, progress.intValue(), false)
+						.setContentTitle(getString(R.string.sync_insync))
+						.build());
 
 	}
 

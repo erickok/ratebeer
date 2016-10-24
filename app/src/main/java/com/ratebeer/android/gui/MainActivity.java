@@ -144,29 +144,46 @@ public class MainActivity extends RateBeerActivity implements ActivityCompat.OnR
 		}
 
 		// Set up access buttons
-		RxView.clicks(scanButton).compose(bindToLifecycle()).subscribe(v -> new BarcodeIntentIntegrator(this).initiateScan());
-		RxView.clicks(helpButton).compose(bindToLifecycle()).subscribe(v -> startActivity(HelpActivity.start(this)));
-		RxView.clicks(statusText).compose(bindToLifecycle()).subscribe(v -> startService(SyncService.start(this)));
+		RxView.clicks(scanButton)
+				.compose(bindToLifecycle())
+				.subscribe(v -> new BarcodeIntentIntegrator(this).initiateScan());
+		RxView.clicks(helpButton)
+				.compose(bindToLifecycle())
+				.subscribe(v -> startActivity(HelpActivity.start(this)));
+		RxView.clicks(statusText)
+				.compose(bindToLifecycle())
+				.subscribe(v -> startService(SyncService.start(this)));
 
 		// Set up search box: show results with search view focus, start search on query submit and show suggestions on query text changes
 		searchList.setLayoutManager(new LinearLayoutManager(this));
 		searchList.setAdapter(searchSuggestionsAdaper = new SearchSuggestionsAdapter());
-		ItemClickSupport.addTo(searchList).setOnItemClickListener((parent, pos, v) -> searchFromSuggestion(searchSuggestionsAdaper.get(pos)));
-		Observable<SearchViewQueryTextEvent> queryTextChangeEvents = RxSearchView.queryTextChangeEvents(searchEdit).compose(onUi()).replay(1)
+		ItemClickSupport.addTo(searchList)
+				.setOnItemClickListener((parent, pos, v) -> searchFromSuggestion(searchSuggestionsAdaper.get(pos)));
+		Observable<SearchViewQueryTextEvent> queryTextChangeEvents = RxSearchView.queryTextChangeEvents(searchEdit)
+				.compose(onUi())
+				.replay(1)
 				.refCount();
 		queryTextChangeEvents.map(event -> !TextUtils.isEmpty(event.queryText())).subscribe(hasQuery -> {
 			searchList.setVisibility(hasQuery ? View.VISIBLE : View.GONE);
 			tabLayout.setVisibility(hasQuery ? View.GONE : (tabs.size() == 1 ? View.GONE : View.VISIBLE));
 			scanButton.setVisibility(hasQuery ? View.GONE : View.VISIBLE);
 		});
-		queryTextChangeEvents.filter(SearchViewQueryTextEvent::isSubmitted).subscribe(event -> performSearch(event.queryText().toString()));
-		queryTextChangeEvents.map(event -> event.queryText().toString()).map(String::trim).switchMap(query -> {
-			if (query.length() == 0) {
-				return Db.getAllHistoricSearches(this).toList();
-			} else {
-				return Db.getSuggestions(this, query).toList();
-			}
-		}).compose(onIoToUi()).compose(bindToLifecycle()).subscribe(suggestions -> searchSuggestionsAdaper.update(suggestions));
+		queryTextChangeEvents
+				.filter(SearchViewQueryTextEvent::isSubmitted)
+				.subscribe(event -> performSearch(event.queryText().toString()));
+		queryTextChangeEvents
+				.map(event -> event.queryText().toString())
+				.map(String::trim)
+				.switchMap(query -> {
+					if (query.length() == 0) {
+						return Db.getAllHistoricSearches(this).toList();
+					} else {
+						return Db.getSuggestions(this, query).toList();
+					}
+				})
+				.compose(onIoToUi())
+				.compose(bindToLifecycle())
+				.subscribe(suggestions -> searchSuggestionsAdaper.update(suggestions));
 		searchEdit.setInputType(InputType.TYPE_CLASS_TEXT);
 
 	}
@@ -186,19 +203,25 @@ public class MainActivity extends RateBeerActivity implements ActivityCompat.OnR
 		if (scanResult != null && scanResult.getContents() != null) {
 			statusText.setVisibility(View.GONE);
 			Animations.fadeFlip(loadingProgress, listsPager);
-			Api.get().searchByBarcode(scanResult.getContents()).toList().compose(onIoToUi()).compose(bindToLifecycle()).subscribe(results -> {
-				Animations.fadeFlip(listsPager, loadingProgress);
-				if (results.size() == 0) {
-					Snackbar.show(this, R.string.search_noresults);
-				} else if (results.size() == 1) {
-					// Exact match; directly open the beer
-					startActivity(BeerActivity.start(this, results.get(0).beerId));
-				} else {
-					// Multiple matches; show selection dialog
-					new AlertDialog.Builder(this).setAdapter(new BarcodeSearchResultsAdapter(this, results), (dialogInterface, i) -> startActivity
-							(BeerActivity.start(this, results.get(i).beerId))).show();
-				}
-			}, e -> Snackbar.show(this, R.string.error_connectionfailure));
+			Api.get().searchByBarcode(scanResult.getContents())
+					.toList()
+					.compose(onIoToUi())
+					.compose(bindToLifecycle())
+					.subscribe(results -> {
+								Animations.fadeFlip(listsPager, loadingProgress);
+								if (results.size() == 0) {
+									Snackbar.show(this, R.string.search_noresults);
+								} else if (results.size() == 1) {
+									// Exact match; directly open the beer
+									startActivity(BeerActivity.start(this, results.get(0).beerId));
+								} else {
+									// Multiple matches; show selection dialog
+									new AlertDialog.Builder(this)
+											.setAdapter(new BarcodeSearchResultsAdapter(this, results), (dialogInterface, i) ->
+													startActivity(BeerActivity.start(this, results.get(i).beerId))).show();
+								}
+							},
+							e -> Snackbar.show(this, R.string.error_connectionfailure));
 		}
 	}
 
@@ -250,39 +273,51 @@ public class MainActivity extends RateBeerActivity implements ActivityCompat.OnR
 			// Show ratings sync progress, or show the already stored ratings
 			emptyText.setVisibility(View.GONE);
 			boolean needsFirstSync = Session.get().isLoggedIn() && Session.get().getUserRateCount() > 0 && !Db.hasSyncedRatings(this);
-			syncSubscription = SyncService.getSyncStatus().distinctUntilChanged().compose(toUi()).flatMap(inSync -> {
-				if (inSync) {
-					// Emit null to indicate we are in sync
-					return Observable.just((List<Rating>) null);
-				} else {
-					// Emit a list of all stored ratings
-					return Db.getRatings(this).subscribeOn(Schedulers.io()).toList().doOnError(e -> {
-						Snackbar.show(this, R.string.error_connectionfailure);
-						e.printStackTrace();
-					}).onErrorResumeNext(Observable.just(new ArrayList<>()));
-				}
-			}).compose(toUi()).compose(bindToLifecycle()).subscribe(ratings -> {
-				if (ratings == null) {
-					// Syncing: show progress spinner
-					if (loadingProgress.getVisibility() != View.VISIBLE)
-						Animations.fadeFlipOut(loadingProgress, listsPager, statusText);
-				} else if (needsFirstSync) {
-					// Never synced yet (but user has ratings): show sync invitation text
-					Animations.fadeFlipOut(statusText, listsPager, loadingProgress);
-				} else {
-					if (listsPager.getVisibility() != View.VISIBLE)
-						Animations.fadeFlipOut(listsPager, loadingProgress, statusText);
-					if (view.getAdapter() == null)
-						view.setAdapter(new RatingsAdapter(this, getMenuInflater(), ratings));
-					else
-						((RatingsAdapter) view.getAdapter()).update(ratings);
-					if (ratings.isEmpty()) {
-						emptyText.setVisibility(View.VISIBLE);
-						emptyText.setText(R.string.error_noplaces);
-					}
-				}
-			});
-			ItemClickSupport.addTo(view).setOnItemClickListener((parent, pos, v) -> openRating(((RatingsAdapter) view.getAdapter()).get(pos)));
+			syncSubscription = SyncService.getSyncStatus()
+					.distinctUntilChanged()
+					.compose(toUi())
+					.flatMap(inSync -> {
+						if (inSync) {
+							// Emit null to indicate we are in sync
+							return Observable.just(null);
+						} else {
+							// Emit a list of all stored ratings
+							return Db.getRatings(this)
+									.compose(onIoToUi())
+									.subscribeOn(Schedulers.io())
+									.toList()
+									.doOnError(e -> {
+										Snackbar.show(this, R.string.error_connectionfailure);
+										e.printStackTrace();
+									})
+									.onErrorResumeNext(Observable.just(new ArrayList<>()));
+						}
+					})
+					.compose(toUi())
+					.compose(bindToLifecycle())
+					.subscribe(ratings -> {
+						if (ratings == null) {
+							// Syncing: show progress spinner
+							if (loadingProgress.getVisibility() != View.VISIBLE)
+								Animations.fadeFlipOut(loadingProgress, listsPager, statusText);
+						} else if (needsFirstSync) {
+							// Never synced yet (but user has ratings): show sync invitation text
+							Animations.fadeFlipOut(statusText, listsPager, loadingProgress);
+						} else {
+							if (listsPager.getVisibility() != View.VISIBLE)
+								Animations.fadeFlipOut(listsPager, loadingProgress, statusText);
+							if (view.getAdapter() == null)
+								view.setAdapter(new RatingsAdapter(this, getMenuInflater(), ratings));
+							else
+								((RatingsAdapter) view.getAdapter()).update(ratings);
+							if (ratings.isEmpty()) {
+								emptyText.setVisibility(View.VISIBLE);
+								emptyText.setText(R.string.error_noplaces);
+							}
+						}
+					});
+			ItemClickSupport.addTo(view)
+					.setOnItemClickListener((parent, pos, v) -> openRating(((RatingsAdapter) view.getAdapter()).get(pos)));
 			rateButton.show();
 			listAddButton.hide();
 
@@ -306,24 +341,32 @@ public class MainActivity extends RateBeerActivity implements ActivityCompat.OnR
 
 			// Show (fresh and cached) nearby places as list
 			Animations.fadeFlip(loadingProgress, listsPager);
-			ItemClickSupport.addTo(view).setOnItemClickListener((parent, pos, v) -> openLocalPlace(((LocalPlacesAdapter) view.getAdapter()).get
-					(pos)));
+			ItemClickSupport.addTo(view)
+					.setOnItemClickListener((parent, pos, v) -> openLocalPlace(((LocalPlacesAdapter) view.getAdapter()).get(pos)));
 			Observable<Location> lastOrQuickLocation = new RxLocation(this).getLastOrQuickLocation().compose(onUi());
-			Observable.combineLatest(lastOrQuickLocation, lastOrQuickLocation.compose(toIo()).flatMap(showLocation -> Db.getPlacesNearby(this,
-					showLocation)), RxTuples.toPair()).map(place -> LocalPlace.from(place.getValue1(), place.getValue0())).toSortedList().compose
-					(toUi()).compose(bindToLifecycle()).subscribe(places -> {
-				if (view.getAdapter() == null)
-					view.setAdapter(new LocalPlacesAdapter(this, places));
-				else
-					((LocalPlacesAdapter) view.getAdapter()).update(places);
-				if (places.isEmpty()) {
-					emptyText.setVisibility(View.VISIBLE);
-					emptyText.setText(R.string.error_noplaces);
-				}
-			}, e -> {
-				Animations.fadeFlip(listsPager, loadingProgress);
-				Snackbar.show(this, R.string.error_connectionfailure);
-			}, () -> Animations.fadeFlip(listsPager, loadingProgress));
+			Observable.combineLatest(
+					lastOrQuickLocation,
+					lastOrQuickLocation
+							.compose(toIo())
+							.flatMap(showLocation -> Db.getPlacesNearby(this, showLocation)),
+					RxTuples.toPair())
+					.map(place -> LocalPlace.from(place.getValue1(), place.getValue0()))
+					.toSortedList()
+					.compose(toUi())
+					.compose(bindToLifecycle())
+					.subscribe(places -> {
+						if (view.getAdapter() == null)
+							view.setAdapter(new LocalPlacesAdapter(this, places));
+						else
+							((LocalPlacesAdapter) view.getAdapter()).update(places);
+						if (places.isEmpty()) {
+							emptyText.setVisibility(View.VISIBLE);
+							emptyText.setText(R.string.error_noplaces);
+						}
+					}, e -> {
+						Animations.fadeFlip(listsPager, loadingProgress);
+						Snackbar.show(this, R.string.error_connectionfailure);
+					}, () -> Animations.fadeFlip(listsPager, loadingProgress));
 
 		} else if (type == TAB_MY_LISTS) {
 
@@ -336,21 +379,25 @@ public class MainActivity extends RateBeerActivity implements ActivityCompat.OnR
 
 			// Show the custom, local user lists
 			Animations.fadeFlip(loadingProgress, listsPager);
-			ItemClickSupport.addTo(view).setOnItemClickListener((parent, pos, v) -> openCustomList(((CustomListsAdapter) view.getAdapter()).get
-					(pos)));
-			Db.getCustomListsWithCount(this).toSortedList().compose(onIoToUi()).compose(bindToLifecycle()).subscribe(customLists -> {
-				if (view.getAdapter() == null)
-					view.setAdapter(new CustomListsAdapter(customLists));
-				else
-					((CustomListsAdapter) view.getAdapter()).update(customLists);
-				if (customLists.isEmpty()) {
-					emptyText.setVisibility(View.VISIBLE);
-					emptyText.setText(R.string.error_nolists);
-				}
-			}, e -> {
-				Animations.fadeFlip(listsPager, loadingProgress);
-				Snackbar.show(this, R.string.error_connectionfailure);
-			}, () -> Animations.fadeFlip(listsPager, loadingProgress));
+			ItemClickSupport.addTo(view)
+					.setOnItemClickListener((parent, pos, v) -> openCustomList(((CustomListsAdapter) view.getAdapter()).get(pos)));
+			Db.getCustomListsWithCount(this)
+					.toSortedList()
+					.compose(onIoToUi())
+					.compose(bindToLifecycle())
+					.subscribe(customLists -> {
+						if (view.getAdapter() == null)
+							view.setAdapter(new CustomListsAdapter(customLists));
+						else
+							((CustomListsAdapter) view.getAdapter()).update(customLists);
+						if (customLists.isEmpty()) {
+							emptyText.setVisibility(View.VISIBLE);
+							emptyText.setText(R.string.error_nolists);
+						}
+					}, e -> {
+						Animations.fadeFlip(listsPager, loadingProgress);
+						Snackbar.show(this, R.string.error_connectionfailure);
+					}, () -> Animations.fadeFlip(listsPager, loadingProgress));
 
 		} else if (type == TAB_TOP50) {
 
@@ -385,20 +432,25 @@ public class MainActivity extends RateBeerActivity implements ActivityCompat.OnR
 
 			// Load a feed (global, local or friends)
 			Animations.fadeFlip(loadingProgress, listsPager);
-			ItemClickSupport.addTo(view).setOnItemClickListener((parent, pos, v) -> openFeedItem(((FeedItemsAdapter) view.getAdapter()).get(pos)));
-			getTabFeed(type).toList().compose(onIoToUi()).compose(bindToLifecycle()).subscribe(feed -> {
-				if (view.getAdapter() == null)
-					view.setAdapter(new FeedItemsAdapter(this, feed));
-				else
-					((FeedItemsAdapter) view.getAdapter()).update(feed);
-				if (feed.isEmpty()) {
-					emptyText.setVisibility(View.VISIBLE);
-					emptyText.setText(R.string.error_noplaces);
-				}
-			}, e -> {
-				Animations.fadeFlip(listsPager, loadingProgress);
-				Snackbar.show(this, R.string.error_connectionfailure);
-			}, () -> Animations.fadeFlip(listsPager, loadingProgress));
+			ItemClickSupport.addTo(view)
+					.setOnItemClickListener((parent, pos, v) -> openFeedItem(((FeedItemsAdapter) view.getAdapter()).get(pos)));
+			getTabFeed(type)
+					.toList()
+					.compose(onIoToUi())
+					.compose(bindToLifecycle())
+					.subscribe(feed -> {
+						if (view.getAdapter() == null)
+							view.setAdapter(new FeedItemsAdapter(this, feed));
+						else
+							((FeedItemsAdapter) view.getAdapter()).update(feed);
+						if (feed.isEmpty()) {
+							emptyText.setVisibility(View.VISIBLE);
+							emptyText.setText(R.string.error_noplaces);
+						}
+					}, e -> {
+						Animations.fadeFlip(listsPager, loadingProgress);
+						Snackbar.show(this, R.string.error_connectionfailure);
+					}, () -> Animations.fadeFlip(listsPager, loadingProgress));
 
 		}
 	}
@@ -446,8 +498,8 @@ public class MainActivity extends RateBeerActivity implements ActivityCompat.OnR
 	}
 
 	private void searchFromSuggestion(SearchSuggestion searchSuggestion) {
-		if ((searchSuggestion.type == SearchSuggestion.TYPE_BEER || searchSuggestion.type == SearchSuggestion.TYPE_RATING) && searchSuggestion
-				.itemId != null) {
+		if ((searchSuggestion.type == SearchSuggestion.TYPE_BEER || searchSuggestion.type == SearchSuggestion.TYPE_RATING)
+				&& searchSuggestion.itemId != null) {
 			// Directly open the searched beer
 			startActivity(BeerActivity.start(this, searchSuggestion.itemId));
 		} else if (searchSuggestion.type == SearchSuggestion.TYPE_BREWERY && searchSuggestion.itemId != null) {
