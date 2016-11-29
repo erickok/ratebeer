@@ -14,13 +14,13 @@ try {
 }
 
 android {
-    compileSdkVersion 24
-    buildToolsVersion '24.0.2'
+    compileSdkVersion 25
+    buildToolsVersion '25.0.1'
 
     defaultConfig {
         applicationId 'com.ratebeer.android'
         minSdkVersion 15
-        targetSdkVersion 24
+        targetSdkVersion 25
         versionCode 211
         versionName '2.1.0'
         jackOptions {
@@ -65,11 +65,11 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support:appcompat-v7:24.2.1'
-    compile 'com.android.support:design:24.2.1'
-    compile 'com.android.support:recyclerview-v7:24.2.1'
-    compile 'com.google.android.gms:play-services-location:9.6.1'
-    compile 'com.google.android.gms:play-services-maps:9.6.1'
+    compile 'com.android.support:appcompat-v7:25.0.1'
+    compile 'com.android.support:design:25.0.1'
+    compile 'com.android.support:recyclerview-v7:25.0.1'
+    compile 'com.google.android.gms:play-services-location:10.0.0'
+    compile 'com.google.android.gms:play-services-maps:10.0.0'
 
     compile 'io.reactivex:rxjava:1.2.1'
     compile 'io.reactivex:rxandroid:1.2.1'
