@@ -20,7 +20,6 @@ import android.widget.TextView;
 import com.ratebeer.android.R;
 import com.ratebeer.android.api.Api;
 import com.ratebeer.android.api.model.BreweryBeer;
-import com.ratebeer.android.db.Beer;
 import com.ratebeer.android.db.Brewery;
 import com.ratebeer.android.db.Db;
 import com.ratebeer.android.gui.lists.BreweryPropertiesBeersAdapter;
@@ -60,12 +59,18 @@ public final class BreweryActivity extends RateBeerActivity {
 
 		// Load place from database or live
 		long breweryId = getIntent().getLongExtra("breweryId", 0);
-		Db.getBrewery(this, breweryId, false).compose(onIoToUi()).compose(bindToLifecycle()).subscribe(this::showBrewery, e -> Snackbar.show(this, R
-				.string.error_connectionfailure));
+		Db.getBrewery(this, breweryId, false)
+				.compose(onIoToUi())
+				.compose(bindToLifecycle())
+				.subscribe(this::showBrewery, e -> Snackbar.show(this, R
+						.string.error_connectionfailure));
 
 		// Load beers made by this brewery (which is always live data)
-		Api.get().getBreweryBeers(breweryId).toSortedList().compose(onIoToUi()).compose(bindToLifecycle()).subscribe(this::showBeers,
-				Throwable::printStackTrace);
+		Api.get().getBreweryBeers(breweryId)
+				.toSortedList()
+				.compose(onIoToUi())
+				.compose(bindToLifecycle())
+				.subscribe(this::showBeers, Throwable::printStackTrace);
 
 	}
 

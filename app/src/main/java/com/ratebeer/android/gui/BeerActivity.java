@@ -19,7 +19,6 @@ import android.text.style.StyleSpan;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -38,7 +37,6 @@ import com.ratebeer.android.db.Beer;
 import com.ratebeer.android.db.CustomList;
 import com.ratebeer.android.db.CustomListBeer;
 import com.ratebeer.android.db.Db;
-import com.ratebeer.android.db.RBLog;
 import com.ratebeer.android.db.Rating;
 import com.ratebeer.android.gui.lists.BeerRatingsAdapter;
 import com.ratebeer.android.gui.lists.CustomListsPopupAdapter;
@@ -47,9 +45,7 @@ import com.ratebeer.android.gui.widget.CheckableImageButton;
 import com.ratebeer.android.gui.widget.Images;
 import com.ratebeer.android.gui.widget.ImeUtils;
 import com.ratebeer.android.gui.widget.ItemClickSupport;
-import com.trello.rxlifecycle.RxLifecycle;
-
-import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent;
+import com.trello.rxlifecycle.android.RxLifecycleAndroid;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -61,7 +57,6 @@ import static com.ratebeer.android.db.CupboardDbHelper.rxdb;
 
 public final class BeerActivity extends RateBeerActivity {
 
-	private View rootLayout;
 	private RecyclerView ratingsList;
 	private ProgressBar loadingProgress;
 	private View detailsLayout;
@@ -92,7 +87,6 @@ public final class BeerActivity extends RateBeerActivity {
 			refresh(true);
 		});
 
-		rootLayout = findViewById(R.id.root_layout);
 		ratingsList = (RecyclerView) findViewById(R.id.ratings_list);
 		loadingProgress = (ProgressBar) findViewById(R.id.loading_progress);
 		detailsLayout = findViewById(R.id.details_layout);
@@ -103,6 +97,21 @@ public final class BeerActivity extends RateBeerActivity {
 		rateButton = (FloatingActionButton) findViewById(R.id.rate_button);
 		rateButton.setVisibility(View.GONE);
 
+		beerId = getIntent().getLongExtra("beerId", 0);
+		if (getIntent().getAction() != null && getIntent().getAction().equals(Intent.ACTION_VIEW) && getIntent().getData() != null) {
+			List<String> segments = getIntent().getData().getPathSegments();
+			if (segments != null && segments.size() > 1) {
+				try {
+					beerId = Integer.parseInt(segments.get(1));
+				} catch (NumberFormatException e) {
+					// Not a supported URL; start the url in a browser instead (via missing beerId)
+				}
+			}
+		}
+		if (beerId == 0) {
+			startActivity(new Intent(Intent.ACTION_VIEW, getIntent().getData()));
+			finish();
+		}
 	}
 
 	@Override
@@ -114,17 +123,24 @@ public final class BeerActivity extends RateBeerActivity {
 	private void refresh(boolean forceFresh) {
 
 		// Load beer from database or live, with a fallback on the bare beer name taken from an offline rating
-		beerId = getIntent().getLongExtra("beerId", 0);
-		Db.getBeer(this, beerId, forceFresh).onErrorResumeNext(Db.getOfflineRatingForBeer(this, beerId).map(this::ratingToBeer)).compose(onIoToUi())
-				.compose(bindToLifecycle()).subscribe(this::showBeer, e -> Snackbar.show(this, R.string.error_connectionfailure));
+		Db.getBeer(this, beerId, forceFresh)
+				.onErrorResumeNext(Db.getOfflineRatingForBeer(this, beerId)
+						.map(this::ratingToBeer))
+				.compose(onIoToUi())
+				.compose(bindToLifecycle())
+				.subscribe(this::showBeer, e -> Snackbar.show(this, R.string.error_connectionfailure));
 
 		// Load beer ratings (always live) and the user's rating, if any exists in the database or live
-		Observable<BeerRating> ratings = Api.get().getBeerRatings(beerId).filter(beerRating -> !Session.get().isLoggedIn() || beerRating.userId !=
-				Session.get().getUserId());
+		Observable<BeerRating> ratings = Api.get().getBeerRatings(beerId)
+				.filter(beerRating -> !Session.get().isLoggedIn() || beerRating.userId != Session.get().getUserId());
 		if (Session.get().isLoggedIn())
-			ratings = ratings.onErrorResumeNext(Observable.empty()).startWith(Db.getRating(this, beerId, Session.get().getUserId()).map
-					(this::localToBeerRating));
-		ratings.toList().compose(onIoToUi()).compose(bindToLifecycle()).subscribe(this::showRatings, Throwable::printStackTrace);
+			ratings = ratings.onErrorResumeNext(Observable.empty())
+					.startWith(Db.getRating(this, beerId, Session.get().getUserId())
+							.map(this::localToBeerRating));
+		ratings.toList()
+				.compose(onIoToUi())
+				.compose(bindToLifecycle())
+				.subscribe(this::showRatings, Throwable::printStackTrace);
 
 	}
 
@@ -189,36 +205,50 @@ public final class BeerActivity extends RateBeerActivity {
 			});
 
 			// Load lists when tapping the add to list button
-			RxView.clicks(listAddButton).compose(onUi()).switchMap(click -> Db.getCustomLists(this, beerId).toList()).compose(toIo()).compose(toUi()
-			).compose(bindToLifecycle()).subscribe(lists -> {
+			RxView.clicks(listAddButton)
+					.compose(onUi())
+					.switchMap(click -> Db.getCustomLists(this, beerId).toList())
+					.compose(toIo())
+					.compose(toUi())
+					.compose(bindToLifecycle())
+					.subscribe(lists -> {
 
-				// Prepare popup view
-				ViewGroup content = (ViewGroup) getLayoutInflater().inflate(R.layout.dialog_select_list, null);
-				addListPopup = new PopupWindow(content, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
-				RecyclerView listsList = (RecyclerView) content.findViewById(R.id.lists_list);
-				EditText createNameEdit = (EditText) content.findViewById(R.id.create_name_edit);
-				ImageButton createAddButton = (ImageButton) content.findViewById(R.id.create_add_button);
-				listsList.setLayoutManager(new LinearLayoutManager(this));
-				listsList.setAdapter(new CustomListsPopupAdapter(lists));
+						// Prepare popup view
+						ViewGroup content = (ViewGroup) getLayoutInflater().inflate(R.layout.dialog_select_list, null);
+						addListPopup = new PopupWindow(content, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
+						RecyclerView listsList = (RecyclerView) content.findViewById(R.id.lists_list);
+						EditText createNameEdit = (EditText) content.findViewById(R.id.create_name_edit);
+						ImageButton createAddButton = (ImageButton) content.findViewById(R.id.create_add_button);
+						listsList.setLayoutManager(new LinearLayoutManager(this));
+						listsList.setAdapter(new CustomListsPopupAdapter(lists));
 
-				// Handle new list creation and existing list clicks
-				RxTextView.textChanges(createNameEdit).map(name -> !TextUtils.isEmpty(name)).compose(RxLifecycle.bindView(createNameEdit)).subscribe
-						(createAddButton::setEnabled, e -> Snackbar.show(this, R.string.error_unexpectederror));
-				RxView.clicks(createAddButton).compose(RxLifecycle.bindView(createAddButton)).subscribe(name -> addBeerToNewCustomList(beer,
-						createNameEdit.getText().toString(), addListPopup), e -> Snackbar.show(this, R.string.error_unexpectederror));
-				ItemClickSupport.addTo(listsList).setOnItemClickListener((recyclerView, position, v) -> addBeerToCustomList(beer, (
-						(CustomListsPopupAdapter) recyclerView.getAdapter()).get(position)._id, addListPopup));
+						// Handle new list creation and existing list clicks
+						RxTextView.textChanges(createNameEdit)
+								.map(name -> !TextUtils.isEmpty(name))
+								.compose(RxLifecycleAndroid.bindView(createNameEdit))
+								.subscribe(
+										createAddButton::setEnabled,
+										e -> Snackbar.show(this, R.string.error_unexpectederror));
+						RxView.clicks(createAddButton)
+								.compose(RxLifecycleAndroid.bindView(createAddButton))
+								.subscribe(
+										name -> addBeerToNewCustomList(beer, createNameEdit.getText().toString(), addListPopup),
+										e -> Snackbar.show(this, R.string.error_unexpectederror));
+						ItemClickSupport.addTo(listsList)
+								.setOnItemClickListener((recyclerView, position, v) ->
+										addBeerToCustomList(beer, ((CustomListsPopupAdapter) recyclerView.getAdapter()).get(position)._id,
+												addListPopup));
 
-				/// Show the lists as popup (in the top corner so there is place for the software keyboard)
-				//noinspection deprecation Hack to have the background transparent
-				addListPopup.setBackgroundDrawable(new BitmapDrawable());
-				addListPopup.setOutsideTouchable(true);
-				int popupMargin = (int) getResources().getDimension(R.dimen.static_popup_margin);
-				addListPopup.showAtLocation(listAddButton, Gravity.TOP | Gravity.CENTER_HORIZONTAL, 0, popupMargin);
-				createNameEdit.requestFocus();
-				Observable.timer(100, TimeUnit.MILLISECONDS).subscribe(event -> ImeUtils.showIme(createNameEdit));
+						/// Show the lists as popup (in the top corner so there is place for the software keyboard)
+						//noinspection deprecation Hack to have the background transparent
+						addListPopup.setBackgroundDrawable(new BitmapDrawable());
+						addListPopup.setOutsideTouchable(true);
+						int popupMargin = (int) getResources().getDimension(R.dimen.static_popup_margin);
+						addListPopup.showAtLocation(listAddButton, Gravity.TOP | Gravity.CENTER_HORIZONTAL, 0, popupMargin);
+						createNameEdit.requestFocus();
+						Observable.timer(100, TimeUnit.MILLISECONDS).subscribe(event -> ImeUtils.showIme(createNameEdit));
 
-			}, e -> Snackbar.show(this, R.string.error_unexpectederror));
+					}, e -> Snackbar.show(this, R.string.error_unexpectederror));
 		}
 
 		Animations.fadeFlip(detailsLayout, loadingProgress);
@@ -270,28 +300,34 @@ public final class BeerActivity extends RateBeerActivity {
 	}
 
 	private void addBeerToCustomList(Beer beer, long listId, PopupWindow popup) {
-		Db.getCustomListBeer(this, listId, beer._id).compose(bindToLifecycle()).defaultIfEmpty(null).subscribe(existingBeerOnList -> {
-			if (existingBeerOnList == null) {
-				CustomListBeer addBeer = new CustomListBeer();
-				addBeer.listId = listId;
-				addBeer.beerId = beer._id;
-				addBeer.beerName = beer.name;
-				rxdb(this).put(addBeer);
-				listAddButton.setChecked(true);
-			} else {
-				rxdb(this).delete(existingBeerOnList);
-				listAddButton.setChecked(false);
-			}
-		});
+		Db.getCustomListBeer(this, listId, beer._id)
+				.compose(bindToLifecycle())
+				.defaultIfEmpty(null)
+				.subscribe(existingBeerOnList -> {
+					if (existingBeerOnList == null) {
+						CustomListBeer addBeer = new CustomListBeer();
+						addBeer.listId = listId;
+						addBeer.beerId = beer._id;
+						addBeer.beerName = beer.name;
+						rxdb(this).put(addBeer);
+						listAddButton.setChecked(true);
+					} else {
+						rxdb(this).delete(existingBeerOnList);
+						listAddButton.setChecked(false);
+					}
+				});
 		popup.dismiss();
 	}
 
 	public void openAlias(View view) {
 		// Look up the aliased beer id and open this beer instead (closing the current view)
-		Api.get().getBeerAlias(beerId).compose(onIoToUi()).compose(bindToLifecycle()).subscribe(aliasBeerId -> {
-			startActivity(BeerActivity.start(this, aliasBeerId));
-			finish();
-		}, e -> Snackbar.show(this, R.string.error_connectionfailure));
+		Api.get().getBeerAlias(beerId)
+				.compose(onIoToUi())
+				.compose(bindToLifecycle())
+				.subscribe(aliasBeerId -> {
+					startActivity(BeerActivity.start(this, aliasBeerId));
+					finish();
+				}, e -> Snackbar.show(this, R.string.error_connectionfailure));
 	}
 
 }

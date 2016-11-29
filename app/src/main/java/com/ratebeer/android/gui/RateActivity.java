@@ -26,6 +26,7 @@ import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent;
 import java.util.Date;
 import java.util.Locale;
 
+import rx.Emitter;
 import rx.Observable;
 
 import static com.ratebeer.android.db.CupboardDbHelper.database;
@@ -103,31 +104,34 @@ public final class RateActivity extends RateBeerActivity {
 		Observable<Rating> ratingObservable;
 		if (getIntent().hasExtra("ratingId")) {
 			// Load existing rating
-			ratingObservable = Db.getOfflineRating(this, getIntent().getLongExtra("ratingId", 0)).map(existing -> {
-				// Upgrade legacy data fields
-				if (existing.beerId != null && existing.beerId <= 0)
-					existing.beerId = null;
-				return existing;
-			});
+			ratingObservable = Db.getOfflineRating(this, getIntent().getLongExtra("ratingId", 0))
+					.map(existing -> {
+						// Upgrade legacy data fields
+						if (existing.beerId != null && existing.beerId <= 0)
+							existing.beerId = null;
+						return existing;
+					});
 		} else if (getIntent().hasExtra("beerId")) {
 			// Start rating for a beer, perhaps based on an existing rating
 			long beerId = getIntent().getLongExtra("beerId", 0);
-			ratingObservable = Observable
-					.combineLatest(Db.getBeer(this, beerId), Db.getRating(this, beerId, Session.get().getUserId()).firstOrDefault(null),
-							(beer, existing) -> {
-								if (existing == null) {
-									existing = new Rating();
-									existing.beerId = beer._id;
-									existing.beerName = beer.name;
-								} else {
-									// Upgrade legacy data fields
-									if (existing.beerId != null && existing.beerId <= 0)
-										existing.beerId = null;
-									if (existing.ratingId != null && existing.ratingId <= 0)
-										existing.ratingId = null;
-								}
-								return existing;
-							});
+			ratingObservable = Observable.combineLatest(
+					Db.getBeer(this, beerId),
+					Db.getRating(this, beerId, Session.get().getUserId())
+							.firstOrDefault(null),
+					(beer, existing) -> {
+						if (existing == null) {
+							existing = new Rating();
+							existing.beerId = beer._id;
+							existing.beerName = beer.name;
+						} else {
+							// Upgrade legacy data fields
+							if (existing.beerId != null && existing.beerId <= 0)
+								existing.beerId = null;
+							if (existing.ratingId != null && existing.ratingId <= 0)
+								existing.ratingId = null;
+						}
+						return existing;
+					});
 		} else {
 			ratingObservable = Observable.just(new Rating());
 		}
@@ -163,28 +167,33 @@ public final class RateActivity extends RateBeerActivity {
 		bindPopup(palateButton, palateText, R.layout.dialog_pick_5);
 		bindPopup(overallButton, overallText, R.layout.dialog_pick_20);
 
-		// To easy text entry, hide unneeded widgets (comments during beer name entry, beer name and actions during comment entry)
+		// For easy text entry, hide unneeded widgets (comments during beer name entry, beer name and actions during comment entry)
 		final int startRatingBottomPadding = ratingLayout.getPaddingBottom();
-		Observable<Boolean> keyboardChanges = Observable.create(subscriber -> KeyboardVisibilityEvent.setEventListener(this, isOpen -> {
-			if (!subscriber.isUnsubscribed()) {
-				subscriber.onNext(isOpen);
-			}
-		}));
+		Observable<Boolean> keyboardChanges = Observable.fromEmitter(emitter -> {
+			KeyboardVisibilityEvent.setEventListener(this, emitter::onNext);
+		}, Emitter.BackpressureMode.DROP);
 		keyboardChanges = keyboardChanges.replay(1).refCount();
-		Observable.combineLatest(RxView.focusChanges(beerNameEdit), keyboardChanges,
-				(editingComments, keyboardVisible) -> keyboardVisible && editingComments).compose(toUi()).compose(bindToLifecycle())
+		Observable.combineLatest(
+				RxView.focusChanges(beerNameEdit),
+				keyboardChanges,
+				(editingComments, keyboardVisible) -> keyboardVisible && editingComments)
+				.compose(toUi())
+				.compose(bindToLifecycle())
 				.subscribe(showOnlyBeerName -> {
 					ratingLayout.setVisibility(showOnlyBeerName ? View.GONE : View.VISIBLE);
 				});
-		Observable.combineLatest(RxView.focusChanges(commentsEdit), keyboardChanges,
-				(editingComments, keyboardVisible) -> keyboardVisible && editingComments).compose(toUi()).compose(bindToLifecycle())
+		Observable.combineLatest(
+				RxView.focusChanges(commentsEdit),
+				keyboardChanges,
+				(editingComments, keyboardVisible) -> keyboardVisible && editingComments)
+				.compose(toUi())
+				.compose(bindToLifecycle())
 				.subscribe(showOnlyComments -> {
 					beerNameLayout.setVisibility(showOnlyComments ? View.GONE : View.VISIBLE);
 					ratingLayout.setPadding(0, 0, 0, showOnlyComments ? 0 : startRatingBottomPadding);
 					deleteButton.setVisibility(showOnlyComments ? View.GONE : View.VISIBLE);
 					uploadLayout.setVisibility(showOnlyComments ? View.GONE : View.VISIBLE);
 				});
-
 	}
 
 	@Override
@@ -278,10 +287,13 @@ public final class RateActivity extends RateBeerActivity {
 
 		// Upload the rating directly to RB
 		Animations.fadeFlipOut(uploadProgress, actionButton, deleteButton);
-		Db.postRating(this, rating, Session.get().getUserId()).compose(onIoToUi()).compose(bindToLifecycle()).subscribe(saved -> finish(), e -> {
-			Animations.fadeFlipIn(actionButton, deleteButton, uploadProgress);
-			Snackbar.show(this, R.string.error_connectionfailure);
-		});
+		Db.postRating(this, rating, Session.get().getUserId())
+				.compose(onIoToUi())
+				.compose(bindToLifecycle())
+				.subscribe(saved -> finish(), e -> {
+					Animations.fadeFlipIn(actionButton, deleteButton, uploadProgress);
+					Snackbar.show(this, R.string.error_connectionfailure);
+				});
 
 	}
 
@@ -300,11 +312,14 @@ public final class RateActivity extends RateBeerActivity {
 
 	private void deleteOfflineRating() {
 		Animations.fadeFlipOut(uploadProgress, actionButton, deleteButton);
-		Db.deleteOfflineRating(this, rating, Session.get().getUserId()).compose(onIoToUi()).compose(bindToLifecycle())
-				.toCompletable().subscribe(e -> {
+		Db.deleteOfflineRating(this, rating, Session.get().getUserId())
+				.compose(onIoToUi())
+				.compose(bindToLifecycle())
+				.toCompletable()
+				.subscribe(this::finish, e -> {
 					Animations.fadeFlipIn(deleteButton, actionButton, uploadProgress);
 					Snackbar.show(this, R.string.error_unexpectederror);
-				}, this::finish);
+				});
 	}
 
 }

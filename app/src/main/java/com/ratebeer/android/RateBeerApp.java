@@ -16,7 +16,9 @@ public class RateBeerApp extends Application {
 
 		// Start with a refresh of the user counts (if logged in; ignore any errors)
 		if (Session.get().isLoggedIn()) {
-			Api.get().updateUserRateCounts().subscribeOn(Schedulers.io()).subscribe(result -> {}, Throwable::printStackTrace);
+			Api.get().updateUserRateCounts()
+					.subscribeOn(Schedulers.io())
+					.subscribe(result -> {}, Throwable::printStackTrace);
 		}
 
 		//Picasso.setSingletonInstance(new Picasso.Builder(this).indicatorsEnabled(BuildConfig.DEBUG).loggingEnabled(BuildConfig.DEBUG).build());

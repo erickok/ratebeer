@@ -121,52 +121,65 @@ public class SearchActivity extends RateBeerActivity {
 		RecyclerView view = ((RecyclerView) tabs.get(position));
 		Animations.fadeFlipOut(loadingProgress, view, emptyText);
 
-		Observable<CharSequence> debouncedQueries = RxSearchView.queryTextChanges(searchEdit).compose(onUi()).debounce(666, TimeUnit.MILLISECONDS)
-				.filter(query -> query.length() > 3).compose(toIo());
+		Observable<CharSequence> debouncedQueries = RxSearchView.queryTextChanges(searchEdit)
+				.compose(onUi())
+				.debounce(666, TimeUnit.MILLISECONDS)
+				.filter(query -> query.length() > 3)
+				.compose(toIo());
 		if (type == TAB_BEERS) {
 
-			ItemClickSupport.addTo(view).setOnItemClickListener((parent, pos, v) -> handleBeerResult(((BeerSearchResultAdapter) view.getAdapter())
-					.get(pos)));
-			debouncedQueries.switchMap(query -> Api.get().searchBeers(query.toString()).toList().compose(toUi()).doOnError(e -> Snackbar.show
-					(SearchActivity.this, R.string.error_connectionfailure)).onErrorResumeNext(Observable.empty())).compose(bindToLifecycle())
+			ItemClickSupport.addTo(view)
+					.setOnItemClickListener((parent, pos, v) -> handleBeerResult(((BeerSearchResultAdapter) view.getAdapter()).get(pos)));
+			debouncedQueries.switchMap(query -> Api.get().searchBeers(query.toString())
+					.toList()
+					.compose(toUi())
+					.doOnError(e -> Snackbar.show(SearchActivity.this, R.string.error_connectionfailure))
+					.onErrorResumeNext(Observable.empty()))
+					.compose(bindToLifecycle())
 					.subscribe(results -> {
 
-				view.setAdapter(new BeerSearchResultAdapter(results));
-				if (results.isEmpty())
-					Animations.fadeFlipOut(emptyText, view, loadingProgress);
-				else
-					Animations.fadeFlipOut(view, emptyText, loadingProgress);
-			});
+						view.setAdapter(new BeerSearchResultAdapter(results));
+						if (results.isEmpty())
+							Animations.fadeFlipOut(emptyText, view, loadingProgress);
+						else
+							Animations.fadeFlipOut(view, emptyText, loadingProgress);
+					});
 
 		} else if (type == TAB_BREWERIES) {
 
-			ItemClickSupport.addTo(view).setOnItemClickListener((parent, pos, v) -> handleBreweryResult(((BrewerySearchResultAdapter) view
-					.getAdapter()).get(pos)));
-			debouncedQueries.switchMap(query -> Api.get().searchBreweries(query.toString()).toList().compose(toUi()).doOnError(e -> Snackbar.show
-					(SearchActivity.this, R.string.error_connectionfailure)).onErrorResumeNext(Observable.empty())).compose(bindToLifecycle())
+			ItemClickSupport.addTo(view)
+					.setOnItemClickListener((parent, pos, v) -> handleBreweryResult(((BrewerySearchResultAdapter) view.getAdapter()).get(pos)));
+			debouncedQueries.switchMap(query -> Api.get().searchBreweries(query.toString())
+					.toList()
+					.compose(toUi())
+					.doOnError(e -> Snackbar.show(SearchActivity.this, R.string.error_connectionfailure))
+					.onErrorResumeNext(Observable.empty())).compose(bindToLifecycle())
 					.subscribe(results -> {
 
-				view.setAdapter(new BrewerySearchResultAdapter(results));
-				if (results.isEmpty())
-					Animations.fadeFlipOut(emptyText, view, loadingProgress);
-				else
-					Animations.fadeFlipOut(view, emptyText, loadingProgress);
-			});
+						view.setAdapter(new BrewerySearchResultAdapter(results));
+						if (results.isEmpty())
+							Animations.fadeFlipOut(emptyText, view, loadingProgress);
+						else
+							Animations.fadeFlipOut(view, emptyText, loadingProgress);
+					});
 
 		} else if (type == TAB_PLACES) {
 
-			ItemClickSupport.addTo(view).setOnItemClickListener((parent, pos, v) -> handlePlaceResult(((PlaceSearchResultAdapter) view.getAdapter())
-					.get(pos)));
-			debouncedQueries.switchMap(query -> Api.get().searchPlaces(query.toString()).toList().compose(toUi()).doOnError(e -> Snackbar.show
-					(SearchActivity.this, R.string.error_connectionfailure)).onErrorResumeNext(Observable.empty())).compose(bindToLifecycle())
+			ItemClickSupport.addTo(view)
+					.setOnItemClickListener((parent, pos, v) -> handlePlaceResult(((PlaceSearchResultAdapter) view.getAdapter()).get(pos)));
+			debouncedQueries.switchMap(query -> Api.get().searchPlaces(query.toString())
+					.toList()
+					.compose(toUi())
+					.doOnError(e -> Snackbar.show(SearchActivity.this, R.string.error_connectionfailure))
+					.onErrorResumeNext(Observable.empty())).compose(bindToLifecycle())
 					.subscribe(results -> {
 
-				view.setAdapter(new PlaceSearchResultAdapter(results));
-				if (results.isEmpty())
-					Animations.fadeFlipOut(emptyText, view, loadingProgress);
-				else
-					Animations.fadeFlipOut(view, emptyText, loadingProgress);
-			});
+						view.setAdapter(new PlaceSearchResultAdapter(results));
+						if (results.isEmpty())
+							Animations.fadeFlipOut(emptyText, view, loadingProgress);
+						else
+							Animations.fadeFlipOut(view, emptyText, loadingProgress);
+					});
 
 		}
 
