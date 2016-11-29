@@ -12,6 +12,7 @@ import com.ratebeer.android.db.views.CustomListWithPresence;
 import com.ratebeer.android.gui.lists.SearchSuggestion;
 
 import java.util.Date;
+import java.util.List;
 
 import nl.nl2312.rxcupboard.DatabaseChange;
 import nl.nl2312.rxcupboard.RxCupboard;
@@ -263,12 +264,28 @@ public final class Db {
 				.doOnNext(ignore -> rxdb(context).delete(list));
 	}
 
-	public static Observable<Style> getStyles(Context context) {
+	public static Observable<List<Country>> getCountries(Context context) {
+		Observable<Country> db = rxdb(context).query(Country.class);
+		Observable<Country> fresh = api().getCountries()
+				.map(Country::fromInfo)
+				.flatMap(style -> rxdb(context).putRx(style));
+		return getFresh(
+				db.toSortedList(),
+				fresh.toSortedList(),
+				stylesList -> stylesList.size() != 0 && isFresh(context, stylesList.get(0).timeCached)
+		);
+	}
+
+	public static Observable<List<Style>> getStyles(Context context) {
+		Observable<Style> db = rxdb(context).query(Style.class);
 		Observable<Style> fresh = api().getStyles()
 				.map(Style::fromInfo)
 				.flatMap(style -> rxdb(context).putRx(style));
-		// TODO
-		return fresh;
+		return getFresh(
+				db.toSortedList(),
+				fresh.toSortedList(),
+				stylesList -> stylesList.size() != 0 && isFresh(context, stylesList.get(0).timeCached)
+		);
 	}
 
 	private static <T> Observable<T> getFresh(Observable<T> db, Observable<T> server, Func1<T, Boolean> isFresh) {

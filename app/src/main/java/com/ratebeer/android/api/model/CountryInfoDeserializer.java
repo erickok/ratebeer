@@ -17,7 +17,7 @@ public final class CountryInfoDeserializer implements JsonDeserializer<CountryIn
 		CountryInfo countryInfo = new CountryInfo();
 
 		countryInfo.countryId = object.get("CountryID").getAsInt();
-		countryInfo.countryName = Normalizer.get().cleanHtml(object.get("Country").getAsString());
+		countryInfo.countryName = Normalizer.get().cleanHtml(object.get("Country").getAsString(), true);
 
 		return countryInfo;
 	}

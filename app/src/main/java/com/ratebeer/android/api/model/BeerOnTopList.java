@@ -6,8 +6,6 @@ public final class BeerOnTopList {
 
 	public long beerId;
 	public String beerName;
-	public long brewerId;
-	public String brewerName;
 	public long styleId;
 	public Float weightedRating;
 	public Float overallPercentile;

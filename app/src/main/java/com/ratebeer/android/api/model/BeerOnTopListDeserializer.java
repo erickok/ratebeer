@@ -18,9 +18,8 @@ public final class BeerOnTopListDeserializer implements JsonDeserializer<BeerOnT
 		BeerOnTopList beerOnTopList = new BeerOnTopList();
 		beerOnTopList.beerId = object.get("BeerID").getAsInt();
 		beerOnTopList.beerName = Normalizer.get().cleanHtml(object.get("BeerName").getAsString());
-		beerOnTopList.brewerId = object.get("BrewerID").getAsInt();
-		beerOnTopList.brewerName = Normalizer.get().cleanHtml(object.get("BrewerName").getAsString());
-		beerOnTopList.styleId = object.get("BeerStyleID").getAsInt();
+		if (object.has("BeerStyleID") && !(object.get("BeerStyleID") instanceof JsonNull))
+			beerOnTopList.styleId = object.get("BeerStyleID").getAsInt();
 
 		if (!(object.get("OverallPctl") instanceof JsonNull))
 			beerOnTopList.overallPercentile = object.get("OverallPctl").getAsFloat();

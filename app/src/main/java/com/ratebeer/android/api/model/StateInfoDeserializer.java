@@ -3,6 +3,7 @@ package com.ratebeer.android.api.model;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.ratebeer.android.api.Normalizer;
@@ -18,8 +19,9 @@ public final class StateInfoDeserializer implements JsonDeserializer<StateInfo> 
 
 		stateInfo.countryId = object.get("CountryID").getAsInt();
 		stateInfo.stateId = object.get("CountryID").getAsInt();
-		stateInfo.stateName = Normalizer.get().cleanHtml(object.get("Country").getAsString());
-		stateInfo.abbreviation = Normalizer.get().cleanHtml(object.get("Abbrev").getAsString());
+		stateInfo.stateName = Normalizer.get().cleanHtml(object.get("Country").getAsString(), true);
+		if (object.has("Abbrev") && !(object.get("Abbrev") instanceof JsonNull))
+			stateInfo.abbreviation = Normalizer.get().cleanHtml(object.get("Abbrev").getAsString(), true);
 
 		return stateInfo;
 	}

@@ -4,7 +4,7 @@ import com.ratebeer.android.api.model.StyleInfo;
 
 import java.util.Date;
 
-public final class Style {
+public final class Style implements Comparable<Style> {
 
 	public Long _id;
 	public String name;
@@ -22,6 +22,16 @@ public final class Style {
 
 		style.timeCached = new Date();
 		return style;
+	}
+
+	@Override
+	public String toString() {
+		return name;
+	}
+
+	@Override
+	public int compareTo(Style other) {
+		return name.compareTo(other.name);
 	}
 
 }

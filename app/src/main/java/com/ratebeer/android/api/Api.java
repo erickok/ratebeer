@@ -47,7 +47,6 @@ import com.ratebeer.android.api.model.UserRating;
 import com.ratebeer.android.api.model.UserRatingDeserializer;
 import com.ratebeer.android.db.RBLog;
 import com.ratebeer.android.db.Rating;
-import com.ratebeer.android.db.Style;
 import com.ratebeer.android.rx.AsRangeOperator;
 
 import org.javatuples.Pair;
@@ -90,9 +89,9 @@ public final class Api {
 			logging.setLevel(HttpLoggingInterceptor.Level.BODY);
 		cookieManager = new CookieManager(new PersistentCookieStore(), CookiePolicy.ACCEPT_ORIGINAL_SERVER);
 		OkHttpClient httpclient = new OkHttpClient.Builder()
-				.connectTimeout(5, TimeUnit.SECONDS)
-				.writeTimeout(5, TimeUnit.SECONDS)
-				.readTimeout(10, TimeUnit.SECONDS)
+				.connectTimeout(8, TimeUnit.SECONDS)
+				.writeTimeout(8, TimeUnit.SECONDS)
+				.readTimeout(12, TimeUnit.SECONDS)
 				.cookieJar(new JavaNetCookieJar(cookieManager))
 				.addInterceptor(logging)
 				.addNetworkInterceptor(new ResponseInterceptor())
@@ -117,7 +116,7 @@ public final class Api {
 				.registerTypeAdapter(BeerOnTopList.class, new BeerOnTopListDeserializer())
 				.registerTypeAdapter(CountryInfo.class, new CountryInfoDeserializer())
 				.registerTypeAdapter(StateInfo.class, new StateInfoDeserializer())
-				.registerTypeAdapter(Style.class, new StyleInfoDeserializer())
+				.registerTypeAdapter(StyleInfo.class, new StyleInfoDeserializer())
 				.create();
 		Retrofit retrofit = new Retrofit.Builder()
 				.baseUrl(ENDPOINT)

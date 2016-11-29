@@ -125,6 +125,7 @@
 	<string name="top_topbystyle">Top 25 by style</string>
 	<string name="top_country">Country</string>
 	<string name="top_style">Style</string>
+	<string name="top_clear">Clear filter</string>
 
 	<string name="sync_usesync">Tap to synchronize your ratings</string>
 	<string name="sync_insync">Synchronizing your ratings</string>
