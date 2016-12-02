@@ -71,20 +71,21 @@ dependencies {
     compile 'com.google.android.gms:play-services-location:10.0.0'
     compile 'com.google.android.gms:play-services-maps:10.0.0'
 
-    compile 'io.reactivex:rxjava:1.2.1'
-    compile 'io.reactivex:rxandroid:1.2.1'
-    compile 'com.jakewharton.rxbinding:rxbinding:0.4.0'
-    compile 'com.jakewharton.rxbinding:rxbinding-appcompat-v7:0.4.0'
-    compile 'com.trello:rxlifecycle-components:0.8.0'
+    compile 'io.reactivex.rxjava2:rxjava:2.0.1'
+    compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
+    compile 'com.github.erickok:notrxbinding:e6f7fb5b49'
+    //compile 'com.jakewharton.rxbinding:rxbinding-appcompat-v7:0.4.0'
+    compile 'com.trello.rxlifecycle2:rxlifecycle-components:2.0.1'
     compile 'com.github.pakoito:RxTuples:1.0.0'
 
-    compile 'com.squareup.retrofit2:adapter-rxjava:2.1.0'
+    compile 'com.jakewharton.retrofit:retrofit2-rxjava2-adapter:1.0.0'
     compile 'com.squareup.retrofit2:converter-gson:2.1.0'
     compile 'com.squareup.okhttp3:logging-interceptor:3.4.1'
     compile "com.squareup.okhttp3:okhttp-urlconnection:3.4.1"
-    compile 'nl.2312:rxcupboard:0.7'
+    compile 'nl.2312:rxcupboard2:2.0-rc1'
 
     compile 'com.squareup.picasso:picasso:2.5.2'
-    compile 'pl.charmas.android:android-reactive-location:0.10@aar'
+    //compile 'pl.charmas.android:android-reactive-location:0.10@aar'
+    compile 'com.patloew.rxlocation:rxlocation:1.0.1'
     compile 'net.yslibrary.keyboardvisibilityevent:keyboardvisibilityevent:1.0.1'
 }
