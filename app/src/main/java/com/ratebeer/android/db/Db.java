@@ -12,6 +12,7 @@ import com.ratebeer.android.db.views.CustomListWithPresence;
 import com.ratebeer.android.gui.lists.SearchSuggestion;
 
 import java.util.Date;
+import java.util.List;
 
 import nl.nl2312.rxcupboard.DatabaseChange;
 import nl.nl2312.rxcupboard.RxCupboard;
@@ -44,20 +45,38 @@ public final class Db {
 			whereArgs[i] = "%" + parts[i] + "%";
 		}
 
-		Observable<HistoricSearch> lastHistoric = rxdb(context).query(database(context).query(HistoricSearch.class).withSelection(whereName,
-				whereArgs).orderBy("time desc").limit(2));
-		Observable<Brewery> localBrewers = rxdb(context).query(database(context).query(Brewery.class).withSelection(whereName, whereArgs).orderBy
-				("name").limit(3));
-		Observable<Rating> localRatings = rxdb(context).query(database(context).query(Rating.class).withSelection("beerId is not null and (" +
-				whereBeerName + ")", whereArgs).orderBy("timeEntered IS NULL, timeEntered desc").limit(10));
-		Observable<Place> localPlaces = rxdb(context).query(database(context).query(Place.class).withSelection(whereName, whereArgs).orderBy
-				("rateCount desc").limit(5));
-		Observable<Beer> localBeers = rxdb(context).query(database(context).query(Beer.class).withSelection(whereName, whereArgs).orderBy
-				("rateCount" + " desc").limit(10));
+		Observable<HistoricSearch> lastHistoric = rxdb(context).query(
+				database(context).query(HistoricSearch.class)
+						.withSelection(whereName, whereArgs)
+						.orderBy("time desc").limit(2));
+		Observable<Brewery> localBrewers = rxdb(context).query(
+				database(context).query(Brewery.class)
+						.withSelection(whereName, whereArgs)
+						.orderBy("name")
+						.limit(3));
+		Observable<Rating> localRatings = rxdb(context).query(
+				database(context).query(Rating.class)
+						.withSelection("beerId is not null and (" + whereBeerName + ")", whereArgs)
+						.orderBy("timeEntered IS NULL, timeEntered desc")
+						.limit(10));
+		Observable<Place> localPlaces = rxdb(context).query(
+				database(context).query(Place.class)
+						.withSelection(whereName, whereArgs)
+						.orderBy("rateCount desc")
+						.limit(5));
+		Observable<Beer> localBeers = rxdb(context).query(
+				database(context).query(Beer.class)
+						.withSelection(whereName, whereArgs)
+						.orderBy("rateCount" + " desc")
+						.limit(10));
 
-		return Observable.merge(lastHistoric.map(SearchSuggestion::fromHistoricSearch), localBrewers.map(SearchSuggestion::fromBrewery),
-				localRatings.map(SearchSuggestion::fromRating), localPlaces.map(SearchSuggestion::fromPlace), localBeers.map
-						(SearchSuggestion::fromBeer)).distinct(searchSuggestion -> searchSuggestion.uniqueCode());
+		return Observable.merge(
+				lastHistoric.map(SearchSuggestion::fromHistoricSearch),
+				localBrewers.map(SearchSuggestion::fromBrewery),
+				localRatings.map(SearchSuggestion::fromRating),
+				localPlaces.map(SearchSuggestion::fromPlace),
+				localBeers.map(SearchSuggestion::fromBeer))
+				.distinct(searchSuggestion -> searchSuggestion.uniqueCode());
 	}
 
 	public static Observable<Beer> getBeer(Context context, long beerId) {
@@ -65,11 +84,16 @@ public final class Db {
 	}
 
 	public static Observable<Beer> getBeer(Context context, long beerId, boolean refresh) {
-		Observable<Beer> fresh = api().getBeerDetails(beerId).map(Beer::fromDetails).flatMap(beer -> rxdb(context).putRx(beer));
+		Observable<Beer> fresh = api().getBeerDetails(beerId)
+				.map(Beer::fromDetails)
+				.flatMap(beer -> rxdb(context).putRx(beer));
 		if (refresh)
 			return fresh;
 		else
-			return getFresh(rxdb(context).get(Beer.class, beerId), fresh, beer -> isFresh(context, beer.timeCached));
+			return getFresh(
+					rxdb(context).get(Beer.class, beerId),
+					fresh,
+					beer -> isFresh(context, beer.timeCached));
 	}
 
 	public static Observable<Rating> getOfflineRating(Context context, long ratingId) {
@@ -77,7 +101,8 @@ public final class Db {
 	}
 
 	public static Observable<Rating> getOfflineRatingForBeer(Context context, long beerId) {
-		return rxdb(context).query(Rating.class, "beerId = ?", Long.toString(beerId)).first();
+		return rxdb(context).query(Rating.class, "beerId = ?", Long.toString(beerId))
+				.first();
 	}
 
 	public static Observable<Rating> getRating(Context context, long beerId, long userId) {
@@ -106,34 +131,53 @@ public final class Db {
 	}
 
 	public static Observable<Rating> getRatings(Context context) {
-		return rxdb(context).query(database(context).query(Rating.class).orderBy("timeEntered IS NOT NULL, timeEntered desc, timeCached desc"));
+		return rxdb(context).query(
+				database(context).query(Rating.class)
+						.orderBy("timeEntered IS NOT NULL, timeEntered desc, timeCached desc"));
 	}
 
 	public static Observable<Rating> syncRatings(Context context, Action1<Float> onPageProgress) {
-		return api().getUserRatings(onPageProgress).map(Rating::fromUserRating).flatMap(rating -> {
-			// If the rating already exists in our database, override it
-			Rating existing = database(context).query(Rating.class).withSelection("ratingId = ?", rating.ratingId.toString()).get();
-			if (existing != null)
-				rating._id = existing._id;
-			return rxdb(context).putRx(rating);
-		});
+		// Load all user ratings
+		return api().getUserRatings(onPageProgress)
+				// Map into a local rating
+				.map(Rating::fromUserRating)
+				.flatMap(rating -> {
+					// If the rating already exists in our database, override it
+					Rating existing = database(context).query(Rating.class)
+							.withSelection("ratingId = ?", rating.ratingId.toString())
+							.get();
+					if (existing != null)
+						rating._id = existing._id;
+					return rxdb(context).putRx(rating);
+				});
 	}
 
 	public static Observable<Rating> postRating(Context context, Rating rating, long userId) {
-		return api().postRating(rating, userId).flatMap(postedRating -> Observable.combineLatest(getBeer(context, rating.beerId), Observable.just
-				(postedRating), Observable.just(rating), Rating::fromBeerRating)).flatMap(combinedRating -> rxdb(context).putRx(combinedRating))
+		// Post live rating
+		return api().postRating(rating, userId)
+				.flatMap(postedRating ->
+						// Combine into a local rating
+						Observable.combineLatest(
+								getBeer(context, rating.beerId),
+								Observable.just(postedRating),
+								Observable.just(rating),
+								Rating::fromBeerRating))
+				// Store in db
+				.flatMap(combinedRating -> rxdb(context).putRx(combinedRating))
+				// Update the rate count from the server
 				.doOnNext(combinedRating -> api().updateUserRateCounts().toBlocking().first());
 	}
 
 	public static Observable<Rating> deleteOfflineRating(Context context, Rating rating, long userId) {
-		return rxdb(context).deleteRx(rating).flatMap(deletedRating -> {
-			if (deletedRating.ratingId == null)
-				// Was local only, so we are done
-				return Observable.empty();
-			else
-				// Was stored online, so refresh from the RB server our local rating instance
-				return getRating(context, deletedRating.beerId, userId);
-		});
+		return rxdb(context).deleteRx(rating)
+				.flatMap(deletedRating -> {
+					if (deletedRating.ratingId == null)
+						// Was local only, so we are done
+						return Observable.empty();
+					else
+						// Was stored online, so refresh from the RB server our local rating instance
+						return getRating(context, deletedRating.beerId, userId);
+				});
 	}
 
 	public static Observable<Brewery> getBrewery(Context context, long breweryId) {
@@ -141,18 +185,24 @@ public final class Db {
 	}
 
 	public static Observable<Brewery> getBrewery(Context context, long breweryId, boolean refresh) {
-		Observable<Brewery> fresh = api().getBreweryDetails(breweryId).map(Brewery::fromDetails).flatMap(brewery -> rxdb(context).putRx(brewery));
+		Observable<Brewery> fresh = api().getBreweryDetails(breweryId)
+				.map(Brewery::fromDetails)
+				.flatMap(brewery -> rxdb(context).putRx(brewery));
 		if (refresh)
 			return fresh;
 		else
-			return getFresh(rxdb(context).get(Brewery.class, breweryId), fresh, brewery -> isFresh(context, brewery.timeCached));
+			return getFresh(
+					rxdb(context).get(Brewery.class, breweryId),
+					fresh,
+					brewery -> isFresh(context, brewery.timeCached));
 	}
 
 	public static Observable<Place> getPlacesNearby(Context context, Location location) {
 		int radius = 40000; // Meters
 		// Fresh (from the sever) places are received in a 40 kilometer (±25 mile) radius
-		Observable<Place> fresh = api().getPlacesNearby((int) (radius * 0.000621371192D), location.getLatitude(), location.getLongitude()).map
-				(Place::fromNearby).flatMap(place -> rxdb(context).putRx(place));
+		Observable<Place> fresh = api().getPlacesNearby((int) (radius * 0.000621371192D), location.getLatitude(), location.getLongitude())
+				.map(Place::fromNearby)
+				.flatMap(place -> rxdb(context).putRx(place));
 		// Database places are received in a rough rectangular area of 40 kilometers (±0.4 degrees) in each direction
 		final double accuracy = radius / 111111;
 		String minLat = Double.toString(location.getLatitude() - accuracy);
@@ -169,11 +219,16 @@ public final class Db {
 	}
 
 	public static Observable<Place> getPlace(Context context, long placeId, boolean refresh) {
-		Observable<Place> fresh = api().getPlaceDetails(placeId).map(Place::fromDetails).flatMap(place -> rxdb(context).putRx(place));
+		Observable<Place> fresh = api().getPlaceDetails(placeId)
+				.map(Place::fromDetails)
+				.flatMap(place -> rxdb(context).putRx(place));
 		if (refresh)
 			return fresh;
 		else
-			return getFresh(rxdb(context).get(Place.class, placeId), fresh, place -> isFresh(context, place.timeCached));
+			return getFresh(
+					rxdb(context).get(Place.class, placeId),
+					fresh,
+					place -> isFresh(context, place.timeCached));
 	}
 
 	public static Observable<CustomListWithCount> getCustomListsWithCount(Context context) {
@@ -197,17 +252,49 @@ public final class Db {
 	}
 
 	public static Observable<DatabaseChange<CustomListBeer>> getCustomListBeerChanges(Context context, long listId) {
-		return rxdb(context).changes(CustomListBeer.class).filter(change -> change.entity().listId == listId);
+		return rxdb(context).changes(CustomListBeer.class)
+				.filter(change -> change.entity().listId == listId);
 	}
 
 	public static Observable<Integer> deleteCustomList(Context context, CustomList list) {
-		return Observable.defer(() -> Observable.just(database(context).delete(CustomListBeer.class, "listId = ?", Long.toString(list._id))))
-				.first().doOnNext(ignore -> rxdb(context).delete(list));
+		return Observable.defer(() ->
+				Observable.just(
+						database(context).delete(CustomListBeer.class, "listId = ?", Long.toString(list._id))))
+				.first()
+				.doOnNext(ignore -> rxdb(context).delete(list));
+	}
+
+	public static Observable<List<Country>> getCountries(Context context) {
+		Observable<Country> db = rxdb(context).query(Country.class);
+		Observable<Country> fresh = api().getCountries()
+				.map(Country::fromInfo)
+				.flatMap(style -> rxdb(context).putRx(style));
+		return getFresh(
+				db.toSortedList(),
+				fresh.toSortedList(),
+				stylesList -> stylesList.size() != 0 && isFresh(context, stylesList.get(0).timeCached)
+		);
+	}
+
+	public static Observable<List<Style>> getStyles(Context context) {
+		Observable<Style> db = rxdb(context).query(Style.class);
+		Observable<Style> fresh = api().getStyles()
+				.map(Style::fromInfo)
+				.flatMap(style -> rxdb(context).putRx(style));
+		return getFresh(
+				db.toSortedList(),
+				fresh.toSortedList(),
+				stylesList -> stylesList.size() != 0 && isFresh(context, stylesList.get(0).timeCached)
+		);
 	}
 
 	private static <T> Observable<T> getFresh(Observable<T> db, Observable<T> server, Func1<T, Boolean> isFresh) {
 		db = db.filter(item -> item != null);
-		return Observable.concat(Observable.concat(db, server).takeFirst(isFresh::call), db).take(1);
+		return Observable.concat(
+				Observable.concat(db, server)
+						.takeFirst(isFresh::call),
+				db)
+				.take(1);
 	}
 
 	private static boolean isFresh(Context context, Date timeCached) {

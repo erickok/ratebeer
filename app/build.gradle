@@ -1,5 +1,4 @@
 apply plugin: 'com.android.application'
-apply plugin: 'me.tatarka.retrolambda'
 
 // Load keystore in root directory
 def keystorePropertiesFileDebug = rootProject.file("../ratebeer.keystore.properties");
@@ -15,15 +14,18 @@ try {
 }
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion '23.0.3'
+    compileSdkVersion 25
+    buildToolsVersion '25.0.1'
 
     defaultConfig {
         applicationId 'com.ratebeer.android'
         minSdkVersion 15
-        targetSdkVersion 23
-        versionCode 211
-        versionName '2.1.0'
+        targetSdkVersion 25
+        versionCode 212
+        versionName '2.2.0'
+        jackOptions {
+            enabled true
+        }
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -63,23 +65,26 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support:appcompat-v7:23.4.0'
-    compile 'com.android.support:design:23.4.0'
-    compile 'com.android.support:recyclerview-v7:23.4.0'
-    compile 'com.google.android.gms:play-services-location:8.4.0'
+    compile 'com.android.support:appcompat-v7:25.0.1'
+    compile 'com.android.support:design:25.0.1'
+    compile 'com.android.support:recyclerview-v7:25.0.1'
+    compile 'com.google.android.gms:play-services-location:10.0.0'
+    compile 'com.google.android.gms:play-services-maps:10.0.0'
 
-    compile 'io.reactivex:rxandroid:1.2.0'
+    compile 'io.reactivex:rxjava:1.2.1'
+    compile 'io.reactivex:rxandroid:1.2.1'
     compile 'com.jakewharton.rxbinding:rxbinding:0.4.0'
     compile 'com.jakewharton.rxbinding:rxbinding-appcompat-v7:0.4.0'
-    compile 'com.trello:rxlifecycle-components:0.6.1'
+    compile 'com.trello:rxlifecycle-components:0.8.0'
     compile 'com.github.pakoito:RxTuples:1.0.0'
-    compile 'com.squareup.retrofit2:adapter-rxjava:2.0.2'
-    compile 'com.squareup.retrofit2:converter-gson:2.0.2'
-    compile 'com.squareup.okhttp3:logging-interceptor:3.2.0'
-    compile "com.squareup.okhttp3:okhttp-urlconnection:3.2.0"
+
+    compile 'com.squareup.retrofit2:adapter-rxjava:2.1.0'
+    compile 'com.squareup.retrofit2:converter-gson:2.1.0'
+    compile 'com.squareup.okhttp3:logging-interceptor:3.4.1'
+    compile "com.squareup.okhttp3:okhttp-urlconnection:3.4.1"
     compile 'nl.2312:rxcupboard:0.7'
 
     compile 'com.squareup.picasso:picasso:2.5.2'
-    compile 'pl.charmas.android:android-reactive-location:0.9@aar'
+    compile 'pl.charmas.android:android-reactive-location:0.10@aar'
     compile 'net.yslibrary.keyboardvisibilityevent:keyboardvisibilityevent:1.0.1'
 }

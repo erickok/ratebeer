@@ -29,7 +29,29 @@
 		<activity
 			android:name=".gui.BeerActivity"
 			android:theme="@style/AppTheme.NoStatusBar"
-			android:windowSoftInputMode="adjustPan"/>
+			android:windowSoftInputMode="adjustPan">
+			<intent-filter>
+				<action android:name="android.intent.action.VIEW" />
+				<category android:name="android.intent.category.DEFAULT" />
+				<category android:name="android.intent.category.BROWSABLE" />
+				<data
+					android:host="ratebeer.com"
+					android:pathPrefix="/b/"
+					android:scheme="http" />
+				<data
+					android:host="www.ratebeer.com"
+					android:pathPrefix="/b/"
+					android:scheme="http" />
+				<data
+					android:host="ratebeer.com"
+					android:pathPrefix="/b/"
+					android:scheme="https" />
+				<data
+					android:host="www.ratebeer.com"
+					android:pathPrefix="/b/"
+					android:scheme="https" />
+			</intent-filter>
+		</activity>
 		<activity android:name=".gui.RateActivity" />
 		<activity
 			android:name=".gui.BreweryActivity"
@@ -39,6 +61,7 @@
 			android:theme="@style/AppTheme.NoStatusBar" />
 		<activity android:name=".gui.PhotoActivity" />
 		<activity android:name=".gui.CustomListActivity" />
+		<activity android:name=".gui.TopListActivity" />
 		<activity android:name=".gui.HelpActivity" />
 		<activity android:name=".gui.HelpWhereRatingsActivity" />
 

@@ -16,9 +16,6 @@
 #   public *;
 #}
 
-# Retrolabda
--dontwarn java.lang.invoke.*
-
 # RxJava
 -keep class rx.schedulers.Schedulers {
     public static <methods>;
@@ -97,12 +94,14 @@
 -keep class com.ratebeer.android.api.SerializableHttpCookie { *; }
 -keep class com.ratebeer.android.db.Beer { *; }
 -keep class com.ratebeer.android.db.Brewery { *; }
+-keep class com.ratebeer.android.db.Country { *; }
 -keep class com.ratebeer.android.db.CustomList { *; }
 -keep class com.ratebeer.android.db.CustomListBeer { *; }
 -keep class com.ratebeer.android.db.HistoricSearch { *; }
 -keep class com.ratebeer.android.db.OfflineRating { *; }
 -keep class com.ratebeer.android.db.Place { *; }
 -keep class com.ratebeer.android.db.Rating { *; }
+-keep class com.ratebeer.android.db.State { *; }
 -keep class com.ratebeer.android.db.StoredSession { *; }
 -keep class com.ratebeer.android.db.Style { *; }
 -keep class com.ratebeer.android.db.views.CustomListWithCount { *; }
@@ -110,3 +109,4 @@
 
 -renamesourcefileattribute SourceFile
 -keepattributes SourceFile,LineNumberTable
+-dontobfuscate

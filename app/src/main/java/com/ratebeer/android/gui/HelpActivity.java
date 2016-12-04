@@ -42,7 +42,8 @@ public final class HelpActivity extends RateBeerActivity {
 
 		// Settings persistence
 		datasaverCheck.setChecked(Session.get().inDataSaverMode());
-		RxCompoundButton.checkedChanges(datasaverCheck).subscribe(checked -> Session.get().setDataSaverMode(checked));
+		RxCompoundButton.checkedChanges(datasaverCheck)
+				.subscribe(checked -> Session.get().setDataSaverMode(checked));
 
 	}
 
@@ -58,13 +59,17 @@ public final class HelpActivity extends RateBeerActivity {
 			startActivity(SignInActivity.start(this, true));
 		} else {
 			Animations.fadeFlip(signoutProgress, signInOutButton);
-			Api.get().logout().doOnNext(ignore -> Db.clearRatings(this)).compose(onIoToUi()).compose(bindToLifecycle()).subscribe(removedRatings -> {
-				navigateUp(); // Restart main activity to refresh activities state
-				finish();
-			}, e -> {
-				Snackbar.show(this, R.string.error_connectionfailure);
-				Animations.fadeFlip(signInOutButton, signoutProgress);
-			});
+			Api.get().logout()
+					.doOnNext(ignore -> Db.clearRatings(this))
+					.compose(onIoToUi())
+					.compose(bindToLifecycle())
+					.subscribe(removedRatings -> {
+						navigateUp(); // Restart main activity to refresh activities state
+						finish();
+					}, e -> {
+						Snackbar.show(this, R.string.error_connectionfailure);
+						Animations.fadeFlip(signInOutButton, signoutProgress);
+					});
 		}
 	}
 
@@ -89,11 +94,11 @@ public final class HelpActivity extends RateBeerActivity {
 	}
 
 	public void openRatebeer(View view) {
-		startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.ratebeer.com")));
+		startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(Api.DOMAIN)));
 	}
 
 	public void openUserAgreement(View view) {
-		startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.ratebeer.com/UserAgreement.asp")));
+		startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(Api.DOMAIN + "/UserAgreement.asp")));
 	}
 
 	public void openGithub(View view) {

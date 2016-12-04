@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextUtils;
@@ -17,10 +18,11 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.jakewharton.rxbinding.support.v7.widget.RxToolbar;
 import com.ratebeer.android.R;
+import com.ratebeer.android.ShareHelper;
 import com.ratebeer.android.api.Api;
 import com.ratebeer.android.api.model.BreweryBeer;
-import com.ratebeer.android.db.Beer;
 import com.ratebeer.android.db.Brewery;
 import com.ratebeer.android.db.Db;
 import com.ratebeer.android.gui.lists.BreweryPropertiesBeersAdapter;
@@ -34,6 +36,7 @@ import java.util.List;
 
 public final class BreweryActivity extends RateBeerActivity {
 
+	private Toolbar mainToolbar;
 	private ProgressBar loadingProgress;
 	private View detailsLayout;
 	private RecyclerView propertiesBeersList;
@@ -49,7 +52,8 @@ public final class BreweryActivity extends RateBeerActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_brewery);
 
-		setupDefaultUpButton();
+		mainToolbar = setupDefaultUpButton();
+		mainToolbar.inflateMenu(R.menu.menu_link);
 
 		loadingProgress = (ProgressBar) findViewById(R.id.loading_progress);
 		detailsLayout = findViewById(R.id.details_layout);
@@ -60,12 +64,18 @@ public final class BreweryActivity extends RateBeerActivity {
 
 		// Load place from database or live
 		long breweryId = getIntent().getLongExtra("breweryId", 0);
-		Db.getBrewery(this, breweryId, false).compose(onIoToUi()).compose(bindToLifecycle()).subscribe(this::showBrewery, e -> Snackbar.show(this, R
-				.string.error_connectionfailure));
+		Db.getBrewery(this, breweryId, false)
+				.compose(onIoToUi())
+				.compose(bindToLifecycle())
+				.subscribe(this::showBrewery, e -> Snackbar.show(this, R
+						.string.error_connectionfailure));
 
 		// Load beers made by this brewery (which is always live data)
-		Api.get().getBreweryBeers(breweryId).toSortedList().compose(onIoToUi()).compose(bindToLifecycle()).subscribe(this::showBeers,
-				Throwable::printStackTrace);
+		Api.get().getBreweryBeers(breweryId)
+				.toSortedList()
+				.compose(onIoToUi())
+				.compose(bindToLifecycle())
+				.subscribe(this::showBeers, Throwable::printStackTrace);
 
 	}
 
@@ -129,6 +139,10 @@ public final class BreweryActivity extends RateBeerActivity {
 			}
 		});
 		propertiesBeersAdapter.setProperties(properties);
+
+		RxToolbar.itemClicks(mainToolbar).subscribe(item -> {
+			new ShareHelper(this).shareBrewery(brewery._id, brewery.name);
+		});
 
 		Animations.fadeFlipIn(detailsLayout, propertiesBeersList, loadingProgress);
 

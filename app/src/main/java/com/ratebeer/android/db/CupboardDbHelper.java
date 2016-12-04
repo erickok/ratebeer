@@ -17,7 +17,7 @@ import nl.qbusict.cupboard.DatabaseCompartment;
 public final class CupboardDbHelper extends SQLiteOpenHelper {
 
 	private static final String DATABASE_NAME = "ratebeer.db";
-	private static final int DATABASE_VERSION = 13;
+	private static final int DATABASE_VERSION = 16;
 	private static final Cupboard cupboardTables;
 	private static final Cupboard cupboardAll;
 
@@ -30,6 +30,8 @@ public final class CupboardDbHelper extends SQLiteOpenHelper {
 		cupboardTables = new CupboardBuilder().build();
 		cupboardTables.register(HistoricSearch.class);
 		cupboardTables.register(StoredSession.class);
+		cupboardTables.register(Country.class);
+		cupboardTables.register(State.class);
 		cupboardTables.register(Style.class);
 		cupboardTables.register(Brewery.class);
 		cupboardTables.register(Beer.class);
@@ -44,6 +46,8 @@ public final class CupboardDbHelper extends SQLiteOpenHelper {
 		cupboardAll = new CupboardBuilder().build();
 		cupboardAll.register(HistoricSearch.class);
 		cupboardAll.register(StoredSession.class);
+		cupboardAll.register(Country.class);
+		cupboardAll.register(State.class);
 		cupboardAll.register(Style.class);
 		cupboardAll.register(Brewery.class);
 		cupboardAll.register(Beer.class);

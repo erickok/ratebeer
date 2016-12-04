@@ -44,17 +44,20 @@ public final class SignInActivity extends RateBeerActivity {
 
 		Animations.fadeFlip(loginProgress, decisionLayout);
 
-		Api.get().login(username, password).compose(onIoToUi()).compose(bindToLifecycle()).subscribe(success -> {
-			navigateUp(); // Restart main activity to refresh activities state
-			finish();
-		}, e -> {
-			Snackbar.show(this, R.string.error_authenticationfailed);
-			Animations.fadeFlip(decisionLayout, loginProgress);
-		});
+		Api.get().login(username, password)
+				.compose(onIoToUi())
+				.compose(bindToLifecycle())
+				.subscribe(success -> {
+					navigateUp(); // Restart main activity to refresh activities state
+					finish();
+				}, e -> {
+					Snackbar.show(this, R.string.error_authenticationfailed);
+					Animations.fadeFlip(decisionLayout, loginProgress);
+				});
 	}
 
 	public void createAccount(View view) {
-		startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.ratebeer.com/newuser/")));
+		startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(Api.DOMAIN + "/newuser/")));
 	}
 
 }

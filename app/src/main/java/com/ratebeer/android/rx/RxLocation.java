@@ -23,6 +23,7 @@ public final class RxLocation {
 	/**
 	 * Returns the last known location, or an empty sequence if none is available
 	 */
+	@SuppressWarnings("MissingPermission")
 	public Observable<Location> getLastLocation() {
 		// getLastKnownLocation() completes directly after emitting the last location (which might be null)
 		return provider.getLastKnownLocation();
@@ -31,10 +32,15 @@ public final class RxLocation {
 	/**
 	 * Returns a fresh and fairly accurate location, or an empty sequence if none is quickly available
 	 */
+	@SuppressWarnings("MissingPermission")
 	public Observable<Location> getQuickLocation() {
-		LocationRequest request = LocationRequest.create().setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY).setExpirationDuration
-				(WAITTIME_SHORT);
-		return provider.getUpdatedLocation(request).timeout(WAITTIME_SHORT, TimeUnit.MILLISECONDS).take(1).onErrorResumeNext(Observable.empty());
+		LocationRequest request = LocationRequest.create()
+				.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY)
+				.setExpirationDuration(WAITTIME_SHORT);
+		return provider.getUpdatedLocation(request)
+				.timeout(WAITTIME_SHORT, TimeUnit.MILLISECONDS)
+				.take(1)
+				.onErrorResumeNext(Observable.empty());
 	}
 
 	/**

@@ -23,7 +23,7 @@
 			android:layout_height="match_parent"
 			android:fitsSystemWindows="true"
 			app:contentScrim="@color/grey_light"
-			app:layout_scrollFlags="scroll|enterAlways">
+			app:layout_scrollFlags="scroll|enterAlwaysCollapsed">
 
 			<ImageView
 				android:id="@+id/backdrop_image"
@@ -40,7 +40,6 @@
 				android:layout_width="match_parent"
 				android:layout_height="?attr/actionBarSize"
 				app:layout_collapseMode="pin"
-				app:layout_scrollFlags="scroll|enterAlways"
 				app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
 		</android.support.design.widget.CollapsingToolbarLayout>

@@ -19,11 +19,8 @@ import com.ratebeer.android.db.CustomListBeer;
 import com.ratebeer.android.db.Db;
 import com.ratebeer.android.db.RBLog;
 import com.ratebeer.android.gui.lists.CustomListBeersAdapter;
-import com.ratebeer.android.gui.widget.Animations;
 import com.ratebeer.android.rx.RecyclerAdapterDataEvent;
 import com.ratebeer.android.rx.RxRecyclerViewAdapter;
-
-import rx.Observable;
 
 import static com.ratebeer.android.db.CupboardDbHelper.database;
 import static com.ratebeer.android.db.CupboardDbHelper.rxdb;
@@ -77,27 +74,40 @@ public final class CustomListActivity extends RateBeerActivity {
 		RxToolbar.itemClicks(mainToolbar).compose(onUi())
 				.filter(item -> item.getItemId() == R.id.menu_delete).compose(toIo())
 				.flatMap(event -> Db.deleteCustomList(this, list)).compose(toUi())
-				.doOnEach(RBLog::rx).first().toCompletable()
-				.subscribe(e -> Snackbar.show(this, R.string.error_unexpectederror), this::finish);
+				.doOnEach(RBLog::rx)
+				.first().toCompletable()
+				.subscribe(this::finish, e -> Snackbar.show(this, R.string.error_unexpectederror));
 
 		// Directly persist name changes
-		RxTextView.textChanges(listNameEdit).map(name -> {
-			list.name = name.toString();
-			return list;
-		}).compose(bindToLifecycle()).subscribe(rxdb(this).put(), e -> RBLog.e("Error persisting the list name", e));
+		RxTextView.textChanges(listNameEdit)
+				.map(name -> {
+					list.name = name.toString();
+					return list;
+				})
+				.compose(bindToLifecycle())
+				.subscribe(rxdb(this).put(), e -> RBLog.e("Error persisting the list name", e));
 
 		// Directly visualize item changes
-		Db.getCustomListBeerChanges(this, list._id).compose(bindToLifecycle()).subscribe(change -> customListBeersAdapter.change(change), e -> RBLog
-				.e("Error handling a beer list change", e));
+		Db.getCustomListBeerChanges(this, list._id)
+				.compose(bindToLifecycle())
+				.subscribe(
+						change -> customListBeersAdapter.change(change),
+						e -> RBLog.e("Error handling a beer list change", e));
 
 		// Load current beers list and always have it update the empty view visibility when adding/removing beers
-		Db.getCustomListBeers(this, list._id).toList().compose(onIoToUi()).compose(bindToLifecycle()).subscribe(beers -> customListBeersAdapter.init
-				(beers), e -> Snackbar.show(this, R.string.error_unexpectederror));
-		RxRecyclerViewAdapter.dataEvents(customListBeersAdapter).filter(event -> event.getKind() != RecyclerAdapterDataEvent.Kind.RANGE_CHANGE)
+		Db.getCustomListBeers(this, list._id)
+				.toList()
+				.compose(onIoToUi())
+				.compose(bindToLifecycle())
+				.subscribe(
+						beers -> customListBeersAdapter.init(beers),
+						e -> Snackbar.show(this, R.string.error_unexpectederror));
+		RxRecyclerViewAdapter.dataEvents(customListBeersAdapter)
+				.filter(event -> event.getKind() != RecyclerAdapterDataEvent.Kind.RANGE_CHANGE)
 				.subscribe(event -> {
-			emptyText.setVisibility(customListBeersAdapter.getItemCount() == 0 ? View.VISIBLE : View.GONE);
-			beersList.setVisibility(customListBeersAdapter.getItemCount() == 0 ? View.GONE : View.VISIBLE);
-		}, e -> RBLog.e("Unexpected error when handling list addition/removal", e));
+					emptyText.setVisibility(customListBeersAdapter.getItemCount() == 0 ? View.VISIBLE : View.GONE);
+					beersList.setVisibility(customListBeersAdapter.getItemCount() == 0 ? View.GONE : View.VISIBLE);
+				}, e -> RBLog.e("Unexpected error when handling list addition/removal", e));
 	}
 
 	@Override

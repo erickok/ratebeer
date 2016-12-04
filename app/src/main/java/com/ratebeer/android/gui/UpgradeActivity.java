@@ -42,7 +42,9 @@ public class UpgradeActivity extends RateBeerActivity {
 		Animations.fadeFlip(upgradeProgress, decisionLayout);
 
 		// Copy over old offline ratings to the new ratings database table
-		Observable<Rating> upgradeRatings = rxdb(this).query(OfflineRating.class).map(Rating::fromOfflineRating).doOnNext(rxdb(this).put());
+		Observable<Rating> upgradeRatings = rxdb(this).query(OfflineRating.class)
+				.map(Rating::fromOfflineRating)
+				.doOnNext(rxdb(this).put());
 
 		// If user was logged in, copy over the account info
 		Observable<Boolean> legacyLogin = null;
@@ -59,22 +61,30 @@ public class UpgradeActivity extends RateBeerActivity {
 		}
 
 		// Execute upgrade (emit error when unsuccessful)
-		Observable<Boolean> upgrade = upgradeRatings.count().doOnNext(count -> RBLog.d("Copied " + count + " offline ratings")).map(count -> true);
+		Observable<Boolean> upgrade = upgradeRatings.count()
+				.doOnNext(count -> RBLog.d("Copied " + count + " offline ratings"))
+				.map(count -> true);
 		if (legacyLogin != null)
-			upgrade = Observable.combineLatest(upgrade, legacyLogin, (upgraded, signedIn) -> upgraded && signedIn).filter(done -> done);
-		upgrade.compose(onIoToUi()).compose(bindToLifecycle()).subscribe(success -> {
-			// Remove the old "is_first_start" key to indicate that we have upgraded
-			prefs.edit().remove("is_first_start").apply();
-			// Successfully upgraded the account
-			startActivity(MainActivity.start(this));
-			finish();
-		}, e -> {
-			Snackbar.show(this, R.string.error_upgradefailed);
-			Animations.fadeFlip(decisionLayout, upgradeProgress);
-			// Allow skipping of the upgrade/login step
-			doSkip = true;
-			((Button) findViewById(R.id.decline_button)).setText(R.string.signin_skip);
-		});
+			upgrade = Observable.combineLatest(
+					upgrade,
+					legacyLogin,
+					(upgraded, signedIn) -> upgraded && signedIn)
+					.filter(done -> done);
+		upgrade.compose(onIoToUi())
+				.compose(bindToLifecycle())
+				.subscribe(success -> {
+					// Remove the old "is_first_start" key to indicate that we have upgraded
+					prefs.edit().remove("is_first_start").apply();
+					// Successfully upgraded the account
+					startActivity(MainActivity.start(this));
+					finish();
+				}, e -> {
+					Snackbar.show(this, R.string.error_upgradefailed);
+					Animations.fadeFlip(decisionLayout, upgradeProgress);
+					// Allow skipping of the upgrade/login step
+					doSkip = true;
+					((Button) findViewById(R.id.decline_button)).setText(R.string.signin_skip);
+				});
 	}
 
 	public void declineSkip(View view) {
@@ -85,7 +95,7 @@ public class UpgradeActivity extends RateBeerActivity {
 			startActivity(MainActivity.start(this));
 			finish();
 		} else {
-			startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.ratebeer.com/feedback")));
+			startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(Api.DOMAIN + "/feedback")));
 		}
 	}
 
