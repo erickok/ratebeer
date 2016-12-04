@@ -42,6 +42,14 @@
 					android:host="www.ratebeer.com"
 					android:pathPrefix="/b/"
 					android:scheme="http" />
+				<data
+					android:host="ratebeer.com"
+					android:pathPrefix="/b/"
+					android:scheme="https" />
+				<data
+					android:host="www.ratebeer.com"
+					android:pathPrefix="/b/"
+					android:scheme="https" />
 			</intent-filter>
 		</activity>
 		<activity android:name=".gui.RateActivity" />

@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextUtils;
@@ -21,7 +22,9 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.jakewharton.rxbinding.support.v7.widget.RxToolbar;
 import com.ratebeer.android.R;
+import com.ratebeer.android.ShareHelper;
 import com.ratebeer.android.api.Api;
 import com.ratebeer.android.db.Db;
 import com.ratebeer.android.db.Place;
@@ -35,6 +38,7 @@ import java.util.Locale;
 
 public final class PlaceActivity extends RateBeerActivity {
 
+	private Toolbar mainToolbar;
 	private MapView mapView;
 	private ProgressBar loadingProgress;
 	private View detailsLayout;
@@ -51,7 +55,8 @@ public final class PlaceActivity extends RateBeerActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_place);
 
-		setupDefaultUpButton();
+		mainToolbar = setupDefaultUpButton();
+		mainToolbar.inflateMenu(R.menu.menu_link);
 
 		mapView = (MapView) findViewById(R.id.map_view);
 		mapView.onCreate(savedInstanceState);
@@ -180,8 +185,11 @@ public final class PlaceActivity extends RateBeerActivity {
 			propertiesList.setLayoutManager(new LinearLayoutManager(this));
 			propertiesList.setAdapter(new PropertiesAdapter(properties));
 
-			Animations.fadeFlip(detailsLayout, loadingProgress);
+			RxToolbar.itemClicks(mainToolbar).subscribe(item -> {
+				new ShareHelper(this).sharePlace(place._id, place.name);
+			});
 
+			Animations.fadeFlip(detailsLayout, loadingProgress);
 		});
 
 	}

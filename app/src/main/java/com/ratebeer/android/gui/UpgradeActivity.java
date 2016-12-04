@@ -95,7 +95,7 @@ public class UpgradeActivity extends RateBeerActivity {
 			startActivity(MainActivity.start(this));
 			finish();
 		} else {
-			startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.ratebeer.com/feedback")));
+			startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(Api.DOMAIN + "/feedback")));
 		}
 	}
 

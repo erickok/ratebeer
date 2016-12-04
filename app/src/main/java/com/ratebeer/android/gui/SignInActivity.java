@@ -57,7 +57,7 @@ public final class SignInActivity extends RateBeerActivity {
 	}
 
 	public void createAccount(View view) {
-		startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.ratebeer.com/newuser/")));
+		startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(Api.DOMAIN + "/newuser/")));
 	}
 
 }

@@ -31,6 +31,7 @@ import com.jakewharton.rxbinding.view.RxView;
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.ratebeer.android.R;
 import com.ratebeer.android.Session;
+import com.ratebeer.android.ShareHelper;
 import com.ratebeer.android.api.Api;
 import com.ratebeer.android.api.model.BeerRating;
 import com.ratebeer.android.db.Beer;
@@ -68,6 +69,7 @@ public final class BeerActivity extends RateBeerActivity {
 	private PopupWindow addListPopup;
 
 	private long beerId;
+	private String beerName;
 
 	public static Intent start(Context context, long beerId) {
 		return new Intent(context, BeerActivity.class).putExtra("beerId", beerId);
@@ -81,10 +83,15 @@ public final class BeerActivity extends RateBeerActivity {
 
 		// Set up toolbar
 		Toolbar mainToolbar = setupDefaultUpButton();
+		mainToolbar.inflateMenu(R.menu.menu_link);
 		mainToolbar.inflateMenu(R.menu.menu_refresh);
-		RxToolbar.itemClicks(mainToolbar).filter(item -> item.getItemId() == R.id.menu_refresh).subscribe(item -> {
-			Animations.fadeFlip(loadingProgress, detailsLayout);
-			refresh(true);
+		RxToolbar.itemClicks(mainToolbar).subscribe(item -> {
+			if (item.getItemId() == R.id.menu_link) {
+				new ShareHelper(this).shareBeer(beerId, beerName);
+			} else if (item.getItemId() == R.id.menu_link) {
+				Animations.fadeFlip(loadingProgress, detailsLayout);
+				refresh(true);
+			}
 		});
 
 		ratingsList = (RecyclerView) findViewById(R.id.ratings_list);
@@ -147,6 +154,7 @@ public final class BeerActivity extends RateBeerActivity {
 	@TargetApi(Build.VERSION_CODES.M)
 	private void showBeer(Beer beer) {
 
+		this.beerName = beer.name;
 		ImageView photoImage = (ImageView) findViewById(R.id.backdrop_image);
 		Images.with(this).loadBeer(beer._id, true).fit().centerCrop().noPlaceholder().into(photoImage);
 

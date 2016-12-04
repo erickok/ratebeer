@@ -6,6 +6,8 @@
 	<string name="app_accept">I accept your apology</string>
 	<string name="app_decline">Forget it</string>
 	<string name="app_refresh">Refresh</string>
+	<string name="app_openorshare">Open or share link</string>
+	<string name="app_sharetext">%1$s on RateBeer\n%2$s</string>
 
 	<string name="signin_welcome">Welcome to RateBeer</string>
 	<string name="signin_getaccount">The biggest source on craft beer is at your fingertips! To get the most out of your beer experience, please sign in to your RateBeer account.</string>

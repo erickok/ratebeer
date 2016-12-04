@@ -71,7 +71,9 @@ import rx.schedulers.Schedulers;
 
 public final class Api {
 
-	private static final String ENDPOINT = "http://www.ratebeer.com/json/";
+	public static final String DOMAIN = "https://www.ratebeer.com";
+
+	private static final String ENDPOINT = DOMAIN + "/json/";
 	private static final String KEY = "tTmwRTWT-W7tpBhtL";
 	private static final String COOKIE_USERID = "UserID";
 	private static final String COOKIE_SESSIONID = "SessionID";

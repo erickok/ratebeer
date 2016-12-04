@@ -94,11 +94,11 @@ public final class HelpActivity extends RateBeerActivity {
 	}
 
 	public void openRatebeer(View view) {
-		startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.ratebeer.com")));
+		startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(Api.DOMAIN)));
 	}
 
 	public void openUserAgreement(View view) {
-		startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.ratebeer.com/UserAgreement.asp")));
+		startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(Api.DOMAIN + "/UserAgreement.asp")));
 	}
 
 	public void openGithub(View view) {
