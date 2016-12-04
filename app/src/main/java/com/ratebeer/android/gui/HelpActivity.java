@@ -24,6 +24,7 @@ public final class HelpActivity extends RateBeerActivity {
 	private Button signInOutButton;
 	private ProgressBar signoutProgress;
 	private CheckBox datasaverCheck;
+	private CheckBox metricunitsCheck;
 
 	public static Intent start(Context context) {
 		return new Intent(context, HelpActivity.class);
@@ -37,13 +38,17 @@ public final class HelpActivity extends RateBeerActivity {
 		signInOutButton = (Button) findViewById(R.id.signinout_button);
 		signoutProgress = (ProgressBar) findViewById(R.id.signout_progress);
 		datasaverCheck = (CheckBox) findViewById(R.id.datasaver_check);
+		metricunitsCheck = (CheckBox) findViewById(R.id.metricunits_check);
 
 		setupDefaultUpButton();
 
 		// Settings persistence
 		datasaverCheck.setChecked(Session.get().inDataSaverMode());
-		RxCompoundButton.checkedChanges(datasaverCheck)
+		RxCompoundButton.checkedChanges(datasaverCheck).skip(1)
 				.subscribe(checked -> Session.get().setDataSaverMode(checked));
+		metricunitsCheck.setChecked(Session.get().useMetricUnits());
+		RxCompoundButton.checkedChanges(metricunitsCheck).skip(1)
+				.subscribe(checked -> Session.get().setUseMetricUnits(checked));
 
 	}
 
