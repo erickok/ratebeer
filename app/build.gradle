@@ -21,8 +21,8 @@ android {
         applicationId 'com.ratebeer.android'
         minSdkVersion 15
         targetSdkVersion 25
-        versionCode 212
-        versionName '2.2.0'
+        versionCode 213
+        versionName '2.2.1'
         jackOptions {
             enabled true
         }
