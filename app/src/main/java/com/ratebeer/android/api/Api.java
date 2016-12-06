@@ -47,7 +47,6 @@ import com.ratebeer.android.api.model.UserRating;
 import com.ratebeer.android.api.model.UserRatingDeserializer;
 import com.ratebeer.android.db.RBLog;
 import com.ratebeer.android.db.Rating;
-import com.ratebeer.android.rx.AsRangeOperator;
 
 import org.javatuples.Pair;
 
