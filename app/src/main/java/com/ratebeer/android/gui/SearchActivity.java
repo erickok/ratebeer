@@ -23,6 +23,7 @@ import com.ratebeer.android.api.Api;
 import com.ratebeer.android.api.model.BeerSearchResult;
 import com.ratebeer.android.api.model.BrewerySearchResult;
 import com.ratebeer.android.api.model.PlaceSearchResult;
+import com.ratebeer.android.db.Db;
 import com.ratebeer.android.gui.lists.BeerSearchResultAdapter;
 import com.ratebeer.android.gui.lists.BrewerySearchResultAdapter;
 import com.ratebeer.android.gui.lists.PlaceSearchResultAdapter;
@@ -131,6 +132,9 @@ public class SearchActivity extends RateBeerActivity {
 			ItemClickSupport.addTo(view)
 					.setOnItemClickListener((parent, pos, v) -> handleBeerResult(((BeerSearchResultAdapter) view.getAdapter()).get(pos)));
 			debouncedQueries.switchMap(query -> Api.get().searchBeers(query.toString())
+					.flatMap(result -> Db.getOfflineRatingForBeer(this, result.beerId)
+							.singleOrDefault(null)
+							.map(userRating -> result.withRating(userRating)))
 					.toList()
 					.compose(toUi())
 					.doOnError(e -> Snackbar.show(SearchActivity.this, R.string.error_connectionfailure))

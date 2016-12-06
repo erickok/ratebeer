@@ -102,7 +102,7 @@ public final class Db {
 
 	public static Observable<Rating> getOfflineRatingForBeer(Context context, long beerId) {
 		return rxdb(context).query(Rating.class, "beerId = ?", Long.toString(beerId))
-				.first();
+				.take(1);
 	}
 
 	public static Observable<Rating> getRating(Context context, long beerId, long userId) {

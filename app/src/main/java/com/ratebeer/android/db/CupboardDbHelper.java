@@ -58,6 +58,8 @@ public final class CupboardDbHelper extends SQLiteOpenHelper {
 		// Views
 		cupboardAll.register(CustomListWithCount.class);
 		cupboardAll.register(CustomListWithPresence.class);
+		// Legacy OfflineRating table to migrate
+		cupboardAll.register(OfflineRating.class);
 	}
 
 	public CupboardDbHelper(Context context) {

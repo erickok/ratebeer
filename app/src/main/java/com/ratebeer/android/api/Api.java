@@ -47,7 +47,6 @@ import com.ratebeer.android.api.model.UserRating;
 import com.ratebeer.android.api.model.UserRatingDeserializer;
 import com.ratebeer.android.db.RBLog;
 import com.ratebeer.android.db.Rating;
-import com.ratebeer.android.rx.AsRangeOperator;
 
 import org.javatuples.Pair;
 
@@ -317,10 +316,8 @@ public final class Api {
 				.map(counts -> (int) Math.ceil((float) counts.rateCount / RATINGS_PER_PAGE));
 		Observable<UserRating> ratings = Observable.combineLatest(
 				pageCount,
-				pageCount.lift(new AsRangeOperator())
-						.onBackpressureBuffer(),
+				pageCount.flatMap(count -> Observable.range(1, count)),
 				RxTuples.toPair())
-				.onBackpressureBuffer()
 				.flatMap(page -> Observable.combineLatest(
 						Observable.just(page),
 						routes.getUserRatings(KEY, page.getValue1() + 1),
