@@ -317,10 +317,8 @@ public final class Api {
 				.map(counts -> (int) Math.ceil((float) counts.rateCount / RATINGS_PER_PAGE));
 		Observable<UserRating> ratings = Observable.combineLatest(
 				pageCount,
-				pageCount.lift(new AsRangeOperator())
-						.onBackpressureBuffer(),
+				pageCount.flatMap(count -> Observable.range(1, count)),
 				RxTuples.toPair())
-				.onBackpressureBuffer()
 				.flatMap(page -> Observable.combineLatest(
 						Observable.just(page),
 						routes.getUserRatings(KEY, page.getValue1() + 1),
